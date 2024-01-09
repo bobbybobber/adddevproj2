@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Users{% endblock %}
+{% block content %}
+<h1 class="display-4">Retrieve Users</h1>
+<div>
+    {% if count == 0 %}
+    <p>There are no staff.</p>
+    {% elif count == 1 %}
+    <p>There is 1 staff.</p>
+    {% else %}
+    <p>There are {{ count }} staff.</p>
+    {% endif %}
+</div>
+<div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Email</th>
+            <th>Update</th>
+            <th>Delete</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for staff in staff_list %}
+        <tr>
+            <td>{{ staff.get_id() }}</td>
+            <td>{{ staff.get_name() }}</td>
+            <td>{{ staff.get_phonenumber() }}</td>
+            <td>{{ staff.get_email() }}</td>
+            <td>{{ staff.get_address() }}</td>
+            <td>{{ staff.get_password() }}</td>
+            <td><a href="/updateStaff/{{staff.get_id()}}" class="btn btn-warning">Update</a></td>
+
+            <td>
+                <form action="{{url_for('deleteStaff', id=staff.get_id())}}" method="POST">
+                    <!-- Button to Open the Modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#myModal_{{staff.get_id()}}">
+                        Delete
+                    </button>
+                    <!-- The Modal -->
+                    <div class="modal" id="myModal_{{staff.get_id()}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Delete Confirmation</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    Are you sure you want to delete {{staff.get_name()}}?
+                                </div>
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <input type="submit" value="Delete" class="btn btn-danger">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
