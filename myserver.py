@@ -17,17 +17,11 @@ app.config['UPLOAD_fOLDER'] = 'static/files'
 # ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('startpage.html')
-
-#login
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-
     create_login_form = logininformation(request.form)
     if request.method == 'POST' and create_login_form.validate():
-        customer = logincheck(create_login_form.email.data,create_login_form.password.data)
+        customer = logincheck(create_login_form.email.data, create_login_form.password.data)
         customer_dict = {}
         db = shelve.open('customer.db', 'r')
         customer_dict = db['Customer']
@@ -38,9 +32,27 @@ def login():
                 return redirect(url_for('retrieveCustomers'))
         db.close()
 
+    return render_template('Startpage.html',form=create_login_form)
 
+
+# login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    create_login_form = logininformation(request.form)
+    if request.method == 'POST' and create_login_form.validate():
+        customer = logincheck(create_login_form.email.data, create_login_form.password.data)
+        customer_dict = {}
+        db = shelve.open('customer.db', 'r')
+        customer_dict = db['Customer']
+        if customer.email_get() in customer_dict:
+            user = customer_dict.get(customer.email_get())
+
+            if customer.password_get() == user.get_password():
+                return redirect(url_for('retrieveCustomers'))
+        db.close()
 
     return render_template('login.html', form=create_login_form)
+
 
 # Customer Name and comment CRUD
 # def allowed_file(filename):
@@ -323,6 +335,7 @@ def deleteCustomer(id):
     db.close()
     return redirect(url_for('retrieveCustomers'))
 
+
 @app.route('/updatecomment/<int:id>/', methods=['GET', 'POST'])
 def update_comment(id):
     update_comment_form = ratingcomment2(request.form)
@@ -342,9 +355,11 @@ def update_comment(id):
     else:
         return render_template('updatecomment.html', form=update_comment_form)
 
+
 @app.route('/viewproject')
 def view_project():
     return render_template('viewproject.html')
+
 
 @app.route('/rating', methods=['GET', 'POST'])
 def rating():
