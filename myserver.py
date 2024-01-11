@@ -27,7 +27,7 @@ def login():
 
     create_login_form = logininformation(request.form)
     if request.method == 'POST' and create_login_form.validate():
-        customer = logincheck(request.form['email'],request.form['password'])
+        customer = logincheck(create_login_form.email.data,create_login_form.password.data)
         customer_dict = {}
         db = shelve.open('customer.db', 'r')
         customer_dict = db['Customer']

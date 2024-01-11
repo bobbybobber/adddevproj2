@@ -1,6 +1,6 @@
 from Customers import customer
 class logincheck:
-    def _init_(self, email2, password2):
+    def __init__(self, email2, password2):
         customer.count_id += 1
         # , email2, password2
         self.__email2 = email2
@@ -19,5 +19,7 @@ class logincheck:
     def password_get(self):
         return self.__password2
 
-    def email_set(self):
-        pass
+    def email_set(self,email):
+        self.__email2 = email
+    def password_set(self,password):
+        self.__password2 = password
