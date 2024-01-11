@@ -1,6 +1,7 @@
 import shelve
 from Customers import customer
 from blog import blog
+from starrating import starrating
 def get_key(my_dict):
     if len(my_dict)==0:
         my_key = 1
@@ -54,4 +55,18 @@ def add_blog(blog):
     # Test codes
     print(blog.get_name(), "was stored in blog.db successfully with user_id ==",
           blog.get_blog_id())
+    db.close()
+
+def add_comment(comment):
+    comment_dict = {}
+    db = shelve.open('comment.db', 'c')
+    try:
+        comment_dict = db['comments']
+    except:
+        print("Error in retrieving comments from comment.db.")
+
+    comment.set_comment(comment)
+    comment_dict[comment.get_user_id()] = comment
+    db['comments'] = comment_dict
+    # Test codes
     db.close()

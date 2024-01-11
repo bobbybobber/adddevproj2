@@ -10,10 +10,12 @@ class CreateStaffForm(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     address = StringField('Address', [validators.Length(min=1, max=150), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
+
 class CreateBlogForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     comment = StringField('Comment', validators=[DataRequired()])
     # image = FileField('Image', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+
 class CreateCustomerForm(Form):
     first_name = StringField('First Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
@@ -23,7 +25,6 @@ class CreateCustomerForm(Form):
 class logininformation(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
-
 
 class DocumentUploadForm(Form):
     Name = StringField('Name', validators=[DataRequired()])
@@ -51,3 +52,17 @@ class CreateProject(Form):
                                                      ('Farmhouse'), ('CON', 'Condominium'), validators.DataRequired()])
     comments = TextAreaField('Additional Request', [validators.Optional()])
 
+class ratingcomment(Form):
+    email = EmailField('Email', [validators.Email(), validators.DataRequired()])
+    comment = StringField('comment', validators=[DataRequired()])
+    stars = StringField('stars', validators=[DataRequired()])
+
+
+class ratingcomment2(Form):
+
+    comment = StringField('comment', validators=[DataRequired()])
+    stars = StringField('stars', validators=[DataRequired()])
+
+class logininformation(Form):
+    email = EmailField('Email', [validators.Email(), validators.DataRequired()])
+    password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])

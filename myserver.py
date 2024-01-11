@@ -4,19 +4,43 @@ from Staff import staff
 from Forms import *
 from Db_functions import *
 from werkzeug.utils import *
+from User import User
+from logincheck import logincheck
 import os
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
 app.config['UPLOAD_fOLDER'] = 'static/files'
+
+
 # app.config['UPLOAD_FOLDER'] = 'C:\\RH stuff\\appdevProject2\\static\\Upload'
 # ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('startpage.html')
 
+#login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+
+    create_login_form = logininformation(request.form)
+    if request.method == 'POST' and create_login_form.validate():
+        customer = logincheck(request.form['email'],request.form['password'])
+        customer_dict = {}
+        db = shelve.open('customer.db', 'r')
+        customer_dict = db['Customer']
+        if customer.email_get() in customer_dict:
+            user = customer_dict.get(customer.email_get())
+
+            if customer.password_get() == user.get_password():
+                return redirect(url_for('retrieveCustomers'))
+        db.close()
+
+
+
+    return render_template('login.html', form=create_login_form)
 
 # Customer Name and comment CRUD
 # def allowed_file(filename):
@@ -29,13 +53,13 @@ def home():
 #     else:
 #         print(f"The directory '{directory_path}' does not exist.")
 #         return []
-#Staff CRUD
-@app.route("/createStaff", methods={'GET','POST'})
+# Staff CRUD
+@app.route("/createStaff", methods={'GET', 'POST'})
 def create_staff():
     create_Staff_form = CreateStaffForm(request.form)
     if request.method == 'POST' and create_Staff_form.validate():
-        Staff = staff(create_Staff_form.name.data,create_Staff_form.phonenumber.data,create_Staff_form.email.data,
-                      create_Staff_form.address.data,create_Staff_form.password.data)
+        Staff = staff(create_Staff_form.name.data, create_Staff_form.phonenumber.data, create_Staff_form.email.data,
+                      create_Staff_form.address.data, create_Staff_form.password.data)
         add_staff(Staff)
         print(Staff.get_name(),
               "was stored in staff.db successfully with user_id ==",
@@ -43,6 +67,7 @@ def create_staff():
 
         return redirect(url_for('retrieveStaff'))
     return render_template('createStaff.html', form=create_Staff_form)
+
 
 @app.route("/retrieveStaff")
 def retrieveStaff():
@@ -58,7 +83,8 @@ def retrieveStaff():
 
     return render_template('retrieveStaff.html', count=len(staff_list), staff_list=staff_list)
 
-@app.route("/updateStaff/<int:id>/",methods=['GET', 'POST'])
+
+@app.route("/updateStaff/<int:id>/", methods=['GET', 'POST'])
 def updateStaff(id):
     Update_staff_form = CreateStaffForm(request.form)
 
@@ -99,6 +125,8 @@ def updateStaff(id):
 
     flash('Staff not found', 'error')
     return redirect(url_for('retrieveStaff'))
+
+
 @app.route("/deleteStaff/<int:id>", methods=['POST'])
 def deleteStaff(id):
     staff_dict = {}
@@ -109,7 +137,8 @@ def deleteStaff(id):
     db.close()
     return redirect(url_for('retrieveStaff'))
 
-#Blog CRUD
+
+# Blog CRUD
 @app.route("/createblog", methods={'GET', 'POST'})
 def UploadImage():
     Create_blog_form = CreateBlogForm(request.form)
@@ -149,6 +178,7 @@ def UploadImage():
 
     # return render_template('createBlog.html', form=blog)
 
+
 @app.route("/retrieveblog")
 def retrieveblog():
     blog_dict = {}
@@ -162,6 +192,7 @@ def retrieveblog():
         blog_list.append(blog)
 
     return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list)
+
 
 @app.route('/updateblog/<int:id>/', methods=['GET', 'POST'])
 def update_blog(id):
@@ -198,6 +229,7 @@ def update_blog(id):
 
     flash('Blog not found', 'error')
     return redirect(url_for('retrieveblog'))
+
 
 @app.route('/deleteblog/<int:id>', methods=['POST'])
 def deleteblog(id):
@@ -281,9 +313,6 @@ def update_user(id):
     return redirect(url_for('retrieveCustomers'))
 
 
-# @app.route('login')
-# def login():
-#
 @app.route('/deleteCustomer/<int:id>', methods=['POST'])
 def deleteCustomer(id):
     customer_dict = {}
@@ -293,6 +322,74 @@ def deleteCustomer(id):
     db['Customer'] = customer_dict
     db.close()
     return redirect(url_for('retrieveCustomers'))
+
+@app.route('/updatecomment/<int:id>/', methods=['GET', 'POST'])
+def update_comment(id):
+    update_comment_form = ratingcomment2(request.form)
+    if request.method == 'POST' and update_comment_form.validate():
+        comment_dict = {}
+        db = shelve.open('comment.db', 'w')
+        comment_dict = db['comments']
+        comment = comment_dict.get(id)
+        print(comment_dict.get(id))
+        comment.set_comment(update_comment_form.comment.data)
+        comment.stars_set(update_comment_form.stars.data)
+        db['comments'] = comment_dict
+        db.close()
+        print('works?')
+        return redirect(url_for('rating'))
+
+    else:
+        return render_template('updatecomment.html', form=update_comment_form)
+
+@app.route('/viewproject')
+def view_project():
+    return render_template('viewproject.html')
+
+@app.route('/rating', methods=['GET', 'POST'])
+def rating():
+    # users_list = []
+    # for key in users_dict:
+    #     user = users_dict.get(key)
+    #     users_list.append(user)
+    comment_dict = {}
+    db = shelve.open('comment.db', 'r')
+    comment_dict = db['comments']
+    print(comment_dict)
+    db.close()
+    comment_list = []
+    for key in comment_dict:
+        comment = comment_dict.get(key)
+
+        comment_list.append(comment)
+    create_rating_form = ratingcomment(request.form)
+    if request.method == 'POST' and create_rating_form.validate():
+        users_dict = {}
+        db = shelve.open('user.db', 'r')
+        users_dict = db['Users']
+
+        comment1 = starrating(create_rating_form.email.data, create_rating_form.comment.data,
+                              create_rating_form.stars.data)
+        if comment1.email_get() in users_dict:
+            db.close()
+            print(comment1)
+            add_comment(comment1)
+
+            return redirect(url_for('rating'))
+
+    return render_template('rating.html', form=create_rating_form, count=len(comment_list), users_list=comment_list)
+
+
+@app.route('/deleteComment/<int:id>', methods=['POST'])
+def deleteComment(id):
+    print(id)
+    comment_dict = {}
+    db = shelve.open('comment.db', 'w')
+    comment_dict = db['comments']
+    comment_dict.pop(id)
+    db['comments'] = comment_dict
+    db.close()
+    return redirect(url_for('rating'))
 
 
 if __name__ == '__main__':

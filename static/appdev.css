@@ -30,7 +30,7 @@ background-color: #04AA6D; /* Green */
 }
 
 body{
-    background-color:#F9AF58;
+    background-color:white;
 }
 
 #footering{
@@ -185,7 +185,7 @@ width:225px;
 height:70px;
 border-radius:50px;
 border:20px;
-background-color:#F18204;
+background-color:#ADD8E6;
 font-weight:700;
 color:white;
 }
@@ -195,7 +195,7 @@ width:225px;
 height:70px;
 background: transparent;
 border:transparent;
-color:white;
+color:#ADD8E6;
 }
 #header {
     display: flex;
