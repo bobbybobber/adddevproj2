@@ -285,8 +285,8 @@ def retrieveCustomers():
     return render_template('retrieveCustomer.html', count=len(Customer_list), Customer_list=Customer_list)
 
 
-@app.route('/updateCustomer/<int:id>/', methods=['GET', 'POST'])
-def update_user(id):
+@app.route('/updateCustomer/<string:email>/', methods=['GET', 'POST'])
+def update_user(email):
     update_customer_form = CreateCustomerForm(request.form)
 
     if request.method == 'POST' and update_customer_form.validate():
@@ -295,8 +295,8 @@ def update_user(id):
         customer_dict = db['Customer']
 
         # Check if the customer exists in the dictionary
-        if id in customer_dict:
-            Customer = customer_dict[id]
+        if email in customer_dict:
+            Customer = customer_dict[email]
             Customer.set_first_name(update_customer_form.first_name.data)
             Customer.set_last_name(update_customer_form.last_name.data)
             Customer.set_email(update_customer_form.email.data)
@@ -312,8 +312,8 @@ def update_user(id):
         db.close()
 
         # Check if the customer exists in the dictionary
-        if id in customer_dict:
-            Customer = customer_dict[id]
+        if email in customer_dict:
+            Customer = customer_dict[email]
             update_customer_form.first_name.data = Customer.get_first_name()
             update_customer_form.last_name.data = Customer.get_last_name()
             update_customer_form.email.data = Customer.get_email()

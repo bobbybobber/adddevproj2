@@ -33,7 +33,7 @@
             <td>{{ customer.get_last_name() }}</td>
             <td>{{ customer.get_email() }}</td>
             <td>{{ customer.get_password() }}</td>
-            <td><a href="/updateCustomer/{{customer.get_customer_id()}}" class="btn btn-warning">Update</a></td>
+            <td><a href="/updateCustomer/{{customer.get_email()}}" class="btn btn-warning">Update</a></td>
 
             <td>
                 <form action="{{url_for('deleteCustomer', email=customer.get_email())}}" method="POST">
