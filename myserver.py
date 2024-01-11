@@ -325,12 +325,12 @@ def update_user(id):
     return redirect(url_for('retrieveCustomers'))
 
 
-@app.route('/deleteCustomer/<int:id>', methods=['POST'])
-def deleteCustomer(id):
+@app.route('/deleteCustomer/<string:email>', methods=['POST'])
+def deleteCustomer(email):
     customer_dict = {}
     db = shelve.open('customer.db', 'w')
     customer_dict = db['Customer']
-    customer_dict.pop(id)
+    customer_dict.pop(email)
     db['Customer'] = customer_dict
     db.close()
     return redirect(url_for('retrieveCustomers'))
