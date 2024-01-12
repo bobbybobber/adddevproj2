@@ -6,7 +6,9 @@ from Db_functions import *
 from werkzeug.utils import *
 from User import User
 from logincheck import logincheck
+from flask_mail import Mail,Message
 import os
+from random import *
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -15,6 +17,83 @@ app.config['UPLOAD_fOLDER'] = 'static/files'
 
 # app.config['UPLOAD_FOLDER'] = 'C:\\RH stuff\\appdevProject2\\static\\Upload'
 # ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+mail = Mail(app)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'ruihernh@gmail.com'
+app.config['MAIL_PASSWORD'] = 'yqqh pwcr byeq sseo'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+otp = randint(000000,999999)
+@app.route('/verify', methods=['POST','GET'])
+def verify():
+    create_email_veri_form = emailfield(request.form)
+    if request.method == 'POST' and create_email_veri_form.validate():
+        email = request.form['email']
+        msg = Message(subject='OTP', sender='ruihernh@gmail.com', recipients=[email])
+        msg.body = str(otp)
+
+        # Use the App Password instead of your account password
+        app_password = "yqqh pwcr byeq sseo"
+        mail.send(msg)
+        return redirect(url_for('validate', email=email))
+
+    return render_template('getOTP.html', form=create_email_veri_form)
+@app.route('/validate', methods=['GET', 'POST'])
+def validate():
+    email = request.args.get('email')
+    create_otp_form = otpfield(request.form)
+    if request.method == 'POST' and create_otp_form.validate():
+
+        user_otp = request.form['otp']
+        if otp==int(user_otp):
+            return redirect(url_for('resetPassword',email=email))
+
+
+    return render_template('verifyOTP.html', form=create_otp_form)
+
+@app.route('/resetPassword', methods=['GET', 'POST'])
+def resetPassword():
+    email = request.args.get('email')
+    print(email)
+    create_reset_form = resetpassword(request.form)
+    if request.method == 'POST' and create_reset_form.validate():
+
+        if create_reset_form.password1.data==create_reset_form.password2.data:
+            db = shelve.open('customer.db', 'r')
+            customer_dict = db['Customer']
+            db.close()
+            staff_dict = {}
+            db = shelve.open('staff.db', 'r')
+            staff_dict = db['Staff']
+            db.close()
+            print('pw is same')
+            if email in customer_dict:
+                db = shelve.open('customer.db', 'w')
+                customer_dict = db['Customer']
+
+                Customer = customer_dict.get(email)
+                Customer.set_password(create_reset_form.password1.data)
+                print(Customer.get_password())
+                db['Customer'] = customer_dict
+                db.close()
+                return redirect(url_for('retrieveCustomers'))
+            elif email in staff_dict:
+                db = shelve.open('staff.db','w')
+                staff_dict = db['Staff']
+
+                Staff = staff_dict.get(email)
+                Staff.set_password(create_reset_form.password2.data)
+                print(Staff.get_password())
+                db['Staff'] = staff_dict
+                db.close()
+                return redirect(url_for('retrieveStaff'))
+            else:
+                print('wawrawrawrwasd')
+
+    return render_template('resetPassword.html', form=create_reset_form)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -104,7 +183,7 @@ def create_staff():
         print(staff_dict)
         print(customer_dict)
         print(Staff.get_email())
-        if Staff.get_email() in customer_dict or staff_dict:
+        if Staff.get_email() in customer_dict or Staff.get_email() in staff_dict:
             print("duplicate email found!")
         else:
             add_staff(Staff)
@@ -312,7 +391,7 @@ def create_customer():
             print("Error in retrieving Staff from Staff.db.")
         db['Staff'] = staff_dict
         db.close()
-        if Customer.get_email() in customer_dict or staff_dict:
+        if Customer.get_email() in staff_dict or Customer.get_email() in customer_dict:
             print("same email!")
         else:
             add_customer(Customer)

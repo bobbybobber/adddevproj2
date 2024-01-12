@@ -66,3 +66,13 @@ class ratingcomment2(Form):
 class logininformation(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
+
+class emailfield(Form):
+    email = EmailField('Email', [validators.Email(), validators.DataRequired()])
+
+class otpfield(Form):
+    otp = PasswordField('Password', [validators.length(min=0, max=6), validators.data_required()])
+
+class resetpassword(Form):
+    password1 = PasswordField('Password',[validators.length(min=5, max=15), validators.data_required()])
+    password2 = PasswordField('Password',[validators.length(min=5, max=15), validators.data_required()])

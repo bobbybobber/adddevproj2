@@ -687,7 +687,7 @@ text-decoration:none;
 .remember-forgot a::hover{
 text-decoration:underline;
 }
-.wrapper .login-btn{
+.login-btn{
 width:100%;
 height:45px;
 background:#fff;
