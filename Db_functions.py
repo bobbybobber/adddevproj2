@@ -2,6 +2,11 @@ import shelve
 from Customers import customer
 from blog import blog
 from starrating import starrating
+import os
+
+
+
+
 def get_key(my_dict):
     if len(my_dict)==0:
         my_key = 1
@@ -68,5 +73,24 @@ def add_comment(comment):
     comment.set_comment(comment)
     comment_dict[comment.get_user_id()] = comment
     db['comments'] = comment_dict
+    # Test codes
+    db.close()
+
+def add_project(project):
+    project_dict = {}
+    db = shelve.open('project.db', 'c')
+    try:
+        project_dict = db['Project']
+    except:
+        print("Error in retrieving Users from user.db.")
+
+    project.set_owner_id(project)
+    project_dict[project.get_owner_id()] = project
+    db['Project'] = project_dict
+    # Test codes
+    db.close()
+
+
+
     # Test codes
     db.close()

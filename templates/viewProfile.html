@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}View Profile{% endblock %}
+{% block content %}
+<div class="media">
+  <img class="rounded-circle account-img" src="#">
+  <div class="media-body">
+    <h2 class="account-heading">{{customer.get_first_name}}</h2>
+    <p class="text-secondary">{{customer.get_email}}/p>
+  </div>
+</div>
+{% endblock %}

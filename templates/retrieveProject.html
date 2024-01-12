@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Library Loan System - Retrieve Project{% endblock %}
+{% block content %}
+<h1 class="display-4">Retrieve Project</h1>
+
+<div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Home Type</th>
+            <th>Home Theme</th>
+            <th>Comments</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for project in project_list %}
+        <tr>
+            <td>{{ project.get_phone()}}</td>
+            <td>{{ project.get_address()}}</td>
+            <td>{{ project.get_house_type() }}</td>
+            <td>{{ project.get_house_theme()}}</td>
+            <td>{{ project.get_comments()}}</td>
+            <td><a href="/updateProject/{{project.get_owner_id()}}" class="btn btn-warning">Update</a></td>
+            <td>
+                <form action="{{url_for('delete_project', id=project.get_owner_id())}}" method="POST">
+                    <!-- Button to Open the Modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{project.get_owner_id()}}">
+                        Delete
+                    </button>
+                    <!-- The Modal -->
+                    <div class="modal" id="myModal_{{project.get_owner_id()}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Delete Confirmation</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    Are you sure you want to delete {{project.get_owner_id()}}?
+                                </div>
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <input type="submit" value="Delete" class="btn btn-danger">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </td>
+
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

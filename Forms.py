@@ -16,11 +16,12 @@ class CreateBlogForm(Form):
     comment = StringField('Comment', validators=[DataRequired()])
     # image = FileField('Image', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
 
-class CreateCustomerForm(Form):
+class CreateCustomerForm(FlaskForm):
     first_name = StringField('First Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
+    image = FileField('Profile Picture')
 
 class logininformation(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
@@ -76,3 +77,18 @@ class otpfield(Form):
 class resetpassword(Form):
     password1 = PasswordField('Password',[validators.length(min=5, max=15), validators.data_required()])
     password2 = PasswordField('Password',[validators.length(min=5, max=15), validators.data_required()])
+
+class CreateProject(Form):
+    phone = StringField('Phone', [validators.Length(min=8), validators.DataRequired()])
+    address = StringField('House address', [validators.Length(min=1, max=150), validators.DataRequired()])
+    house_type = RadioField('House Type', choices=[('AP', 'Appartment'), ('BUN', 'Bungalow'), ('HDB2', '2-Room HDB'),
+                                                   ('HDB3', '3-Room HDB'),('HDB4', '4-Room HDB'),('HDB5', '5-Room HDB')
+                                                   ,('CON', 'Condominium')], validators = [validators.DataRequired()])
+    house_theme = RadioField('House Theme', choices=[('Scandanavian'), ('Luxury'), ('Modern-Luxury'),
+                                                   ('Traditional'), ('Contemporary'),
+                                                   ('Farmhouse')], validators = [validators.DataRequired()])
+    comments = TextAreaField('Additional Request', [validators.Optional()])
+
+class CreateProject2(Form):
+    address = StringField('House address', [validators.Length(min=1, max=150), validators.DataRequired()])
+    comments = TextAreaField('Additional Request', [validators.Optional()])

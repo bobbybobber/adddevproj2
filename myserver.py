@@ -5,6 +5,7 @@ from Forms import *
 from Db_functions import *
 from werkzeug.utils import *
 from User import User
+from project import Project
 from logincheck import logincheck
 from flask_mail import Mail,Message
 import os
@@ -12,10 +13,13 @@ from random import *
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['UPLOAD_fOLDER'] = 'static/files'
-
-
-# app.config['UPLOAD_FOLDER'] = 'C:\\RH stuff\\appdevProject2\\static\\Upload'
+app.config['UPLOAD_fOLDER'] = 'static/images'
+app.config['UPLOAD_FOLDER'] = 'C:\\Users\\Ervin\\Desktop\\adddevproj2\\static\\image'
+def save_image(file):
+    filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(filename)
+    return filename
+#
 # ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 mail = Mail(app)
@@ -27,6 +31,10 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 otp = randint(000000,999999)
+
+# @app.route('/viewprofile/<string:email>')
+# def viewprofile(email):
+
 @app.route('/verify', methods=['POST','GET'])
 def verify():
     create_email_veri_form = emailfield(request.form)
@@ -374,7 +382,7 @@ def create_customer():
     create_Customer_form = CreateCustomerForm(request.form)
     if request.method == 'POST' and create_Customer_form.validate():
         Customer = customer(create_Customer_form.first_name.data, create_Customer_form.last_name.data,
-                            create_Customer_form.email.data, create_Customer_form.password.data)
+                            create_Customer_form.email.data, create_Customer_form.password.data, create_Customer_form.image.data)
         customer_dict = {}
         db = shelve.open('customer.db', 'c')
         try:
@@ -539,6 +547,104 @@ def deleteComment(id):
     db.close()
     return redirect(url_for('rating'))
 
+
+@app.route('/createProject2', methods=['GET', 'POST'])
+def create_Project2():
+    create_project_form = CreateProject(request.form)
+    if request.method == 'POST' and create_project_form.validate():
+        project = Project(create_project_form.address.data,create_project_form.phone.data,create_project_form.house_type.data,
+                          create_project_form.house_theme.data, create_project_form.comments.data)
+
+        add_project(project)
+        print(project.get_phone(),"was stored in project.db successfully with project_id ==", project.get_owner_id())
+        print(project)
+        return redirect(url_for('retrieveProject'))
+    return render_template('createProject2.html',form = create_project_form)
+
+@app.route('/retrieveProject')
+def retrieveProject():
+    project_dict = {}
+    db = shelve.open('project.db', 'r')
+    project_dict = db['Project']
+    db.close()
+    # comment_list = []
+    # for key in comment_dict:
+    #     comment = comment_dict.get(key)
+    #
+    #     comment_list.append(comment)
+    project_list = []
+    for key in project_dict:
+        project = project_dict.get(key)
+        project_list.append(project)
+        print(project.get_owner_id())
+        print(project)
+    return render_template('retrieveProject.html',  project_list=project_list)
+
+# @app.route('/updateProject/<int:id>/', methods=['GET', 'POST'])
+# def update_project(id):
+#     update_project_form = CreateProject2(request.form)
+#     if request.method == 'POST' and update_project_form.validate():
+#         project_dict = {}
+#         db = shelve.open('project.db', 'w')
+#         project_dict = db['Project']
+#         project = project_dict.get(id)
+#
+#         project.set_address(update_project_form.address.data)
+#         project.set_comments(update_project_form.comments.data)
+#         db['Project'] = project_dict
+#         db.close()
+#         return redirect(url_for('retrieveProject'))
+#     else:
+#         return redirect(url_for('retrieveProject'))
+@app.route('/updateProject/<int:id>/', methods=['GET', 'POST'])
+def update_project(id):
+    update_project_form = CreateProject2(request.form)
+
+    if request.method == 'POST' and update_project_form.validate():
+        project_dict = {}
+        db = shelve.open('project.db', 'w')
+        try:
+            project_dict = db['Project']
+        except KeyError:
+            pass
+
+        if id in project_dict:
+            project = project_dict[id]
+            project.set_address(update_project_form.address.data)
+            project.set_comments(update_project_form.comments.data)
+            db['Project'] = project_dict
+            db.close()
+            flash('Project updated successfully', 'success')
+            return redirect(url_for('retrieveProject'))
+
+    else:
+        project_dict = {}
+        db = shelve.open('project.db', 'r')
+        try:
+            project_dict = db['Project']
+        except KeyError:
+            pass
+        db.close()
+
+        if id in project_dict:
+            project = project_dict[id]
+            update_project_form.address.data = project.get_address()
+            update_project_form.comments.data = project.get_comments()
+
+            return render_template('updateProject.html', form=update_project_form)
+
+    flash('Project not found', 'error')
+    return redirect(url_for('retrieveProject'))
+
+@app.route('/deleteProject/<int:id>', methods=['POST'])
+def delete_project(id):
+    project_dict = {}
+    db = shelve.open('project.db', 'w')
+    project_dict = db['Project']
+    project_dict.pop(id)
+    db['Project'] = project_dict
+    db.close()
+    return redirect(url_for('retrieveProject'))
 
 if __name__ == '__main__':
     app.run(debug=True)
