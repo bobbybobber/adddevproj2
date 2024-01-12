@@ -19,18 +19,31 @@ app.config['UPLOAD_fOLDER'] = 'static/files'
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+
     create_login_form = logininformation(request.form)
     if request.method == 'POST' and create_login_form.validate():
         customer = logincheck(create_login_form.email.data, create_login_form.password.data)
         customer_dict = {}
         db = shelve.open('customer.db', 'r')
         customer_dict = db['Customer']
+        db.close()
+        staff_dict = {}
+        db = shelve.open('staff.db', 'r')
+        staff_dict = db['Staff']
+        db.close()
         if customer.email_get() in customer_dict:
             user = customer_dict.get(customer.email_get())
-
             if customer.password_get() == user.get_password():
                 return redirect(url_for('retrieveCustomers'))
-        db.close()
+        elif customer.email_get() in staff_dict:
+            print('hello')
+            user = staff_dict.get(customer.email_get())
+            print(user.get_password())
+            if customer.password_get() == user.get_password():
+                return redirect(url_for('retrieveStaff'))
+
+
+
 
     return render_template('Startpage.html',form=create_login_form)
 
@@ -72,10 +85,32 @@ def create_staff():
     if request.method == 'POST' and create_Staff_form.validate():
         Staff = staff(create_Staff_form.name.data, create_Staff_form.phonenumber.data, create_Staff_form.email.data,
                       create_Staff_form.address.data, create_Staff_form.password.data)
-        add_staff(Staff)
-        print(Staff.get_name(),
-              "was stored in staff.db successfully with user_id ==",
-              Staff.get_id())
+        staff_dict = {}
+        db = shelve.open('staff.db', 'c')
+        try:
+            staff_dict = db['Staff']
+        except:
+            print("Error in retrieving Staff from Staff.db.")
+        db['Staff'] = staff_dict
+        db.close()
+        customer_dict = {}
+        db = shelve.open('customer.db', 'c')
+        try:
+            customer_dict = db['Customer']
+        except:
+            print("Error in retrieving Customer from customer.db.")
+        db['Customer'] = customer_dict
+        db.close()
+        print(staff_dict)
+        print(customer_dict)
+        print(Staff.get_email())
+        if Staff.get_email() in customer_dict or staff_dict:
+            print("duplicate email found!")
+        else:
+            add_staff(Staff)
+            print(Staff.get_name(),
+            "was stored in staff.db successfully with user_id ==",
+            Staff.get_id())
 
         return redirect(url_for('retrieveStaff'))
     return render_template('createStaff.html', form=create_Staff_form)
@@ -261,10 +296,29 @@ def create_customer():
     if request.method == 'POST' and create_Customer_form.validate():
         Customer = customer(create_Customer_form.first_name.data, create_Customer_form.last_name.data,
                             create_Customer_form.email.data, create_Customer_form.password.data)
-        add_customer(Customer)
-        print(Customer.get_first_name(), Customer.get_last_name(),
-              "was stored in customer.db successfully with user_id ==",
-              Customer.get_customer_id())
+        customer_dict = {}
+        db = shelve.open('customer.db', 'c')
+        try:
+            customer_dict = db['Customer']
+        except:
+            print("Error in retrieving Customer from customer.db.")
+        db['Customer'] = customer_dict
+        db.close()
+        staff_dict = {}
+        db = shelve.open('staff.db', 'c')
+        try:
+            staff_dict = db['Staff']
+        except:
+            print("Error in retrieving Staff from Staff.db.")
+        db['Staff'] = staff_dict
+        db.close()
+        if Customer.get_email() in customer_dict or staff_dict:
+            print("same email!")
+        else:
+            add_customer(Customer)
+            print(Customer.get_first_name(), Customer.get_last_name(),
+                  "was stored in customer.db successfully with user_id ==",
+                  Customer.get_customer_id())
 
         return redirect(url_for('retrieveCustomers'))
     return render_template('createCustomer.html', form=create_Customer_form)

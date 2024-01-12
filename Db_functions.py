@@ -34,7 +34,7 @@ def add_staff(staff):
         print("Error in retrieving Staff from Staff.db.")
 
     staff.set_id(get_key(staff_dict))
-    staff_dict[staff.get_id()] = staff
+    staff_dict[staff.get_email()] = staff
     db['Staff'] = staff_dict
     # Test codes
     print(staff.get_id(),staff.get_name(),staff.get_phonenumber(),staff.get_email(),
