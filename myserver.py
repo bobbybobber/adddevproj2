@@ -9,19 +9,20 @@ from project import Project
 from logincheck import logincheck
 from flask_mail import Mail,Message
 import os
+import uuid
 from random import *
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['UPLOAD_fOLDER'] = 'static/images'
-app.config['UPLOAD_FOLDER'] = 'C:\\Users\\Ervin\\Desktop\\adddevproj2\\static\\image'
+UPLOAD_FOLDER = os.path.join('static', 'image')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['UPLOAD_FOLDER'] = 'C:\\Users\\Ervin\\Desktop\\adddevproj2\\static\\image'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def save_image(file):
     filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(filename)
     return filename
 #
-# ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-
 mail = Mail(app)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -34,7 +35,8 @@ otp = randint(000000,999999)
 
 # @app.route('/viewprofile/<string:email>')
 # def viewprofile(email):
-
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 @app.route('/verify', methods=['POST','GET'])
 def verify():
     create_email_veri_form = emailfield(request.form)
@@ -275,18 +277,34 @@ def deleteStaff(id):
 # Blog CRUD
 @app.route("/createblog", methods={'GET', 'POST'})
 def UploadImage():
-    Create_blog_form = CreateBlogForm(request.form)
-    if request.method == 'POST' and Create_blog_form.validate():
-        Blog = blog(Create_blog_form.name.data, Create_blog_form.comment.data)
+    if request.method == 'POST':
+        file = request.files['image']
+        name = request.form['name']
+        comment = request.form['comment']
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+        image = os.path.join(app.config['UPLOAD_FOLDER'],filename)
+        Blog = blog(name, comment, image)
         add_blog(Blog)
+        Blog.set_blog_image(image)
+        fileimage = Blog.get_blog_image()
         print(Blog.get_name(),
-              "was stored in blog.db successfully with user_id ==",
-              Blog.get_blog_id())
+                  "was stored in blog.db successfully with user_id ==",
+                  Blog.get_blog_id(),'  ',Blog.get_blog_image())
+        return redirect(url_for('retrieveblog', image=fileimage, name=name, comment=comment))
+    return render_template('displayimage.html')
+    # Create_blog_form = CreateBlogForm(request.form)
+    # if request.method == 'POST' and Create_blog_form.validate():
+    #     Blog = blog(Create_blog_form.name.data, Create_blog_form.comment.data)
+    #     add_blog(Blog)
+    #     print(Blog.get_name(),
+    #           "was stored in blog.db successfully with user_id ==",
+    #           Blog.get_blog_id())
 
-        return redirect(url_for('retrieveblog'))
-    return render_template('createBlog.html', form=Create_blog_form)
-
-    # file = request.files.get('file')
+    #     return redirect(url_for('retrieveblog'))
+    # return render_template('createBlog.html', form=Create_blog_form)
+    # if request.method == 'POST' and Create_blog_form.validate():
+    #     file = request.files.get('file')
     # if not file:
     #     flash('No file part')
     #     return redirect(url_for('home'))
@@ -298,7 +316,7 @@ def UploadImage():
     # if file and allowed_file(file.filename):
     #     filename = secure_filename(file.filename)
     #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    #     Blog = blog(Create_blog_form.name.data,CreateBlogForm.comment.data)
+    #     Blog = blog(Create_blog_form.name.data,CreateBlogForm.comment.data,file)
     #     add_blog(Blog)
     #     print(Blog.get_name(),
     #           "was stored in blog.db successfully with user_id ==",
@@ -309,8 +327,9 @@ def UploadImage():
     # else:
     #     flash('Allowed image types are - png, jpg, jpeg, gif')
     #     return redirect(url_for('retrieveblog'))
-
     # return render_template('createBlog.html', form=blog)
+
+
 
 
 @app.route("/retrieveblog")
@@ -324,7 +343,6 @@ def retrieveblog():
     for key in blog_dict:
         blog = blog_dict.get(key)
         blog_list.append(blog)
-
     return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list)
 
 
@@ -382,7 +400,7 @@ def create_customer():
     create_Customer_form = CreateCustomerForm(request.form)
     if request.method == 'POST' and create_Customer_form.validate():
         Customer = customer(create_Customer_form.first_name.data, create_Customer_form.last_name.data,
-                            create_Customer_form.email.data, create_Customer_form.password.data, create_Customer_form.image.data)
+                            create_Customer_form.email.data, create_Customer_form.password.data)
         customer_dict = {}
         db = shelve.open('customer.db', 'c')
         try:

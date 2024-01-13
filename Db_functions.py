@@ -59,7 +59,7 @@ def add_blog(blog):
     db['Blog'] = blog_dict
     # Test codes
     print(blog.get_name(), "was stored in blog.db successfully with user_id ==",
-          blog.get_blog_id())
+          blog.get_blog_id(), 'image was file', blog.get_blog_image(),"was saved")
     db.close()
 
 def add_comment(comment):

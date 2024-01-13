@@ -1,10 +1,14 @@
 class blog:
     count_id = 0
-    def __init__(self,name,comment):
+    def __init__(self,name,comment,image):
         blog.count_id += 1
         self.__blog_id = blog.count_id
         self.__name = name
         self.__comment = comment
+        self.__image = None
+
+    def get_blog_image(self):
+        return self.__image
 
     def get_blog_id(self):
         return self.__blog_id
@@ -25,3 +29,5 @@ class blog:
 
     def set_comment(self, comment):
         self.__comment = comment
+    def set_blog_image(self,image):
+        self.__image = image

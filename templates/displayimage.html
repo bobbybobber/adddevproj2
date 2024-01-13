@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rendering Dynamic Images Using Flask</title>
+</head>
+<body>
+<form action="{{ url_for('UploadImage') }}" enctype="multipart/form-data" method="POST">
+    <input name="image" type="file"/>
+    <input type="submit"/>
+    <input type="text" name="name">
+    <input type="text" name="comment">
+</form>
+<div>
+  <label>{{ name }}</label>
+    <br>
+    <label>{{ comment }}</label>
+</div>
+{% if image %}
+<h1>Rendered Image</h1>
+<img src="{{image}}">
+{% else %}
+<h1>Image will be render here...</h1>
+{% endif %}
+</body>
+</html>
