@@ -56,6 +56,7 @@ def add_blog(blog):
 
     blog.set_blog_id(get_key(blog_dict))
     blog_dict[blog.get_blog_id()] = blog
+    print(blog.get_blog_image,'phase1')
     db['Blog'] = blog_dict
     # Test codes
     print(blog.get_name(), "was stored in blog.db successfully with user_id ==",

@@ -25,7 +25,7 @@ class CreateCustomerForm(FlaskForm):
     last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
-    # image = FileField('Profile Picture')
+
 
 
 class logininformation(Form):

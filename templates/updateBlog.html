@@ -3,13 +3,12 @@
 {% block content %}
 {% from "includes/_formHelper.html" import render_field %}
 <h1 class="display-4">Update Blog</h1>
-<form method="POST" action="">
+<form method="POST" action="{{ url_for('update_blog', id=id) }}">
     <div class="field">
     <div class="control">
         {{render_field(form.name, class="form-control")}}
     </div>
     </div>
-
     <div class="field">
         <div class="control">
             {{ render_field(form.comment, class="form-control") }}

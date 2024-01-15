@@ -31,8 +31,10 @@
             <td>{{ blog.get_blog_id() }}</td>
             <td>{{ blog.get_name() }}</td>
             <td>{{ blog.get_comment() }}</td>
+
+
             <td>
-                <img src= '{{blog.get_blog_image()}}'>
+                <img src={{blog.get_blog_image()}}>
             </td>
 
             <td><a href="/updateblog/{{blog.get_blog_id()}}" class="btn btn-warning">Update</a></td>

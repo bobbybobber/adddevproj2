@@ -220,8 +220,8 @@ def retrieveStaff():
     return render_template('retrieveStaff.html', count=len(staff_list), staff_list=staff_list)
 
 
-@app.route("/updateStaff/<int:id>/", methods=['GET', 'POST'])
-def updateStaff(id):
+@app.route("/updateStaff/<string:email>/", methods=['GET', 'POST'])
+def updateStaff(email):
     Update_staff_form = CreateStaffForm(request.form)
 
     if request.method == 'POST' and Update_staff_form.validate():
@@ -230,8 +230,8 @@ def updateStaff(id):
         staff_dict = db['Staff']
 
         # Check if the customer exists in the dictionary
-        if id in staff_dict:
-            Staff = staff_dict[id]
+        if email in staff_dict:
+            Staff = staff_dict[email]
             Staff.set_name(Update_staff_form.name.data)
             Staff.set_phonenumber(Update_staff_form.phonenumber.data)
             Staff.set_email(Update_staff_form.email.data)
@@ -249,8 +249,8 @@ def updateStaff(id):
         db.close()
 
         # Check if the customer exists in the dictionary
-        if id in staff_dict:
-            Staff = staff_dict[id]
+        if email in staff_dict:
+            Staff = staff_dict[email]
             Update_staff_form.name.data = Staff.get_name()
             Update_staff_form.phonenumber.data = Staff.get_phonenumber()
             Update_staff_form.email.data = Staff.get_email()
@@ -263,12 +263,13 @@ def updateStaff(id):
     return redirect(url_for('retrieveStaff'))
 
 
-@app.route("/deleteStaff/<int:id>", methods=['POST'])
-def deleteStaff(id):
+@app.route("/deleteStaff/<string:email>", methods=['POST'])
+def deleteStaff(email):
     staff_dict = {}
+
     db = shelve.open('staff.db', 'w')
     staff_dict = db['Staff']
-    staff_dict.pop(id)
+    staff_dict.pop(email)
     db['Staff'] = staff_dict
     db.close()
     return redirect(url_for('retrieveStaff'))
@@ -284,10 +285,13 @@ def UploadImage():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
         image = os.path.join(app.config['UPLOAD_FOLDER'],filename)
-        Blog = blog(name, comment, image)
+
+        Blog = blog(name, comment, str(image))
+
         add_blog(Blog)
         Blog.set_blog_image(image)
         fileimage = Blog.get_blog_image()
+
         print(Blog.get_name(),
                   "was stored in blog.db successfully with user_id ==",
                   Blog.get_blog_id(),'  ',Blog.get_blog_image())
@@ -362,6 +366,7 @@ def update_blog(id):
             Blog.set_comment(Update_blog_form.comment.data)
             db['Blog'] = blog_dict
             db.close()
+            print("update successful")
             flash('Blog updated successfully', 'success')
             return redirect(url_for('retrieveblog'))
 
@@ -377,7 +382,7 @@ def update_blog(id):
             Update_blog_form.name.data = Blog.get_name()
             Update_blog_form.comment.data = Blog.get_comment()
 
-            return render_template('updateBlog.html', form=Update_blog_form)
+            return render_template('updateBlog.html', form=Update_blog_form, id=id)
 
     flash('Blog not found', 'error')
     return redirect(url_for('retrieveblog'))
@@ -417,6 +422,7 @@ def create_customer():
             print("Error in retrieving Staff from Staff.db.")
         db['Staff'] = staff_dict
         db.close()
+        print(Customer.get_email())
         if Customer.get_email() in staff_dict or Customer.get_email() in customer_dict:
             print("same email!")
         else:

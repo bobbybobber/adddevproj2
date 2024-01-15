@@ -5,7 +5,7 @@ class blog:
         self.__blog_id = blog.count_id
         self.__name = name
         self.__comment = comment
-        self.__image = None
+        self.__image = image
 
     def get_blog_image(self):
         return self.__image

@@ -3,7 +3,7 @@ class customer:
     count_id = 0
 
     # initializer method
-    def __init__(self, first_name, last_name,email,password):
+    def __init__(self, first_name, last_name, email, password):
         customer.count_id += 1
         self.__customer_id = customer.count_id
         self.__first_name = first_name

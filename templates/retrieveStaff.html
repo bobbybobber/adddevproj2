@@ -36,10 +36,10 @@
             <td>{{ staff.get_email() }}</td>
             <td>{{ staff.get_address() }}</td>
             <td>{{ staff.get_password() }}</td>
-            <td><a href="/updateStaff/{{staff.get_id()}}" class="btn btn-warning">Update</a></td>
+            <td><a href="/updateStaff/{{staff.get_email()}}" class="btn btn-warning">Update</a></td>
 
             <td>
-                <form action="{{url_for('deleteStaff', id=staff.get_id())}}" method="POST">
+                <form action="{{url_for('deleteStaff', email=staff.get_email())}}" method="POST">
                     <!-- Button to Open the Modal -->
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                             data-bs-target="#myModal_{{staff.get_id()}}">
