@@ -20,7 +20,7 @@ class CreateBlogForm(FlaskForm):
     image = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'png'], "Images Only!")])
 
 
-class CreateCustomerForm(FlaskForm):
+class CreateCustomerForm(Form):
     first_name = StringField('First Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
@@ -44,20 +44,7 @@ class UploadFileForm(FlaskForm):
     submit = SubmitField("Upload")
 
 
-class CreateProject(Form):
-    first_name = StringField('First Name', [validators.Length(min=1, max=150), validators.DataRequired()])
-    last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
-    phone = StringField('Phone', [validators.Length(min=8), validators.DataRequired()])
-    email = EmailField('Email', [validators.Email(), validators.DataRequired()])
-    address = StringField('House address', [validators.Length(min=1, max=150), validators.DataRequired()])
-    house_type = RadioField('House Type', choices=[('AP', 'Appartment'), ('BUN', 'Bungalow'), ('HDB2', '2-Room HDB'),
-                                                   ('HDB3', '3-Room HDB'), ('HDB4', '4-Room HDB'),
-                                                   ('HDB5', '5-Room HDB')
-        , ('CON', 'Condominium'), validators.DataRequired()])
-    house_theme = RadioField('House Theme', choices=[('Scandanavian'), ('Luxury'), ('Modern-Luxury'),
-                                                     ('Traditional'), ('Contemporary'),
-                                                     ('Farmhouse'), ('CON', 'Condominium'), validators.DataRequired()])
-    comments = TextAreaField('Additional Request', [validators.Optional()])
+
 
 
 class ratingcomment(Form):

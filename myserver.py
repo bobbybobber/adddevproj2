@@ -296,7 +296,7 @@ def UploadImage():
                   "was stored in blog.db successfully with user_id ==",
                   Blog.get_blog_id(),'  ',Blog.get_blog_image())
         return redirect(url_for('retrieveblog', image=fileimage, name=name, comment=comment))
-    return render_template('displayimage.html')
+    return render_template('createBlog.html')
     # Create_blog_form = CreateBlogForm(request.form)
     # if request.method == 'POST' and Create_blog_form.validate():
     #     Blog = blog(Create_blog_form.name.data, Create_blog_form.comment.data)
@@ -576,6 +576,7 @@ def deleteComment(id):
 def create_Project2():
     create_project_form = CreateProject(request.form)
     if request.method == 'POST' and create_project_form.validate():
+
         project = Project(create_project_form.address.data,create_project_form.phone.data,create_project_form.house_type.data,
                           create_project_form.house_theme.data, create_project_form.comments.data)
 

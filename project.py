@@ -1,7 +1,7 @@
 from User import User
 class Project:
     count_id = 0
-    def _init_(self, address, phone,  house_type, house_theme, comments):
+    def __init__(self, address, phone,  house_type, house_theme, comments):
         User.count_id += 1
         self.__user_id = Project.count_id
         self.__house_type = house_type

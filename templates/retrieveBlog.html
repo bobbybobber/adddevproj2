@@ -12,67 +12,17 @@
     {% endif %}
 </div>
 <div>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>User ID</th>
-            <th>Name</th>
-            <th>Comment</th>
-            <th>File</th>
-            <th>Update</th>
-            <th>Delete</th>
-            <th></th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
+    <div class="card-container" style="display:flex; gap: 1rem; flex-wrap:wrap;">
         {% for blog in blog_list %}
-        <tr>
-            <td>{{ blog.get_blog_id() }}</td>
-            <td>{{ blog.get_name() }}</td>
-            <td>{{ blog.get_comment() }}</td>
-
-
-            <td>
-                <img src={{blog.get_blog_image()}}>
-            </td>
-
-            <td><a href="/updateblog/{{blog.get_blog_id()}}" class="btn btn-warning">Update</a></td>
-
-            <td>
-                <form action="{{url_for('deleteblog', id=blog.get_blog_id())}}" method="POST">
-                    <!-- Button to Open the Modal -->
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#myModal_{{blog.get_blog_id()}}">
-                        Delete
-                    </button>
-                    <!-- The Modal -->
-                    <div class="modal" id="myModal_{{blog.get_blog_id()}}">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <!-- Modal Header -->
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Delete Confirmation</h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <!-- Modal body -->
-                                <div class="modal-body">
-                                    Are you sure you want to delete {{blog.get_name()}}?
-                                </div>
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <input type="submit" value="Delete" class="btn btn-danger">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </td>
-        </tr>
+        <div class="card" style="width: 18rem; margin-bottom:20px;">
+            <img class="card-img-top" src="{{ blog.get_blog_image() }}" style="width: 100%; height: auto;" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{ blog.get_name() }}</h5>
+                <p class="card-text">{{ blog.get_comment() }}</p>
+                <a href="#" class="btn btn-primary">View More</a>
+            </div>
+        </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 </div>
 {% endblock %}
