@@ -23,3 +23,13 @@ $(document).ready(function() {
     }, delay);
   });
 });
+$(document).ready(function() {
+  // Add a click event listener to all the anchor tags in the navbar
+  $('#navbar a').on('click', function() {
+    // Remove the 'active' class from all anchor tags
+    $('#navbar a').removeClass('active');
+
+    // Add the 'active' class to the clicked anchor tag
+    $(this).addClass('active');
+  });
+});

@@ -62,6 +62,7 @@ def validate():
             return redirect(url_for('resetPassword',email=email))
 
 
+
     return render_template('verifyOTP.html', form=create_otp_form)
 
 @app.route('/resetPassword', methods=['GET', 'POST'])
@@ -194,6 +195,7 @@ def create_staff():
         print(customer_dict)
         print(Staff.get_email())
         if Staff.get_email() in customer_dict or Staff.get_email() in staff_dict:
+            print("duplicate email found!")
             print("duplicate email found!")
         else:
             add_staff(Staff)
@@ -575,7 +577,7 @@ def deleteComment(id):
 @app.route('/createProject2', methods=['GET', 'POST'])
 def create_Project2():
     create_project_form = CreateProject(request.form)
-    if request.method == 'POST' and create_project_form.validate():
+    if request.method == 'POST':
 
         project = Project(create_project_form.address.data,create_project_form.phone.data,create_project_form.house_type.data,
                           create_project_form.house_theme.data, create_project_form.comments.data)

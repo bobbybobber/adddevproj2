@@ -77,18 +77,18 @@ class resetpassword(Form):
 
 
 class CreateProject(Form):
-    phone = StringField('Phone', [validators.Length(min=8), validators.DataRequired()])
-    address = StringField('House address', [validators.Length(min=1, max=150), validators.DataRequired()])
-    house_type = RadioField('House Type', choices=[('AP', 'Appartment'), ('BUN', 'Bungalow'), ('HDB2', '2-Room HDB'),
+    phone = StringField('', [validators.Length(min=8), validators.DataRequired()])
+    address = StringField('', [validators.Length(min=1, max=150), validators.DataRequired()])
+    house_type = RadioField('', choices=[('AP', 'Appartment'), ('BUN', 'Bungalow'), ('HDB2', '2-Room HDB'),
                                                    ('HDB3', '3-Room HDB'), ('HDB4', '4-Room HDB'),
                                                    ('HDB5', '5-Room HDB')
         , ('CON', 'Condominium')], validators=[validators.DataRequired()])
-    house_theme = RadioField('House Theme', choices=[('Scandanavian'), ('Luxury'), ('Modern-Luxury'),
+    house_theme = RadioField('', choices=[('Scandanavian'), ('Luxury'), ('Modern-Luxury'),
                                                      ('Traditional'), ('Contemporary'),
                                                      ('Farmhouse')], validators=[validators.DataRequired()])
-    comments = TextAreaField('Additional Request', [validators.Optional()])
+    comments = TextAreaField('', [validators.Optional()])
 
 
 class CreateProject2(Form):
-    address = StringField('House address', [validators.Length(min=1, max=150), validators.DataRequired()])
-    comments = TextAreaField('Additional Request', [validators.Optional()])
+    address = StringField('', [validators.Length(min=1, max=150), validators.DataRequired()])
+    comments = TextAreaField('', [validators.Optional()])

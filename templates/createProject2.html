@@ -3,39 +3,61 @@
 {% from "includes/_formHelper.html" import render_field %}
 {% block content %}
 <div class="column is-4 is-offset-4">
-    <h3 class="title">Create Project</h3>
+    <h3 class="title has-text-centered">Create Project</h3>
     <div class="box">
-        <form method="POST" action="/createProject2">
+        <form method="POST" action="/createProject2" class="project-form">
+<div class="container1">
+ <label for="phone" class="label"><b>Phone</b> <span class="required">*</span></label>
+    <br>
+    <div class="control">
+        <input type="text" id="phone" name="phone" required>
+    </div>
 
-            <div class="field">
-                <div class="control">
-                    {{ render_field(form.phone, class="form-control") }}
-                </div>
-            </div>
+    <br>
+ <label for="address" class="label"><b>Address</b> <span class="required">*</span></label>
+    <br>
+    <div class="control">
+        <input type="text" id="address" name="address" required>
+    </div>
+<br>
+    <label for="house_type" class="label"><b>House Type</b> <span class="required">*</span></label>
+    <br>
+    <div class="control">
+        <select id="house_type" name="house_type" required>
+    <option value="">Select...</option>
+    <option value="HDB1">1-Room HDB</option>
+    <option value="HDB2">2-Room HDB</option>
+    <option value="HDB3">3-Room HDB</option>
+    <option value="HDB4">4-Room HDB</option>
+    <option value="HDB5">5-Room HDB</option>
+    </select>
+    </div>
 
-            <div class="field">
-                <div class="control">
-                     {{ render_field(form.address, class="form-control") }}
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    {{ render_field(form.house_theme, class="form-control") }}
-                    {{ render_field(form.house_type, class="form-control") }}
-                    {{ render_field(form.comments, class="form-control") }}
-
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    {{ render_field(form.comments, class="form-control") }}
-                </div>
-            </div>
-
-            <button type="submit" value="submit" class="smbbtn">Submit</button>
+    <br>
+ <label for="house_theme" class="label"><b>House Theme</b> <span class="required">*</span></label>
+    <br>
+    <div class="control">
+        <select id="house_theme" name="house_theme" required>
+    <option value="">Select...</option>
+    <option value="Scandanavian">Scandanavian</option>
+    <option value="Luxury">Luxury</option>
+    <option value="Modern-Luxury">Modern-Luxury</option>
+    <option value="Traditional">Traditional</option>
+    <option value="Contemporary">Contemporary</option>
+    <option value="Farmhouse">Farmhouse</option>
+ </select>
+    </div>
+<br>
+ <label for="comments" class="label"><b>Comments</b></label>
+    <br>
+    <div class="control">
+        <textarea id="comments" name="comments"></textarea>
+    </div>
+<br>
+ <input type="submit" class="smbbtn" value="Submit">
+</div>
         </form>
     </div>
 </div>
+
 {% endblock %}
