@@ -2,25 +2,25 @@
 {% block title %} MonsterBob - Create Project{% endblock %}
 {% from "includes/_formHelper.html" import render_field %}
 {% block content %}
-<div class="column is-4 is-offset-4">
+<div class="column is-4 is-offset-4" style="margin-top: 10vh;">
     <h3 class="title has-text-centered">Create Project</h3>
     <div class="box">
         <form method="POST" action="/createProject2" class="project-form">
 <div class="container1">
- <label for="phone" class="label"><b>Phone</b> <span class="required">*</span></label>
+    <label for="phone" class="label"><h5>Phone <span class="required">*</span></h5></label>
     <br>
     <div class="control">
         <input type="text" id="phone" name="phone" required>
     </div>
 
     <br>
- <label for="address" class="label"><b>Address</b> <span class="required">*</span></label>
+ <label for="address" class="label"><h5>Address <span class="required">*</span></h5> </label>
     <br>
     <div class="control">
         <input type="text" id="address" name="address" required>
     </div>
 <br>
-    <label for="house_type" class="label"><b>House Type</b> <span class="required">*</span></label>
+    <label for="house_type" class="label"><h5>House Type <span class="required">*</span></h5> </label>
     <br>
     <div class="control">
         <select id="house_type" name="house_type" required>
@@ -34,7 +34,7 @@
     </div>
 
     <br>
- <label for="house_theme" class="label"><b>House Theme</b> <span class="required">*</span></label>
+ <label for="house_theme" class="label"><h5>House Theme <span class="required">*</span></h5> </label>
     <br>
     <div class="control">
         <select id="house_theme" name="house_theme" required>
@@ -48,7 +48,7 @@
  </select>
     </div>
 <br>
- <label for="comments" class="label"><b>Comments</b></label>
+ <label for="comments" class="label"><h5>Comments</h5></label>
     <br>
     <div class="control">
         <textarea id="comments" name="comments"></textarea>
