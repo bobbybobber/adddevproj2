@@ -18,12 +18,12 @@
         {% for blog in blog_list|batch(3, '<div></div>') %}
           <div class="carousel-item {% if loop.first %}active{% endif %}">
             <div class="card-group">
-              {% for single_blog in blog %}
+              {% for blog in blog %}
                 <div class="card" style="width: 18rem; margin-right: 20px;">
-                  <img class="card-img-top" src="{{ single_blog.get_blog_image() }}" alt="Card image cap" height="170px" width="291.44px">
+                  <img class="card-img-top" src="{{ blog.get_blog_image() }}" alt="Card image cap" height="170px" width="291.44px">
                   <div class="card-body">
-                    <h5 class="card-title">{{ single_blog.get_name() }}</h5>
-                    <p class="card-text">{{ single_blog.get_comment() }}</p>
+                    <h5 class="card-title">{{ blog.get_name() }}</h5>
+                    <p class="card-text">{{ blog.get_comment() }}</p>
                     <a href="#" class="btn btn-primary">View More</a>
                   </div>
                 </div>
