@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash,jsonify
 from Customers import customer
 from Staff import staff
 from Forms import *
@@ -293,10 +293,11 @@ def UploadImage():
         add_blog(Blog)
         Blog.set_blog_image(image)
         fileimage = Blog.get_blog_image()
-
+        new_blog_card_html = render_template('blog_card.html', blog=Blog)
         print(Blog.get_name(),
                   "was stored in blog.db successfully with user_id ==",
                   Blog.get_blog_id(),'  ',Blog.get_blog_image())
+        jsonify({'new_blog_card_html': new_blog_card_html})
         return redirect(url_for('retrieveblog', image=fileimage, name=name, comment=comment))
     return render_template('createBlog.html')
     # Create_blog_form = CreateBlogForm(request.form)
@@ -344,12 +345,19 @@ def retrieveblog():
     db = shelve.open('blog.db', 'r')
     blog_dict = db['Blog']
     db.close()
-
+    customer_dict = {}
+    db = shelve.open('customer.db', 'r')
+    customer_dict = db['Customer']
+    db.close()
+    Customer_list = []
+    for key in customer_dict:
+        customer = customer_dict.get(key)
+        Customer_list.append(customer)
     blog_list = []
     for key in blog_dict:
         blog = blog_dict.get(key)
         blog_list.append(blog)
-    return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list)
+    return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list), Customer_list=Customer_list)
 
 
 @app.route('/updateblog/<int:id>/', methods=['GET', 'POST'])

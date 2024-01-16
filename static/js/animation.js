@@ -33,3 +33,24 @@ $(document).ready(function() {
     $(this).addClass('active');
   });
 });
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+$.ajax({
+    type: 'POST',
+    url: '/createblog',
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function (response) {
+        // Update the carousel with the new blog card
+        $('#dynamicCarousel').prepend(response.new_blog_card_html);
+
+        // Initiate the redirect
+        window.location.href = retrieveblog;
+    }
+});
+  $(document).ready(function(){
+        $('#profileCarousel').carousel();
+        setInterval(function(){
+            $('#profileCarousel').carousel('next');
+        }, 3000); // Adjust the interval as needed (in milliseconds)
+    });
