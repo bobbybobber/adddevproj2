@@ -357,6 +357,7 @@ def retrieveblog():
     for key in blog_dict:
         blog = blog_dict.get(key)
         blog_list.append(blog)
+    print(Customer_list)
     return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list), Customer_list=Customer_list)
 
 

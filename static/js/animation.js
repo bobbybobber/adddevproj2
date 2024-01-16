@@ -48,9 +48,8 @@ $.ajax({
         window.location.href = retrieveblog;
     }
 });
-  $(document).ready(function(){
-        $('#profileCarousel').carousel();
-        setInterval(function(){
-            $('#profileCarousel').carousel('next');
-        }, 3000); // Adjust the interval as needed (in milliseconds)
+$(document).ready(function(){
+        $('.carousel').carousel({
+            interval: 2000 //changes the speed
+        })
     });
