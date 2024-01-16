@@ -12,17 +12,23 @@
     {% endif %}
 </div>
 <div>
-    <div class="card-container" style="display:flex; gap: 1rem; flex-wrap:wrap;">
+    <div>
+    <div class="card-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
         {% for blog in blog_list %}
-        <div class="card" style="width: 18rem; margin-bottom:20px;">
-            <img class="card-img-top" src="{{ blog.get_blog_image() }}" style="width: 100%; height: auto;" alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title">{{ blog.get_name() }}</h5>
-                <p class="card-text">{{ blog.get_comment() }}</p>
-                <a href="#" class="btn btn-primary">View More</a>
+        <div class="card-row">
+            <div class="card" style="width: 18rem; margin-bottom: 20px;">
+                <img class="card-img-top" src="{{ blog.get_blog_image() }}" style="width: 100%; height: auto;" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">{{ blog.get_name() }}</h5>
+                    <p class="card-text">{{ blog.get_comment() }}</p>
+                    <a href="#" class="btn btn-primary">View More</a>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+</div>
+
 {% endblock %}

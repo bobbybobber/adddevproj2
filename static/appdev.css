@@ -721,57 +721,59 @@ h3.title {
 .smbbtn:hover {
     background-color: #4cae4c;
 }
-
-/* Adjustments for the card layout */
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+/* Add this to your existing styles or create a new CSS file */
+@keyframes moveCardOddRow {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
 }
 
-.card {
-    width: calc(33.33% - 1rem); /* Set the width to one-third with a small gap between cards */
-    margin-bottom: 20px;
-
-    /* Animation */
-    animation-duration: 3s; /* Adjust the duration as needed */
-    animation-fill-mode: forwards;
+@keyframes moveCardEvenRow {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
 }
 
-.card:nth-child(6n + 1),
-.card:nth-child(6n + 2),
-.card:nth-child(6n + 3) {
-    animation-name: moveRight; /* Cards in alternate rows move to the right */
+/* Apply the animation based on the row index in the loop */
+.card-container > .card-row:nth-child(odd) {
+  animation: moveCardOddRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
 }
 
-.card:nth-child(6n + 4),
-.card:nth-child(6n + 5),
-.card:nth-child(6n + 6) {
-    animation-name: moveLeft; /* Cards in alternate rows move to the left */
+.card-container > .card-row:nth-child(even) {
+  animation: moveCardEvenRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
+}
+@keyframes moveCardOddRow {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
 }
 
-@keyframes moveRight {
-    from {
-        transform: translateX(-200%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+@keyframes moveCardEvenRow {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
 }
 
-@keyframes moveLeft {
-    from {
-        transform: translateX(200%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+/* Apply the animation based on the row index in the loop */
+.card-container > .card-row:nth-child(odd) {
+  animation: moveCardOddRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
 }
 
+.card-container > .card-row:nth-child(even) {
+  animation: moveCardEvenRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
+}
 #loginform {
     display: flex;
     justify-content: center;
