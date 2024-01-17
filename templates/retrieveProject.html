@@ -1,8 +1,58 @@
 {% extends "base.html" %}
 {% block title %}Library Loan System - Retrieve Project{% endblock %}
 {% block content %}
-<h1 class="display-4">Retrieve Project</h1>
+<style>
+    .progress-bar-custom {
+        width: 0%;
+        height: 30px;
+        background-color: green; /* Default color, will be overridden by JS */
+        text-align: center;
+        line-height: 30px;
+        color: white;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        {% for project in project_list %}
+            var projectId{{ project.get_owner_id() }} = {{ project.get_owner_id() }};
+            var totalTime{{ project.get_owner_id() }} = {{ project.get_duration() }};
+            var remainingTimeKey{{ project.get_owner_id() }} = 'remainingTime' + projectId{{ project.get_owner_id() }};
+            var remainingTime{{ project.get_owner_id() }} = localStorage.getItem(remainingTimeKey{{ project.get_owner_id() }})
+                ? parseInt(localStorage.getItem(remainingTimeKey{{ project.get_owner_id() }}))
+                : {{ project.get_remaining_time() }};
 
+            function updateProgress{{ project.get_owner_id() }}() {
+                if (remainingTime{{ project.get_owner_id() }} > 0) {
+                    remainingTime{{ project.get_owner_id() }}--;
+                    localStorage.setItem(remainingTimeKey{{ project.get_owner_id() }}, remainingTime{{ project.get_owner_id() }});
+                }
+
+                var progressPercentage{{ project.get_owner_id() }} = (1 - (remainingTime{{ project.get_owner_id() }} / totalTime{{ project.get_owner_id() }})) * 100;
+                var progressBar{{ project.get_owner_id() }} = $("#progress-bar-{{ project.get_owner_id() }}");
+                progressBar{{ project.get_owner_id() }}.css('width', progressPercentage{{ project.get_owner_id() }} + '%');
+
+                var color;
+                if (progressPercentage{{ project.get_owner_id() }} < 50) {
+                    color = 'red';
+                } else if (progressPercentage{{ project.get_owner_id() }} < 75) {
+                    color = 'yellow';
+                } else {
+                    color = 'green';
+                }
+                progressBar{{ project.get_owner_id() }}.css('background-color', color);
+                console.log("Project " + projectId{{ project.get_owner_id() }} + " - Progress: " + progressPercentage{{ project.get_owner_id() }} + "%, Color: " + color);
+
+                $("#timer-{{ project.get_owner_id() }}").text(remainingTime{{ project.get_owner_id() }} + ' days remaining');
+            }
+
+            setInterval(function() {
+                updateProgress{{ project.get_owner_id() }}();
+            }, 86400000);
+        {% endfor %}
+    });
+</script>
+<h1 class="display-4">Retrieve Project</h1>
 <div>
     <table class="table table-striped">
         <thead>
@@ -24,6 +74,11 @@
             <td>{{ project.get_house_type() }}</td>
             <td>{{ project.get_house_theme()}}</td>
             <td>{{ project.get_comments()}}</td>
+            <td>
+                <h4>Countdown Timer</h4>
+        <div id="timer-{{ project.get_owner_id() }}">Loading...</div>
+        <div id="progress-bar-{{ project.get_owner_id() }}" class="progress-bar-custom" style="width: 0%;"></div>
+            </td>
             <td><a href="/updateProject/{{project.get_owner_id()}}" class="btn btn-warning">Update</a></td>
             <td>
                 <form action="{{url_for('delete_project', id=project.get_owner_id())}}" method="POST">

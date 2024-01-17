@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask, render_template, request, redirect, url_for, flash,jsonify
 from Customers import customer
 from Staff import staff
@@ -592,6 +594,8 @@ def create_Project2():
                           create_project_form.house_theme.data, create_project_form.comments.data)
 
         add_project(project)
+        project.set_start_date(datetime.now())
+        print(project.get_start_date())
         print(project.get_phone(),"was stored in project.db successfully with project_id ==", project.get_owner_id())
         print(project)
         return redirect(url_for('retrieveProject'))
@@ -599,6 +603,38 @@ def create_Project2():
 
 @app.route('/retrieveProject')
 def retrieveProject():
+    combination_durations = {
+        "1-Room HDB, Scandinavian": 1,
+        "1-Room HDB, Luxury": 2,
+        "1-Room HDB, Modern-Luxury": 3,
+        "1-Room HDB, Traditional": 4,
+        "1-Room HDB, Contemporary": 5,
+        "1-Room HDB, Farmhouse": 6,
+        "2-Room HDB, Scandinavian": 7,
+        "2-Room HDB, Luxury": 8,
+        "2-Room HDB, Modern-Luxury": 9,
+        "2-Room HDB, Traditional": 10,
+        "2-Room HDB, Contemporary": 11,
+        "2-Room HDB, Farmhouse": 12,
+        "3-Room HDB, Scandinavian": 13,
+        "3-Room HDB, Luxury": 14,
+        "3-Room HDB, Modern-Luxury": 15,
+        "3-Room HDB, Traditional": 16,
+        "3-Room HDB, Contemporary": 17,
+        "3-Room HDB, Farmhouse": 18,
+        "4-Room HDB, Scandinavian": 19,
+        "4-Room HDB, Luxury": 20,
+        "4-Room HDB, Modern-Luxury": 21,
+        "4-Room HDB, Traditional": 22,
+        "4-Room HDB, Contemporary": 23,
+        "4-Room HDB, Farmhouse": 24,
+        "5-Room HDB, Scandinavian": 25,
+        "5-Room HDB, Luxury": 26,
+        "5-Room HDB, Modern-Luxury": 27,
+        "5-Room HDB, Traditional": 28,
+        "5-Room HDB, Contemporary": 29,
+        "5-Room HDB, Farmhouse": 30
+    }
     project_dict = {}
     db = shelve.open('project.db', 'r')
     project_dict = db['Project']
@@ -611,9 +647,23 @@ def retrieveProject():
     project_list = []
     for key in project_dict:
         project = project_dict.get(key)
+        house_type = project.get_house_type()
+        house_theme = project.get_house_theme()
+        key1 = f"{house_type}, {house_theme}"
+        print(f"House Type: {house_type}, House Theme: {house_theme}")
+        print(f"Generated Key: {key1}")
+        duration_months = combination_durations.get(key1, 0)
+        # Debugging prints
+        print(f"Combination: {key1}, Duration in months: {duration_months}")
+        start_date = project.get_start_date()
+        print(f"Start Date: {start_date}")
+        end_date = start_date + timedelta(days=duration_months * 30)
+        remaining_days = (end_date - start_date).days
+        print(f"End Date: {end_date}, Remaining Days: {remaining_days}")
+        project.set_remaining_time(remaining_days)
         project_list.append(project)
+        print(project_list)
         print(project.get_owner_id())
-        print(project)
     return render_template('retrieveProject.html',  project_list=project_list)
 
 # @app.route('/updateProject/<int:id>/', methods=['GET', 'POST'])

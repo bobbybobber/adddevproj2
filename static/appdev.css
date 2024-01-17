@@ -982,3 +982,34 @@ input[type=submit]:hover {
 .required {
  color: red;
 }
+items */
+}
+
+/* Additional styles to ensure controls are not too wide /
+.carousel-control-prev,
+.carousel-control-next {
+width: auto; / Only be as wide as necessary */
+}
+
+/* Make sure the carousel container is positioned relatively */
+#profileCarousel {
+position: relative;
+}
+.carousel-control-prev,
+.carousel-control-next {
+    align-items: center; /* Vertically align the controls in the middle */
+    height: 100%; /* Set the height to match the carousel item */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 50px; /* Adjust the width as needed */
+    height: 50px; /* Adjust the height as needed */
+    background-size: 50px; /* Adjust size to match the new width/height */
+    z-index: 2; /* Ensure it's above carousel items but not too high */
+}
+
+/* You may need to adjust the top position depending on the height of your carousel items */
+.carousel-control-prev,
+.carousel-control-next {
+    top: calc(50% - 25px); /* This centers the middle of the arrow at the halfway point of the

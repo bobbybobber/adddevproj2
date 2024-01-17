@@ -22,8 +22,7 @@ $(document).ready(function() {
       });
     }, delay);
   });
-});
-$(document).ready(function() {
+
   // Add a click event listener to all the anchor tags in the navbar
   $('#navbar a').on('click', function() {
     // Remove the 'active' class from all anchor tags
@@ -32,24 +31,43 @@ $(document).ready(function() {
     // Add the 'active' class to the clicked anchor tag
     $(this).addClass('active');
   });
-});
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-$.ajax({
-    type: 'POST',
-    url: '/createblog',
-    data: formData,
-    processData: false,
-    contentType: false,
-    success: function (response) {
-        // Update the carousel with the new blog card
-        $('#dynamicCarousel').prepend(response.new_blog_card_html);
 
-        // Initiate the redirect
-        window.location.href = retrieveblog;
-    }
-});
-$(document).ready(function(){
-        $('.carousel').carousel({
-            interval: 2000 //changes the speed
-        })
-    });
+  // Carousel interval
+  $('.carousel').carousel({
+    interval: 2000 //changes the speed
+  });
+
+//  $('form').submit(function (event) {
+//    event.preventDefault(); // Prevent the default form submission behavior
+//
+//    // Create a new FormData object
+//    var formData = new FormData();
+//
+//    // Get the values entered by the user in the form fields
+//    var name = $('#name').val();
+//    var comment = $('#comment').val();
+//    var image = $('#image')[0].files[0]; // Assuming you want to upload a single file
+//
+//    // Append the values to the FormData object
+//    formData.append('name', name);
+//    formData.append('comment', comment);
+//    formData.append('image', image);
+//
+//    // Now, you can send this formData in your AJAX request
+//    $.ajax({
+//      type: 'POST',
+//      url: '/createblog',
+//      data: formData,
+//      processData: false,
+//      contentType: false,
+//      success: function (response) {
+//        // Handle the response from the server
+//        console.log('Blog created successfully:', response);
+//      },
+//      error: function (error) {
+//        // Handle errors if the AJAX request fails
+//        console.error('Error creating blog:', error);
+//      },
+//    });
+//  });
+//}); // Closing brace for $(document).ready(function() {
