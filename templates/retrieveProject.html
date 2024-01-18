@@ -4,54 +4,74 @@
 <style>
     .progress-bar-custom {
         width: 0%;
-        height: 30px;
-        background-color: green; /* Default color, will be overridden by JS */
-        text-align: center;
-        line-height: 30px;
-        color: white;
+        height: 20px; /* Adjust height as needed */
+        background-color: #f0ad4e; /* Bootstrap's warning color for yellow */
+        border: 1px solid #ccc; /* Light grey border */
+        border-radius: 10px; /* Rounded corners for outer bar */
+        position: relative; /* Required for inner text to position correctly */
+        overflow: hidden; /* Ensures the content fits within the rounded corners */
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2); /* Inner shadow for depth */
+    }
+
+    .progress-bar-custom::after {
+        content: '';
+        display: block;
+        height: 100%;
+        background-color: #5cb85c; /* Bootstrap's success color for green */
+        width: 0%; /* This will be animated with JavaScript */
+        transition: width 0.5s ease-in-out; /* Smooth transition for width change */
+        border-radius: 8px; /* Slightly smaller radius for the inner bar */
+    }
+
+    .progress-bar-text {
+        position: absolute; /* Absolute position relative to the parent */
+        width: 100%;
+        text-align: center; /* Centers the text horizontally */
+        line-height: 20px; /* Centers the text vertically */
+        color: white; /* Text color */
+        font-size: 12px; /* Adjust as needed */
+        z-index: 1; /* Ensures the text is above the colored bar */
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         {% for project in project_list %}
-            var projectId{{ project.get_owner_id() }} = {{ project.get_owner_id() }};
-            var totalTime{{ project.get_owner_id() }} = {{ project.get_duration() }};
-            var remainingTimeKey{{ project.get_owner_id() }} = 'remainingTime' + projectId{{ project.get_owner_id() }};
-            var remainingTime{{ project.get_owner_id() }} = localStorage.getItem(remainingTimeKey{{ project.get_owner_id() }})
-                ? parseInt(localStorage.getItem(remainingTimeKey{{ project.get_owner_id() }}))
-                : {{ project.get_remaining_time() }};
+            // Create a function scope for each project to avoid closure issues
+            (function() {
+                var projectId = "{{ project.get_owner_id() }}";
+                var totalTime = {{ project.get_duration() }};
+                var remainingTimeKey = 'remainingTime' + projectId;
+                var remainingTime = localStorage.getItem(remainingTimeKey)
+                    ? parseInt(localStorage.getItem(remainingTimeKey))
+                    : {{ project.get_remaining_time() }};
 
-            function updateProgress{{ project.get_owner_id() }}() {
-                if (remainingTime{{ project.get_owner_id() }} > 0) {
-                    remainingTime{{ project.get_owner_id() }}--;
-                    localStorage.setItem(remainingTimeKey{{ project.get_owner_id() }}, remainingTime{{ project.get_owner_id() }});
+                function updateProgress() {
+                    if (remainingTime > 0) {
+                        remainingTime--;
+                        localStorage.setItem(remainingTimeKey, remainingTime);
+                    }
+                    var progressText = $("#progress-bar-text-" + projectId);
+                    var progressPercentage = (1 - (remainingTime / totalTime)) * 100;
+                    var progressBar = $("#progress-bar-" + projectId);
+                    progressBar.css('width', progressPercentage + '%');
+                    progressText.text(progressPercentage.toFixed(0) + '%'); // Update the text
+                    var color = progressPercentage < 50 ? 'red' :
+                                progressPercentage < 75 ? 'yellow' : 'green';
+                    progressBar.css('background-color', color);
+                    $("#timer-" + projectId).text(remainingTime + ' days remaining');
                 }
 
-                var progressPercentage{{ project.get_owner_id() }} = (1 - (remainingTime{{ project.get_owner_id() }} / totalTime{{ project.get_owner_id() }})) * 100;
-                var progressBar{{ project.get_owner_id() }} = $("#progress-bar-{{ project.get_owner_id() }}");
-                progressBar{{ project.get_owner_id() }}.css('width', progressPercentage{{ project.get_owner_id() }} + '%');
+                // Immediately update the progress bar to reflect the current state
+                updateProgress();
 
-                var color;
-                if (progressPercentage{{ project.get_owner_id() }} < 50) {
-                    color = 'red';
-                } else if (progressPercentage{{ project.get_owner_id() }} < 75) {
-                    color = 'yellow';
-                } else {
-                    color = 'green';
-                }
-                progressBar{{ project.get_owner_id() }}.css('background-color', color);
-                console.log("Project " + projectId{{ project.get_owner_id() }} + " - Progress: " + progressPercentage{{ project.get_owner_id() }} + "%, Color: " + color);
-
-                $("#timer-{{ project.get_owner_id() }}").text(remainingTime{{ project.get_owner_id() }} + ' days remaining');
-            }
-
-            setInterval(function() {
-                updateProgress{{ project.get_owner_id() }}();
-            }, 86400000);
+                // Then update it every day (24 * 60 * 60 * 1000 milliseconds)
+                setInterval(updateProgress, 86400000);
+            })();
         {% endfor %}
     });
 </script>
+
 <h1 class="display-4">Retrieve Project</h1>
 <div>
     <table class="table table-striped">
@@ -76,8 +96,11 @@
             <td>{{ project.get_comments()}}</td>
             <td>
                 <h4>Countdown Timer</h4>
-        <div id="timer-{{ project.get_owner_id() }}">Loading...</div>
-        <div id="progress-bar-{{ project.get_owner_id() }}" class="progress-bar-custom" style="width: 0%;"></div>
+    <div id="timer-{{ project.get_owner_id() }}">Loading...</div>
+    <div id="progress-bar-{{ project.get_owner_id() }}" class="progress-bar-custom">
+        <div id="progress-bar-text-{{ project.get_owner_id() }}" class="progress-bar-text">0%</div>
+    </div>
+
             </td>
             <td><a href="/updateProject/{{project.get_owner_id()}}" class="btn btn-warning">Update</a></td>
             <td>

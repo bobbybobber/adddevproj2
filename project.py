@@ -3,7 +3,7 @@ from datetime import datetime
 class Project:
     count_id = 0
     def __init__(self, address, phone,  house_type, house_theme, comments,start_date=None):
-        User.count_id += 1
+        Project.count_id += 1
         self.__user_id = Project.count_id
         self.__house_type = house_type
         self.__house_theme = house_theme

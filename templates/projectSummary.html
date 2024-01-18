@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Project Summary - Checkout{% endblock %}
+{% block content %}
+<style>
+    .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .summary-table th, .summary-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .summary-table th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
+</style>
+
+<h1 class="display-4">Project Summary</h1>
+<p>Please review your project details before proceeding to checkout.</p>
+
+<div>
+    <table class="summary-table">
+        <thead>
+        <tr>
+            <th>Project ID</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Home Type</th>
+            <th>Home Theme</th>
+            <th>Comments</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for project in project_list %}
+        <tr>
+            <td>{{ project.get_owner_id() }}</td>
+            <td>{{ project.get_phone()}}</td>
+            <td>{{ project.get_address()}}</td>
+            <td>{{ project.get_house_type() }}</td>
+            <td>{{ project.get_house_theme()}}</td>
+            <td>{{ project.get_comments()}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="checkout-button">
+    <form action="{{url_for('checkout')}}" method="POST">
+        <input type="submit" value="Proceed to Checkout" class="btn btn-success">
+    </form>
+</div>
+
+{% endblock %}

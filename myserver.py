@@ -594,6 +594,7 @@ def create_Project2():
                           create_project_form.house_theme.data, create_project_form.comments.data)
 
         add_project(project)
+        print(project.get_owner_id())
         project.set_start_date(datetime.now())
         print(project.get_start_date())
         print(project.get_phone(),"was stored in project.db successfully with project_id ==", project.get_owner_id())

@@ -8,7 +8,7 @@ import os
 
 
 def get_key(my_dict):
-    if len(my_dict)==0:
+    if len(my_dict) == 0:
         my_key = 1
     else:
         my_key = len(my_dict.keys()) + 1
@@ -85,13 +85,10 @@ def add_project(project):
     except:
         print("Error in retrieving Users from user.db.")
 
-    project.set_owner_id(project)
+    project.set_owner_id(get_key(project_dict))
     project_dict[project.get_owner_id()] = project
     db['Project'] = project_dict
-    # Test codes
-    db.close()
-
-
-
+    print(project.get_phone(), "was stored in blog.db successfully with user_id ==",
+          project.get_owner_id())
     # Test codes
     db.close()
