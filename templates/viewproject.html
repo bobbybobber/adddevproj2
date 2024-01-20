@@ -1,68 +1,44 @@
 {% extends "base.html" %}
-{% block title %} MonsterBob - Create Account{% endblock %}
+{% block title %} MonsterBob - Create Account {% endblock %}
 {% from "includes/_formHelper.html" import render_field %}
 {% block content %}
-
-
-<div class="gridcontain">
-    <div class="grids">
-        <div class="card">
-            <a href="rating" id="card1">
-                <div class="servicecolleft">
-                    <div class="cardtop" id="card1-2">
-
+<div class="container mt-5">
+    <div class="row">
+        <!-- Card 1 -->
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <a href="rating" class="card-link">
+                    <div class="card-body">
+                        <h5 class="card-title">Project1</h5>
+                        <p class="card-text">Description for Project1.</p>
                     </div>
-                    <div class="cardmiddle">
-                        <h1 class="toptext">Project1</h1>
-                        <p class="middletext"></p>
-                        <p class="middletext"></p>
-                        <p class="middletext"></p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <a href="anatomy.html" class="card-link">
+                    <div class="card-body">
+                        <h5 class="card-title">Project2</h5>
+                        <p class="card-text">Description for Project2.</p>
                     </div>
-                    <div class="cardbottom" id="cardbot1">
+                </a>
+            </div>
+        </div>
 
+        <!-- Card 3 -->
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <a href="perspective.html" class="card-link">
+                    <div class="card-body">
+                        <h5 class="card-title">Project3</h5>
+                        <p class="card-text">Description for Project3.</p>
                     </div>
-                </div>
-            </a></div>
-        <div class="card">
-            <a href="anatomy.html" id="card2">
-                <div class="servicecol">
-                    <div class="cardtop" id="card2-2">
-
-                    </div>
-                    <div class="cardmiddle">
-                        <h1 class="toptext">Project2</h1>
-                        <p></p>
-
-                        <br>
-                        <p class="middletext"></p>
-                        <p class="middletext"></p>
-                    </div>
-                    <div class="cardbottom" id="card2bot">
-
-                    </div>
-                </div>
-            </a></div>
-        <div class="card">
-            <a href="perspective.html" id="card3">
-                <div class="servicecolright">
-                    <div class="cardtop" id="card3-2">
-
-                    </div>
-                    <div class="cardmiddle">
-                        <h1 class="toptext">Project3</h1>
-                        <p class="middletext"></p>
-                        <p class="middletext"></p>
-                        <p class="middletext"></p>
-
-
-                    </div>
-                    <div class="cardbottom" id="card3bot">
-
-                    </div>
-                </div>
-            </a></div>
-
-
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

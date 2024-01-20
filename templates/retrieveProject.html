@@ -1,162 +1,76 @@
 {% extends "base.html" %}
 {% block title %}Library Loan System - Retrieve Project{% endblock %}
 {% block content %}
-<style>
-    .progress-bar-custom {
-        width: 0%;
-        height: 20px; /* Adjust height as needed */
-        background-color: #f0ad4e; /* Bootstrap's warning color for yellow */
-        border: 1px solid #ccc; /* Light grey border */
-        border-radius: 10px; /* Rounded corners for outer bar */
-        position: relative; /* Required for inner text to position correctly */
-        overflow: hidden; /* Ensures the content fits within the rounded corners */
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2); /* Inner shadow for depth */
-    }
-
-    .progress-bar-custom::after {
-        content: '';
-        display: block;
-        height: 100%;
-        background-color: #5cb85c; /* Bootstrap's success color for green */
-        width: 0%; /* This will be animated with JavaScript */
-        transition: width 0.5s ease-in-out; /* Smooth transition for width change */
-        border-radius: 8px; /* Slightly smaller radius for the inner bar */
-    }
-
-    .progress-bar-text {
-        position: absolute; /* Absolute position relative to the parent */
-        width: 100%;
-        text-align: center; /* Centers the text horizontally */
-        line-height: 20px; /* Centers the text vertically */
-        color: white; /* Text color */
-        font-size: 12px; /* Adjust as needed */
-        z-index: 1; /* Ensures the text is above the colored bar */
-    }
-</style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        {% for project in project_list %}
-            (function() {
-                var projectId = "{{ project.get_owner_id() }}";
-                var totalTime = {{ project.get_duration() }};
-                var remainingTimeKey = 'remainingTime' + projectId;
-                var lastUpdatedKey = 'lastUpdated' + projectId;
-                var remainingTime = localStorage.getItem(remainingTimeKey)
-                    ? parseInt(localStorage.getItem(remainingTimeKey))
-                    : {{ project.get_remaining_time() }};
-                var lastUpdated = localStorage.getItem(lastUpdatedKey)
-                    ? new Date(localStorage.getItem(lastUpdatedKey))
-                    : new Date();
-
-                function updateProgress() {
-                    var currentDate = new Date();
-                    if (currentDate - lastUpdated >= 86400000) { // 24 hours have passed
-                        if (remainingTime > 0) {
-                            remainingTime--;
-                            localStorage.setItem(remainingTimeKey, remainingTime);
-                        }
-                        lastUpdated = currentDate;
-                        localStorage.setItem(lastUpdatedKey, lastUpdated.toISOString());
-                    }
-
-                    var progressText = $("#progress-bar-text-" + projectId);
-                    var progressPercentage = (1 - (remainingTime / totalTime)) * 100;
-                    var progressBar = $("#progress-bar-" + projectId);
-                    progressBar.css('width', progressPercentage + '%');
-                    progressText.text(progressPercentage.toFixed(0) + '%'); // Update the text
-                    var color = progressPercentage < 50 ? 'red' :
-                                progressPercentage < 75 ? 'yellow' : 'green';
-                    progressBar.css('background-color', color);
-                    $("#timer-" + projectId).text(remainingTime + ' days remaining');
-
-                    // Check if progress is 100% and change button
-                    if (progressPercentage >= 100) {
-                        $("#update-button-" + projectId).hide(); // Hide update button
-                        $("#review-button-" + projectId).show(); // Show review button
-                    }
-                }
-
-                // Immediately update the progress bar to reflect the current state
-                updateProgress();
-
-                // Then update it every day
-                setInterval(updateProgress, 86400000);
-            })();
-        {% endfor %}
-    });
-</script>
-</script>
-<h1 class="display-4">Retrieve Project</h1>
-<div>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Home Type</th>
-            <th>Home Theme</th>
-            <th>Comments</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for project in project_list %}
-        <tr>
-            <td>{{ project.get_phone()}}</td>
-            <td>{{ project.get_address()}}</td>
-            <td>{{ project.get_house_type() }}</td>
-            <td>{{ project.get_house_theme()}}</td>
-            <td>{{ project.get_comments()}}</td>
-            <td>
-                <h4>Progress</h4>
-    <div id="timer-{{ project.get_owner_id() }}">Loading...</div>
-    <div id="progress-bar-{{ project.get_owner_id() }}" class="progress-bar-custom">
-        <div id="progress-bar-text-{{ project.get_owner_id() }}" class="progress-bar-text">0%</div>
-    </div>
-
-            </td>
-            <td>
-    <a href="/updateProject/{{project.get_owner_id()}}" id="update-button-{{project.get_owner_id()}}"  class="btn btn-warning">Update</a>
-    <a href="/projectReview/{{ session['user_id'] }}" id="review-button-{{ session['user_id'] }}" class="btn btn-primary">Review</a>
-
-</td>
-
-            <td>
-                <form action="{{url_for('delete_project', id=project.get_owner_id())}}" method="POST">
-                    <!-- Button to Open the Modal -->
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{project.get_owner_id()}}">
-                        Delete
-                    </button>
-                    <!-- The Modal -->
-                    <div class="modal" id="myModal_{{project.get_owner_id()}}">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <!-- Modal Header -->
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Delete Confirmation</h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <!-- Modal body -->
-                                <div class="modal-body">
-                                    Are you sure you want to delete {{project.get_owner_id()}}?
-                                </div>
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <input type="submit" value="Delete" class="btn btn-danger">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
+<section class="container-fluid mt-5">
+    <h1 class="display-4 text-center mb-4">Retrieve Project</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Home Type</th>
+                <th>Home Theme</th>
+                <th>Comments</th>
+                <th>Progress</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for project in project_list %}
+            <tr>
+                <td>{{ project.get_phone() }}</td>
+                <td>{{ project.get_address() }}</td>
+                <td>{{ project.get_house_type() }}</td>
+                <td>{{ project.get_house_theme() }}</td>
+                <td>{{ project.get_comments() }}</td>
+                <td>
+                    <div id="timer-{{ project.get_owner_id() }}">Progress</div>
+                    <div id="progress-bar-{{ project.get_owner_id() }}" class="progress-bar-custom">
+                        <div id="progress-bar-text-{{ project.get_owner_id() }}" class="progress-bar-text">0%</div>
                     </div>
+                </td>
+                <td>
+                    <a href="/updateProject/{{ project.get_owner_id() }}" id="update-button-{{ project.get_owner_id() }}"
+                       class="btn btn-outline-warning">Update</a>
+                    <a href="/projectReview/{{ project.get_owner_id() }}"
+                       id="review-button-{{ project.get_owner_id() }}" class="btn btn-outline-primary"
+                       style="display: none;">Review</a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#myModal_{{ project.get_owner_id() }}">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Modals for each project for delete confirmation -->
+{% for project in project_list %}
+<div class="modal fade" id="myModal_{{ project.get_owner_id() }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this project?
+            </div>
+            <div class="modal-footer">
+                <form action="{{url_for('delete_project', id=project.get_owner_id())}}" method="POST">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-danger" value="Delete">
                 </form>
-            </td>
-
-
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
+{% endfor %}
 {% endblock %}

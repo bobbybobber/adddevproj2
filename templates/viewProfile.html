@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}View Profile{% endblock %}
 {% block content %}
-<div class="media">
-  <img class="rounded-circle account-img" src="#">
-  <div class="media-body">
-    <h2 class="account-heading">{{customer.get_first_name}}</h2>
-    <p class="text-secondary">{{customer.get_email}}/p>
-  </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <img class="rounded-circle account-img mb-3" src="#" alt="Profile Image">
+            <h2 class="account-heading">{{ customer.get_first_name() }}</h2>
+            <p class="text-secondary">{{ customer.get_email() }}</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

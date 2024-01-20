@@ -1,61 +1,43 @@
 {% extends "base.html" %}
 {% block title %}Project Summary - Checkout{% endblock %}
 {% block content %}
-<style>
-    .summary-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .summary-table th, .summary-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-    }
-    .summary-table th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #4CAF50;
-        color: white;
-    }
-</style>
+<div class="container mt-5">
+    <h1 class="display-4 text-center mb-4">Project Summary</h1>
+    <p class="text-center mb-4">Please review your project details before proceeding to checkout.</p>
 
-<h1 class="display-4">Project Summary</h1>
-<p>Please review your project details before proceeding to checkout.</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Project ID</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Home Type</th>
+                    <th>Home Theme</th>
+                    <th>Comments</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if project %}
+                <tr>
+                    <td>{{ project.get_owner_id() }}</td>
+                    <td>{{ project.get_phone() }}</td>
+                    <td>{{ project.get_address() }}</td>
+                    <td>{{ project.get_house_type() }}</td>
+                    <td>{{ project.get_house_theme() }}</td>
+                    <td>{{ project.get_comments() }}</td>
+                    <td><strong>${{ project.get_total_price() }}</strong></td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
 
-<div>
-    <table class="summary-table">
-        <thead>
-        <tr>
-            <th>Project ID</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Home Type</th>
-            <th>Home Theme</th>
-            <th>Comments</th>
-            <th>Total Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% if project %}
-        <tr>
-            <td>{{ project.get_owner_id() }}</td>
-            <td>{{ project.get_phone()}}</td>
-            <td>{{ project.get_address()}}</td>
-            <td>{{ project.get_house_type() }}</td>
-            <td>{{ project.get_house_theme()}}</td>
-            <td>{{ project.get_comments()}}</td>
-               <td><strong>${{ project.get_total_price() }}</strong></td> <!-- Displaying total price -->
-
-        </tr>
-        {% endif %}
-        </tbody>
-    </table>
+    <div class="text-center mt-4">
+        <form action="" method="POST">
+            <input type="submit" value="Proceed to Checkout" class="btn btn-primary btn-lg">
+        </form>
+    </div>
 </div>
-
-<div class="checkout-button">
-    <form action="" method="POST">
-        <input type="submit" value="Proceed to Checkout" class="btn btn-success">
-    </form>
-</div>
-
 {% endblock %}

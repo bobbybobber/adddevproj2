@@ -2,20 +2,30 @@
 {% block title %}MonsterBob - Update User{% endblock %}
 {% block content %}
 {% from "includes/_formHelper.html" import render_field %}
-<h1 class="display-4">Update Customers</h1>
-<form method="POST" action="">
-    <div class="form-group">
-
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="py-5">
+                <h1 class="display-4 text-center mb-4">Update Customers</h1>
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        {{ render_field(form.address, class="form-control", placeholder="Enter address",
+                        aria-describedby="addressHelp") }}
+                        <div id="addressHelp" class="form-text">Enter the customer's address.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comments</label>
+                        {{ render_field(form.comments, class="form-control", placeholder="Enter comments",
+                        aria-describedby="commentsHelp") }}
+                        <div id="commentsHelp" class="form-text">Enter any additional comments.</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-block">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        {{ render_field(form.address, class="form-control") }}
-    </div>
-    <div class="form-group">
-        {{ render_field(form.comments, class="form-control") }}
-    </div>
-    <div class="form-group">
-
-    </div>
-    <button type="submit" value="submit" class="smbbtn">Update</button>
-</form>
+</div>
 {% endblock %}

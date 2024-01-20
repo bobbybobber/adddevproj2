@@ -948,16 +948,68 @@ def project_reviews(id):
         # for ada in rating_dict.items():
         #     image_path = os.path.basename(rating.get_image())
         #     testlist.append(image_path)
-        return render_template('about.html',carousel_items =carousel_items,email=email)
+        session['carousel_items'] = carousel_items
+        return redirect(url_for('about'))
     else:
         return render_template('projectReview.html', project=project)
 
-@app.route('/about',methods=['POST','GET'])
-def about():
-    email = request.args.get('email')
-    ratelist = request.args.get('ratelist')
 
-    return render_template('about.html', ratelist=ratelist,email=email)
+@app.route('/about', methods=['POST', 'GET'])
+def about():
+    print("Entered about route")
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    search_query = request.args.get('search', '').lower()  # Get search query and convert to lowercase
+    email = request.args.get('email', default='')  # Assuming email is optional
+    ratelist = request.args.get('ratelist', default='')  # Assuming ratelist is optional
+    carousel_items = request.args.get('carousel_items',default='')
+    db = shelve.open('blog.db', 'r')
+    blog_dict = db['Blog']
+    db.close()
+
+    # Filter blogs based on search query
+    if search_query:
+        filtered_blog_dict = {k: v for k, v in blog_dict.items() if search_query in v.get_name().lower() or search_query in v.get_comment().lower()}
+    else:
+        filtered_blog_dict = blog_dict
+
+    # Calculate total pages
+    total_blogs = len(filtered_blog_dict)
+    total_pages = (total_blogs + per_page - 1) // per_page
+    print(total_pages)
+
+    # Create paginated blog_list
+    blog_list = []
+    sorted_keys = sorted(filtered_blog_dict.keys())[(page - 1) * per_page: page * per_page]
+    for key in sorted_keys:
+        blog = filtered_blog_dict[key]
+        blog_image = blog.get_blog_image()
+
+        if blog_image:  # Check if blog_image is not None
+            image_filename = os.path.basename(blog_image)
+            web_image_path = image_filename.replace('\\', '/')
+        else:
+            web_image_path = 'default_image.jpg'  # Provide a default image or a placeholder
+
+        blog_item = {
+            'image': web_image_path,
+            'title': blog.get_name(),
+            'content': blog.get_comment(),
+            # Add other blog properties here
+        }
+        blog_list.append(blog_item)
+
+    print("Total Pages:", total_pages)  # Debugging print statement
+    # Retrieve carousel_items from session
+    carousel_items = session.get('carousel_items', [])
+    # Check if it's an AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('partials/blog_list.html', blog_list=blog_list)
+    else:
+        return render_template('about.html', email=email, ratelist=ratelist, blog_list=blog_list,
+                               total_pages=total_pages,
+                               current_page=page, carousel_items=carousel_items)
+
 
 
 if __name__ == '__main__':

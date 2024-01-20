@@ -1,39 +1,30 @@
 {% extends "base.html" %}
 {% block title %} MonsterBob - Create Blog {% endblock %}
-{% from "includes/_formHelper.html" import render_field %}
 {% block content %}
-<form method="post" action="" enctype="multipart/form-data">
-    <div class="container1" style="margin-top:10vh;">
-        <h3 class="title">Create Blog Post</h3>
-        <div class="container1">
-            <br>
-            <label for="name" class="label"><h5>Name</h5></label>
-            <br>
-            <div class="control">
-                <input type="text" name="name" id="name" placeholder="Enter blog title">
-            </div>
-        </div>
+<form method="post" action="" enctype="multipart/form-data" class="form-container">
+    <h3 class="title">Create Blog Post</h3>
 
-        <div class="container1">
-            <br>
-            <label for="comment" class="label"><h5>Comment</h5></label>
-            <br>
-            <div class="control">
-                <input type="text" name="comment" id="comment" placeholder="Write your comment here">
-            </div>
-        </div>
+    <div class="form-field">
+        <label for="name" class="label">Name</label>
+        <input type="text" name="name" id="name" class="input" placeholder="Enter blog title">
+    </div>
 
-        <div class="container1">
-            <br>
-            <label for="image" class="label"><h5>Blog Image</h5></label>
-            <br>
-            <div class="control">
-                <input type="file" name="image" id="image">
-            </div>
-        </div>
+    <div class="form-field">
+        <label for="comment" class="label">Comment</label>
+        <textarea name="comment" id="comment" class="textarea" placeholder="Write your comment here"></textarea>
+    </div>
 
-        <button type="submit" value="submit" class="smbbtn">Submit</button>
+    <div class="form-field">
+        <label for="image" class="label">Blog Image</label>
+        <div class="file-input-container">
+            <input type="file" name="image" id="image" class="file-input">
+            <span class="file-input-label">Choose file...</span>
+        </div>
+    </div>
+
+
+    <div class="form-field">
+        <button type="submit" class="form-button">Submit</button>
     </div>
 </form>
-
 {% endblock %}

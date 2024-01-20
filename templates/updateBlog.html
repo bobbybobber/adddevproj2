@@ -2,18 +2,28 @@
 {% block title %}MonsterBob - Update Blog{% endblock %}
 {% block content %}
 {% from "includes/_formHelper.html" import render_field %}
-<h1 class="display-4">Update Blog</h1>
-<form method="POST" action="{{ url_for('update_blog', id=id) }}">
-    <div class="field">
-    <div class="control">
-        {{render_field(form.name, class="form-control")}}
-    </div>
-    </div>
-    <div class="field">
-        <div class="control">
-            {{ render_field(form.comment, class="form-control") }}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="update-blog-form py-5">
+                <h1 class="display-4 text-center mb-4">Update Blog</h1>
+                <form method="POST" action="{{ url_for('update_blog', id=id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Blog Title</label>
+                        {{ render_field(form.name, class="form-control", placeholder="Enter blog title", aria-describedby="blogTitleHelp") }}
+                        <div id="blogTitleHelp" class="form-text">Enter the title of your blog post.</div>
+                    </div>
+                    <div class="mb-4">
+                        <label  class="form-label">Blog Content</label>
+                        {{ render_field(form.comment, class="form-control", placeholder="Write your blog content here", aria-describedby="blogContentHelp") }}
+                        <div id="blogContentHelp" class="form-text">Write the content of your blog post.</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-block">Update</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    <button type="submit" value="submit" class="smbbtn">Update</button>
-</form>
+</div>
 {% endblock %}

@@ -1,66 +1,53 @@
 {% extends "base.html" %}
-{% block title %} MonsterBob - Create Project{% endblock %}
-{% from "includes/_formHelper.html" import render_field %}
+{% block title %}MonsterBob - Create Project{% endblock %}
 {% block content %}
-<div class="column is-4 is-offset-4" style="margin-top: 10vh;">
-    <h3 class="title has-text-centered">Create Project</h3>
-    <div class="box">
-        <form method="POST" action="/createProject2" class="project-form">
-<div class="container1">
-    <label for="phone" class="label"><h5>Phone <span class="required">*</span></h5></label>
-    <br>
-    <div class="control">
-        <input type="text" id="phone" name="phone" required>
-    </div>
+<div class="form-container">
+    <h3 class="title">Create Project</h3>
+    <form method="POST" action="/createProject2">
+        <div class="form-field">
+            <label for="phone" class="label">Phone <span class="required">*</span></label>
+            <input type="text" id="phone" name="phone" class="input" required>
+        </div>
 
-    <br>
- <label for="address" class="label"><h5>Address <span class="required">*</span></h5> </label>
-    <br>
-    <div class="control">
-        <input type="text" id="address" name="address" required>
-    </div>
-<br>
-    <label for="house_type" class="label"><h5>House Type <span class="required">*</span></h5> </label>
-    <br>
-    <div class="control">
-        <select id="house_type" name="house_type" required>
-    <option value="">Select...</option>
-    <option value="1-Room HDB">1-Room HDB</option>
-    <option value="2-Room HDB">2-Room HDB</option>
-    <option value="3-Room HDB">3-Room HDB</option>
-    <option value="4-Room HDB">4-Room HDB</option>
-    <option value="5-Room HDB">5-Room HDB</option>
-</select>
+        <div class="form-field">
+            <label for="address" class="label">Address <span class="required">*</span></label>
+            <input type="text" id="address" name="address" class="input" required>
+        </div>
 
-    </div>
+        <div class="form-field">
+            <label for="house_type" class="label">House Type <span class="required">*</span></label>
+            <select id="house_type" name="house_type" class="input" required>
+                <option value="">Select...</option>
+                <option value="1-Room HDB">1-Room HDB</option>
+                <option value="2-Room HDB">2-Room HDB</option>
+                <option value="3-Room HDB">3-Room HDB</option>
+                <option value="4-Room HDB">4-Room HDB</option>
+                <option value="5-Room HDB">5-Room HDB</option>
+            </select>
+        </div>
 
-    <br>
- <label for="house_theme" class="label"><h5>House Theme <span class="required">*</span></h5> </label>
-    <br>
-    <div class="control">
-<select id="house_theme" name="house_theme" required>
-    <option value="">Select...</option>
-    <option value="Scandinavian">Scandinavian</option>
-    <option value="Luxury">Luxury</option>
-    <option value="Modern-Luxury">Modern-Luxury</option>
-    <option value="Traditional">Traditional</option>
-    <option value="Contemporary">Contemporary</option>
-    <option value="Farmhouse">Farmhouse</option>
-</select>
+        <div class="form-field">
+            <label for="house_theme" class="label">House Theme <span class="required">*</span></label>
+            <select id="house_theme" name="house_theme" class="input" required>
+                <option value="">Select...</option>
+                <option value="Scandinavian">Scandinavian</option>
+                <option value="Luxury">Luxury</option>
+                <option value="Modern-Luxury">Modern-Luxury</option>
+                <option value="Traditional">Traditional</option>
+                <option value="Contemporary">Contemporary</option>
+                <option value="Farmhouse">Farmhouse</option>
 
- </select>
-    </div>
-<br>
- <label for="comments" class="label"><h5>Comments</h5></label>
-    <br>
-    <div class="control">
-        <textarea id="comments" name="comments"></textarea>
-    </div>
-<br>
- <input type="submit" class="smbbtn" value="Submit">
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="comments" class="label">Comments</label>
+            <textarea id="comments" name="comments" class="textarea"></textarea>
+        </div>
+
+        <div class="form-field">
+            <input type="submit" class="form-button" value="Submit">
+        </div>
+    </form>
 </div>
-        </form>
-    </div>
-</div>
-
 {% endblock %}

@@ -57,22 +57,6 @@ h3.title {
     background-color: #4cae4c;
 }
 
-/* Adjustments for the card layout */
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: space-between;
-}
-
-.card {
-    width: calc(33.33% - 1rem); /* Set the width to one-third with a small gap between cards */
-    margin-bottom: 20px;
-}
-@media screen and (min-width: 768px) {
-    .card {
-        width: calc(33.33% - 1rem); /* Set the width to one-third with a small gap between cards */
-    }
 
 body{
     background-color:white;
@@ -376,9 +360,16 @@ color:#ADD8E6;
     background-position: center;
     box-shadow: inset 0 0 0 1000px rgba(0,0,0,.5);
 }
-div {
-    display: block;
+#blog-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Adjusts space between cards equally */
+    margin-right: -10px;
+    margin-left: -10px;
 }
+
+
+
 .homesection1 {
     background-color: #E7E7ED;
     display: grid;
@@ -674,48 +665,125 @@ footer {
     }
 }
 
-.container1 {
-    margin-top: 30px;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+/* Common Form Styling */
+.form-container {
+    background-color: #fff; /* White background */
+    padding: 24px; /* Padding around the form */
+    margin: 20px auto; /* Center the form with vertical spacing */
+    width: 100%; /* Full width */
+    max-width: 600px; /* Maximum width for better readability */
+    box-shadow: 0 1px 6px rgba(60, 64, 67, 0.15); /* Subtle shadow similar to Google Forms */
+    border-radius: 8px; /* Rounded corners */
+    box-sizing: border-box; /* Include padding and border in width/height */
 }
 
-h3.title {
+.form-container h3 {
     text-align: center;
-    color: #333;
+    color: #202124; /* Dark gray color */
+    margin-bottom: 20px; /* Space below the title */
+    font-size: 24px; /* Larger font size */
 }
 
-.field {
-    margin-bottom: 20px;
+.form-field {
+    margin-bottom: 16px; /* Space between each form field */
 }
 
-.control input[type="text"],
-.control input[type="file"] {
+.form-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #202124; /* Dark gray color */
+    font-size: 16px; /* Standard font size */
+    font-weight: 500; /* Medium font weight */
+}
+
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field select,
+.form-field textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 15px 14px; /* Slightly larger padding */
+    border: 1px solid #dfe1e5; /* Light gray border */
     border-radius: 4px;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Include padding and border in width/height */
+    font-size: 16px; /* Standard font size */
+    color: #202124; /* Text color */
 }
 
-.control input[type="file"] {
-    background: white;
+.form-field input[type="text"]:focus,
+.form-field input[type="email"]:focus,
+.form-field input[type="password"]:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border: 2px solid #4285f4; /* Google's blue color on focus */
+    outline: none;
+}
+
+.form-field input[type="file"] {
+    background: #fff;
     cursor: pointer;
 }
 
-.smbbtn {
+.form-button {
     width: 100%;
-    padding: 10px;
-    background-color: #5cb85c;
+    padding: 12px 16px; /* Slightly larger padding */
+    background-color: #1a73e8; /* Google's blue color */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s;
+    text-transform: uppercase; /* Uppercase text */
+    font-weight: 500; /* Medium font weight */
+}
+
+.form-button:hover {
+    background-color: #1967d2; /* Slightly darker shade on hover */
+}
+.file-input-container {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-input-label {
+    color: #202124;
+    font-size: 16px;
+}
+
+.file-input-container:hover {
+    border-color: #4285f4; /* Google's blue color */
+}
+
+
+
+/* Responsive Form Styling */
+@media (max-width: 768px) {
+    .form-container {
+        max-width: 100%; /* Full width on smaller screens */
+        padding: 20px; /* Slightly reduced padding */
+    }
+}
+
+/* Additional Button Styling */
+.smbbtn {
+    background-color: #5cb85c; /* Specific color for this button if different */
+    /* Other properties are inherited from .form-button */
 }
 
 .smbbtn:hover {
@@ -738,41 +806,6 @@ h3.title {
   50% {
     transform: translateX(20px);
   }
-}
-
-/* Apply the animation based on the row index in the loop */
-.card-container > .card-row:nth-child(odd) {
-  animation: moveCardOddRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
-}
-
-.card-container > .card-row:nth-child(even) {
-  animation: moveCardEvenRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
-}
-@keyframes moveCardOddRow {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(-20px);
-  }
-}
-
-@keyframes moveCardEvenRow {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(20px);
-  }
-}
-
-/* Apply the animation based on the row index in the loop */
-.card-container > .card-row:nth-child(odd) {
-  animation: moveCardOddRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
-}
-
-.card-container > .card-row:nth-child(even) {
-  animation: moveCardEvenRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
 }
 #loginform {
     display: flex;
@@ -969,21 +1002,6 @@ input[type=submit]:hover {
  background-color: #45a049;
 }
 
-.container {
- width: 300px;
- padding: 16px;
- background-color: white;
- margin: 0 auto;
- margin-top: 100px;
- border: 1px solid #ccc;
- border-radius: 4px;
-}
-
-.required {
- color: red;
-}
-items */
-}
 
 /* Additional styles to ensure controls are not too wide /
 .carousel-control-prev,
@@ -991,25 +1009,656 @@ items */
 width: auto; / Only be as wide as necessary */
 }
 
-/* Make sure the carousel container is positioned relatively */
-#profileCarousel {
-position: relative;
+#carouselExampleIndicators {
+    width: 100%;
+    height: 600px;
+    margin: auto;
 }
+
+.carousel-item {
+    height: 600px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+}
+
 .carousel-control-prev,
 .carousel-control-next {
-    align-items: center; /* Vertically align the controls in the middle */
-    height: 100%; /* Set the height to match the carousel item */
+    width: auto;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    width: 50px; /* Adjust the width as needed */
-    height: 50px; /* Adjust the height as needed */
-    background-size: 50px; /* Adjust size to match the new width/height */
-    z-index: 2; /* Ensure it's above carousel items but not too high */
+    width: 50px;
+    height: 50px;
+    background-color: black; /* Or any other color */
+    border-radius: 50%;
+    background-size: 100%;
 }
 
-/* You may need to adjust the top position depending on the height of your carousel items */
 .carousel-control-prev,
 .carousel-control-next {
-    top: calc(50% - 25px); /* This centers the middle of the arrow at the halfway point of the
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.carousel-control-prev {
+    left: 10px;
+}
+
+.carousel-control-next {
+    right: 10px;
+}
+
+    /* Styling for the search container, input, and result items */
+.search-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#searchInput {
+    width: 50%; /* Default width for larger screens */
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    display: block;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: #4285f4;
+    box-shadow: 0 0 8px rgba(66, 133, 244, 0.5);
+}
+
+.search-result-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: left;
+    border-radius: 8px;
+}
+
+.search-result-item:hover {
+    background-color: #f8f8f8;
+}
+
+/* Media Queries */
+@media (max-width: 992px) {
+    /* For medium-sized devices like tablets */
+    #searchInput {
+        width: 60%; /* Slightly wider on medium screens */
+    }
+}
+
+@media (max-width: 768px) {
+    /* For small-sized devices like small tablets and large phones */
+    #searchInput {
+        width: 70%; /* Wider on small screens */
+    }
+}
+
+@media (max-width: 576px) {
+    /* For extra small devices like phones */
+    #searchInput {
+        width: 80%; /* Much wider on extra small screens for better usability */
+        padding: 8px 16px; /* Slightly smaller padding */
+        font-size: 14px; /* Slightly smaller font size */
+    }
+}
+.pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination-container a, .pagination-container span {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 0 4px;
+        border: 1px solid #ddd;
+        background-color: #f8f8f8;
+        color: #007185;
+        text-decoration: none;
+        border-radius: 2px;
+        transition: background-color 0.3s;
+    }
+
+    .pagination-container a:hover {
+        border-color: #e77600;
+        background-color: #ffebc6;
+    }
+
+    .pagination-container span.current-page {
+        background-color: #e77600;
+        color: white;
+        border-color: #e77600;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .pagination-container a, .pagination-container span {
+            padding: 5px 8px;
+            font-size: 12px;
+        }
+    }
+
+/* Table Full Width */
+.table {
+    width: 100%; /* Full width for table */
+    margin-top: 20px;
+    /* Other table styles... */
+}
+
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Update and Review Buttons */
+.update-button, .review-button {
+    padding: 8px 12px;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.update-button {
+    background-color: #f0ad4e; /* Orange */
+}
+
+.update-button:hover {
+    background-color: #ec971f; /* Darker Orange */
+}
+
+.review-button {
+    background-color: #5cb85c; /* Green */
+}
+
+.review-button:hover {
+    background-color: #4cae4c; /* Darker Green */
+}
+
+/* Custom Progress Bar */
+.progress-bar-custom {
+    width: 100%;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+}
+
+.progress-bar-custom::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease-in-out;
+    border-radius: 8px;
+}
+
+.progress-bar-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    font-size: 12px;
+    z-index: 1;
+}
+/* Carousel Full Width */
+#blogCarousel {
+    width: 100%; /* Ensure carousel takes full width */
+}
+
+/* Carousel Items */
+.carousel-item {
+    padding: 20px; /* Space inside each carousel item */
+    background-color: #f8f9fa; /* Light background color for the carousel item */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle box-shadow */
+}
+
+/* Responsive adjustments (if needed) */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+}
+/* Adjust the size of the carousel and its items to fill the width */
+#blogCarousel, .carousel-item, .card-group {
+    width: 100%; /* Full width */
+}
+/* Ensure the carousel controls are visible */
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-color: #D3D3D3; /* Adjust as needed */
+}
+/* Button Styling in Cards */
+.card .btn {
+    background-color: #4CAF50; /* Button background color */
+    color: white; /* Button text color */
+    border-radius: 4px; /* Rounded corners for button */
+    padding: 8px 12px; /* Padding inside the button */
+    transition: background-color 0.3s; /* Transition for button hover */
+}
+
+.card .btn:hover {
+    background-color: #45a049; /* Darker shade on hover */
+}
+
+/* Ensure Full Width for Carousel and Cards on Small Screens */
+@media (max-width: 768px) {
+    .carousel-item, .card {
+        width: 100%; /* Full width on smaller screens */
+    }
+}
+/* Card Styling */
+.card {
+    width: 18rem; /* Adjust as necessary */
+    margin-right: 20px; /* Spacing between cards */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for depth */
+    border-radius: 8px; /* Rounded corners */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Slight lift effect on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Increased shadow on hover */
+}
+
+.card-img-top {
+    width: 100%; /* Full width of card */
+    height: auto; /* Maintain aspect ratio */
+    border-top-left-radius: 8px; /* Rounded top corners */
+    border-top-right-radius: 8px;
+}
+.card-body {
+  padding: 15px;
+  background-color: #f8f9fa;
+}
+
+.card-title {
+    color: #333; /* Dark color for title */
+    margin-bottom: 10px; /* Space below title */
+}
+
+.card-text {
+    color: #666; /* Dark color for text */
+}
+/* Apply the animation based on the row index in the loop */
+.card-container > .card-row:nth-child(odd) {
+  animation: moveCardOddRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
+}
+
+.card-container > .card-row:nth-child(even) {
+  animation: moveCardEvenRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
+}
+/* Apply the animation based on the row index in the loop */
+.card-container > .card-row:nth-child(odd) {
+  animation: moveCardOddRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
+}
+
+.card-container > .card-row:nth-child(even) {
+  animation: moveCardEvenRow 8s infinite linear; /* Adjust the duration (8s) for a slower effect */
+}
+@keyframes moveCardOddRow {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes moveCardEvenRow {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
+}
+
+/* Styles for individual cards */
+#blog-container .card {
+    flex: 0 0 calc(33.33% - 20px); /* Adjust the 20px gap as needed */
+    margin-bottom: 20px; /* Space below each card */
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  /* For tablets and smaller desktops */
+  #blog-container .card {
+    flex: 0 0 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 576px) {
+  /* For mobile screens */
+  #blog-container .card {
+    flex: 0 0 100%;
+  }
+}
+
+/* Adjustments for the card layout */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.card {
+    width: calc(33.33% - 1rem); /* Set the width to one-third with a small gap between cards */
+    margin-bottom: 20px;
+}
+@media screen and (min-width: 768px) {
+  .card {
+    width: calc(33.33% - 1rem);
+    margin-bottom: 20px;
+  }
+}
+.container {
+    padding: 20px;
+}
+
+.table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.thead-light th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 500;
+}
+
+.table th, .table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-lg {
+    padding: 10px 20px;
+    font-size: 20px;
+    border-radius: 4px;
+}
+/* Reuse existing styles */
+.container {
+    max-width: 800px; /* Your existing setting */
+}
+
+.card {
+    /* Existing shadow and border-radius */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.form-control {
+    /* Existing styles */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.btn-primary {
+    /* Existing styles */
+    background-color: #4CAF50;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: white;
+}
+
+/* Custom styles for login form */
+.login-container {
+    max-width: 600px; /* Smaller container for login form */
+    margin: auto;
+}
+
+.login-card {
+    /* Custom styles specific to login card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn {
+    /* Unique button style for login form */
+    background-color: #5cb85c; /* Different shade */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.login-btn:hover {
+    background-color: #45a049;
+}
+.google-style-form {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgb(32 33 36 / 28%);
+}
+
+.form-google {
+    display: flex;
+    flex-direction: column;
+}
+
+.google-input {
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+}
+
+.google-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.google-button:hover {
+    background-color: #1369ce;
+}
+
+.google-register-link {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.google-register-link:hover {
+    text-decoration: underline;
+}
+
+.wrapper {
+    text-align: center;
+}
+.google-form-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgb(32 33 36 / 28%);
+}
+
+.google-title {
+    color: #202124;
+    font-size: 24px;
+    margin-bottom: 24px;
+}
+
+.google-form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.google-input {
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.google-submit-btn {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+.google-submit-btn:hover {
+    background-color: #1369ce;
+}
+
+.google-field {
+    margin-bottom: 10px;
+}
+.google-form-container {
+    max-width: 400px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgb(32 33 36 / 28%);
+}
+
+.google-title {
+    color: #202124;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.google-box {
+    padding: 20px;
+}
+
+.google-field {
+    margin-bottom: 15px;
+}
+
+.google-input {
+    width: 100%;
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.google-submit-btn {
+    width: 100%;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.google-submit-btn:hover {
+    background-color: #1369ce;
+}
+.google-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.google-header, .google-body {
+    margin-bottom: 20px;
+}
+
+.google-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.google-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.google-alert-messages {
+    margin-bottom: 20px;
+}
+
+.google-alert {
+    padding: 10px;
+    background-color: #f1f1f1;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: #333;
+}
+
+.google-form-group {
+    margin-bottom: 15px;
+}
+
+.google-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.google-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.google-btn:hover {
+    background-color: #1668c1;
+}
+
+.google-error {
+    color: red;
+    margin-top: 10px;
+}
