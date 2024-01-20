@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+        .project-header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .project-body {
+            padding: 20px;
+            background: #fff;
+            margin-top: 20px;
+        }
+        .review-form {
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group textarea, .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #5cb85c;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .star-rating {
+    direction: rtl; /* Right to left */
+    font-size: 30px; /* Size of the stars */
+}
+
+.star-input {
+    display: none; /* Hide the radio button */
+}
+
+
+
+.star-input:checked ~ .star-label {
+    color: orange; /* Color when the star is selected */
+}
+
+/* Revert direction to ltr after star inputs */
+.star-rating {
+    margin-right: 90%;
+    display: flex;
+    justify-content: flex-start; /* Align stars from left to right */
+}
+
+.star-label {
+    font-size: 30px; /* Size of the stars */
+    margin-right: 5px; /* Add some space between stars */
+    cursor: pointer;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="project-header">
+            <h2>Project Review</h2>
+        </div>
+
+        <div class="project-body">
+            <h3>Project Details</h3>
+            <!-- Project details should be dynamically loaded here -->
+            <table>
+                <!-- Example of project details -->
+                <tr><td>Project ID</td><td>12345</td></tr>
+                <tr><td>Home Type</td><td>Villa</td></tr>
+                <tr><td>Home Theme</td><td>Modern</td></tr>
+                <!-- Add more project details as needed -->
+            </table>
+
+            <div class="review-form">
+                <form  method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+    <label>Rating</label>
+  <div class="star-rating">
+    {% for i in range(1, 6) %}
+    <input id="star{{i}}" name="rating" type="radio" value="{{i}}" class="star-input"/>
+    <label for="star{{i}}" class="star-label">&#9733;</label> <!-- Star character -->
+    {% endfor %}
+</div>
+
+
+                    <div class="form-group">
+                        <label for="review">Review</label>
+                        <textarea id="review" name="review" rows="4" required></textarea>
+                    </div>
+                    <div class="container1">
+            <br>
+            <label for="image" class="label"><h5>Home Image</h5></label>
+            <br>
+            <div class="control">
+                <input type="file" name="image" id="image">
+            </div>
+        </div>
+                    <button type="submit" class="btn">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

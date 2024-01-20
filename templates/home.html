@@ -1,44 +1,57 @@
 {% extends "base.html" %}
+
 {% block title %}MonsterBob - Home{% endblock %}
 
 {% block content %}
-<section id="homepagebody">
-    <h1 id="title">Welcome to MonsterBob</h1>
-    <br>
-    <div>
-        <h6 id="subtitle">Renovate your homes with the experts</h6>
+<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="2000">
+    <div class="carousel-inner">
+        {% for item in carousel_items %}
+        <div class="carousel-item {{ loop.index == 1 ? 'active' : '' }}">
+            <img class="d-block w-100" src="{{ item.image }}" alt="Slide {{ loop.index }}">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>{{ item.caption }}</h5>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    <br>
-    <section id="homepagebtn">
-        <div>
-            <button id="getstartedbtn">Get Started</button>
-        </div>
-        <br>
-        <div>
-            <button id="learnmorebtn">Learn More</button>
-        </div>
-    </section>
-
-</section>
-        <section id="footering">
-        <div class="footer">
-            <div class="waves">
-                <div class="wave"></div>
-                <div class="wave"></div>
-                <div class="wave"></div>
-                <div class="wave"></div>
-            </div>
-                <div class="col">
-                    <ul class="social">
-                        <li><i class="fa-brands fa-facebook-f"></i></li>
-                        <li><i class="fa-brands fa-x-twitter"></i></li>
-                        <li><i class="fa-brands fa-linkedin-in"></i></li>
-                        <li><i class="fa-brands fa-instagram"></i></li>
-                    </ul>
-                </div>
-                <p> &copy; 2023 || All Rights Received by MonsterBob</p>
-            </div>
-    </section>
+</div>
 {% endblock %}
 
+{% block additional_css %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<style>
+    .carousel-item {
+        position: relative;
+        overflow: hidden;
+    }
 
+    .carousel-item::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 50%;
+        background: linear-gradient(to top, transparent, white 80%),
+                    url(your-image-url) no-repeat center / cover;
+        transform: scaleY(-1);
+        z-index: -1;
+        opacity: 0.5;
+    }
+
+    .carousel-caption {
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block additional_js %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+{% endblock %}

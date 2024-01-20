@@ -1,8 +1,12 @@
 from User import User
 from datetime import datetime
+from Customers import customer
+
+
 class Project:
     count_id = 0
-    def __init__(self, address, phone,  house_type, house_theme, comments,start_date=None):
+    def __init__(self, address, phone,  house_type, house_theme, comments,start_date=None,total_price=None,email = None):
+
         Project.count_id += 1
         self.__user_id = Project.count_id
         self.__house_type = house_type
@@ -11,6 +15,8 @@ class Project:
         self.__phone = phone
         self.__comments = comments
         self.__start_date = start_date if start_date else datetime.now()
+        self.__total_price = None
+        self.__email = None
 
     def get_owner_id(self):
         return self.__user_id
@@ -99,3 +105,14 @@ class Project:
         combination_key = f"{self.__house_type}, {self.__house_theme}"
         duration_months = combination_durations.get(combination_key, 0)
         return duration_months * 30  # Assuming the duration is in days
+
+    def get_total_price(self):
+        return self.__total_price
+
+    def set_total_price(self, totalprice):
+        self.__total_price = totalprice
+
+    def get_email(self):
+        return self.__email
+    def set_email(self, email):
+        self.__email = email

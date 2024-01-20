@@ -32,10 +32,11 @@
             <th>Home Type</th>
             <th>Home Theme</th>
             <th>Comments</th>
+            <th>Total Price</th>
         </tr>
         </thead>
         <tbody>
-        {% for project in project_list %}
+        {% if project %}
         <tr>
             <td>{{ project.get_owner_id() }}</td>
             <td>{{ project.get_phone()}}</td>
@@ -43,14 +44,16 @@
             <td>{{ project.get_house_type() }}</td>
             <td>{{ project.get_house_theme()}}</td>
             <td>{{ project.get_comments()}}</td>
+               <td><strong>${{ project.get_total_price() }}</strong></td> <!-- Displaying total price -->
+
         </tr>
-        {% endfor %}
+        {% endif %}
         </tbody>
     </table>
 </div>
 
 <div class="checkout-button">
-    <form action="{{url_for('checkout')}}" method="POST">
+    <form action="" method="POST">
         <input type="submit" value="Proceed to Checkout" class="btn btn-success">
     </form>
 </div>

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from flask import Flask, render_template, request, redirect, url_for, flash,jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash,jsonify,session
 from Customers import customer
 from Staff import staff
 from Forms import *
@@ -13,13 +13,19 @@ from flask_mail import Mail,Message
 import os
 import uuid
 from random import *
+import bcrypt
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
-UPLOAD_FOLDER = os.path.join('static', 'image')
+UPLOAD_FOLDER = os.path.normpath(os.path.join('static', 'image'))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['UPLOAD_FOLDER'] = 'C:\\Users\\Ervin\\Desktop\\adddevproj2\\static\\image'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+@app.context_processor
+def inject_user_status():
+    return dict(is_logged_in='email' in session)
+
 def save_image(file):
     filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(filename)
@@ -34,6 +40,11 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 otp = randint(000000,999999)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
 
 # @app.route('/viewprofile/<string:email>')
 # def viewprofile(email):
@@ -88,56 +99,57 @@ def resetPassword():
                 customer_dict = db['Customer']
 
                 Customer = customer_dict.get(email)
-                Customer.set_password(create_reset_form.password1.data)
+                password = hash_password(create_reset_form.password1.data)
+                Customer.set_password(password)
                 print(Customer.get_password())
                 db['Customer'] = customer_dict
                 db.close()
-                return redirect(url_for('retrieveCustomers'))
+                return redirect(url_for('retrieveCustomers', email=email))
             elif email in staff_dict:
                 db = shelve.open('staff.db','w')
                 staff_dict = db['Staff']
 
                 Staff = staff_dict.get(email)
-                Staff.set_password(create_reset_form.password2.data)
+                password = hash_password(create_reset_form.password2.data)
+                Staff.set_password(password)
                 print(Staff.get_password())
                 db['Staff'] = staff_dict
                 db.close()
-                return redirect(url_for('retrieveStaff'))
+                return redirect(url_for('retrieveStaff', email=email))
             else:
                 print('wawrawrawrwasd')
 
-    return render_template('resetPassword.html', form=create_reset_form)
+    return render_template('resetPassword.html', form=create_reset_form, email=email)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-
     create_login_form = logininformation(request.form)
     if request.method == 'POST' and create_login_form.validate():
-        customer = logincheck(create_login_form.email.data, create_login_form.password.data)
+        email = create_login_form.email.data
+        entered_password = create_login_form.password.data
         customer_dict = {}
-        db = shelve.open('customer.db', 'r')
-        customer_dict = db['Customer']
-        db.close()
         staff_dict = {}
-        db = shelve.open('staff.db', 'r')
-        staff_dict = db['Staff']
-        db.close()
-        if customer.email_get() in customer_dict:
-            user = customer_dict.get(customer.email_get())
-            if customer.password_get() == user.get_password():
-                return redirect(url_for('retrieveCustomers'))
-        elif customer.email_get() in staff_dict:
-            print('hello')
-            user = staff_dict.get(customer.email_get())
-            print(user.get_password())
-            if customer.password_get() == user.get_password():
-                return redirect(url_for('retrieveStaff'))
 
+        with shelve.open('customer.db', 'r') as db:
+            customer_dict = db.get('Customer', {})
 
+        with shelve.open('staff.db', 'r') as db:
+            staff_dict = db.get('Staff', {})
 
-
-    return render_template('Startpage.html',form=create_login_form)
+        user = customer_dict.get(email) or staff_dict.get(email)
+        if user:
+            if bcrypt.checkpw(entered_password.encode('utf-8'), user.get_password()):
+                session['email'] = user.get_email()
+                session['user_id'] = str(uuid.uuid4())
+                session['user_type'] = 'customer' if email in customer_dict else 'staff'
+                return redirect(url_for('retrieveCustomers', email=email)) if session['user_type'] == 'customer' else redirect(url_for('retrieveStaff', email=email))
+            else:
+                flash("Invalid username or password", "danger")
+        else:
+            flash("Invalid username or password", "danger")
+    is_logged_in = 'email' in session  # Check if user is logged in
+    return render_template('Startpage.html', form=create_login_form, is_logged_in=is_logged_in)
 
 
 # login
@@ -282,6 +294,7 @@ def deleteStaff(email):
 # Blog CRUD
 @app.route("/createblog", methods={'GET', 'POST'})
 def UploadImage():
+    email = request.args.get('email')
     if request.method == 'POST':
         file = request.files['image']
         name = request.form['name']
@@ -295,7 +308,7 @@ def UploadImage():
         add_blog(Blog)
         Blog.set_blog_image(image)
         fileimage = Blog.get_blog_image()
-        new_blog_card_html = render_template('blog_card.html', blog=Blog)
+        new_blog_card_html = render_template('blog_card.html', blog=Blog,email=email, name=name, comment=comment)
         print(Blog.get_name(),
                   "was stored in blog.db successfully with user_id ==",
                   Blog.get_blog_id(),'  ',Blog.get_blog_image())
@@ -343,6 +356,7 @@ def UploadImage():
 
 @app.route("/retrieveblog")
 def retrieveblog():
+    email = request.args.get('email')
     blog_dict = {}
     db = shelve.open('blog.db', 'r')
     blog_dict = db['Blog']
@@ -360,11 +374,12 @@ def retrieveblog():
         blog = blog_dict.get(key)
         blog_list.append(blog)
     print(Customer_list)
-    return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list), Customer_list=Customer_list)
+    return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list), Customer_list=Customer_list, email=email)
 
 
 @app.route('/updateblog/<int:id>/', methods=['GET', 'POST'])
 def update_blog(id):
+    email = request.args.get('email')
     Update_blog_form = CreateBlogForm(request.form)
 
     if request.method == 'POST' and Update_blog_form.validate():
@@ -395,7 +410,7 @@ def update_blog(id):
             Update_blog_form.name.data = Blog.get_name()
             Update_blog_form.comment.data = Blog.get_comment()
 
-            return render_template('updateBlog.html', form=Update_blog_form, id=id)
+            return render_template('updateBlog.html', form=Update_blog_form, id=id,email = email)
 
     flash('Blog not found', 'error')
     return redirect(url_for('retrieveblog'))
@@ -450,6 +465,7 @@ def create_customer():
 
 @app.route('/retrieveCustomers')
 def retrieveCustomers():
+    email = request.args.get('email')
     customer_dict = {}
     db = shelve.open('customer.db', 'r')
     customer_dict = db['Customer']
@@ -460,7 +476,7 @@ def retrieveCustomers():
         customer = customer_dict.get(key)
         Customer_list.append(customer)
 
-    return render_template('retrieveCustomer.html', count=len(Customer_list), Customer_list=Customer_list)
+    return render_template('retrieveCustomer.html', count=len(Customer_list), Customer_list=Customer_list,email=email)
 
 
 @app.route('/updateCustomer/<string:email>/', methods=['GET', 'POST'])
@@ -587,6 +603,7 @@ def deleteComment(id):
 
 @app.route('/createProject2', methods=['GET', 'POST'])
 def create_Project2():
+    email = request.args.get('email')
     create_project_form = CreateProject(request.form)
     if request.method == 'POST':
 
@@ -599,11 +616,157 @@ def create_Project2():
         print(project.get_start_date())
         print(project.get_phone(),"was stored in project.db successfully with project_id ==", project.get_owner_id())
         print(project)
-        return redirect(url_for('retrieveProject'))
-    return render_template('createProject2.html',form = create_project_form)
+        id1 = project.get_owner_id()
+        return redirect(url_for('projectSummary',id = id1, project = project , email = email))
 
+    return render_template('createProject2.html',form = create_project_form, email=email)
+
+@app.route('/projectSummary/<int:id>/', methods=['GET', 'POST'])
+def projectSummary(id):
+    email = request.args.get('email')
+    project_dict = {}
+    db = shelve.open('project.db', 'r')
+    project_dict = db['Project']
+    project = project_dict.get(id)
+    db.close()
+
+
+    combination_durations = {
+        "1-Room HDB, Scandinavian": 1,
+        "1-Room HDB, Luxury": 2,
+        "1-Room HDB, Modern-Luxury": 3,
+        "1-Room HDB, Traditional": 4,
+        "1-Room HDB, Contemporary": 5,
+        "1-Room HDB, Farmhouse": 6,
+        "2-Room HDB, Scandinavian": 7,
+        "2-Room HDB, Luxury": 8,
+        "2-Room HDB, Modern-Luxury": 9,
+        "2-Room HDB, Traditional": 10,
+        "2-Room HDB, Contemporary": 11,
+        "2-Room HDB, Farmhouse": 12,
+        "3-Room HDB, Scandinavian": 13,
+        "3-Room HDB, Luxury": 14,
+        "3-Room HDB, Modern-Luxury": 15,
+        "3-Room HDB, Traditional": 16,
+        "3-Room HDB, Contemporary": 17,
+        "3-Room HDB, Farmhouse": 18,
+        "4-Room HDB, Scandinavian": 19,
+        "4-Room HDB, Luxury": 20,
+        "4-Room HDB, Modern-Luxury": 21,
+        "4-Room HDB, Traditional": 22,
+        "4-Room HDB, Contemporary": 23,
+        "4-Room HDB, Farmhouse": 24,
+        "5-Room HDB, Scandinavian": 25,
+        "5-Room HDB, Luxury": 26,
+        "5-Room HDB, Modern-Luxury": 27,
+        "5-Room HDB, Traditional": 28,
+        "5-Room HDB, Contemporary": 29,
+        "5-Room HDB, Farmhouse": 30
+    }
+    project_dict = {}
+    db = shelve.open('project.db', 'r')
+    project_dict = db['Project']
+
+    project = project_dict.get(id)
+    project.set_email(email)
+    project_dict[project.get_owner_id()] = project
+    db.close()
+    house_type = project.get_house_type()
+    house_theme = project.get_house_theme()
+    key1 = f"{house_type}, {house_theme}"
+    duration_months = combination_durations.get(key1, 0)
+    # Calculate total price
+    base_price_per_month = 1000
+    total_price = duration_months * base_price_per_month
+    project.set_total_price(total_price)
+
+    if request.method == 'POST':
+        return redirect(url_for('checkout', id=id , email = email))
+
+    return render_template('projectSummary.html', project=project, id=id,email=email)
+@app.route('/checkout/<int:id>/', methods=['GET', 'POST'])
+def checkout(id):
+    def expiry_date_valid(expiry_date):
+        # Expected format: MM/YY
+        try:
+            exp_date = datetime.strptime(expiry_date, "%m/%y")
+            return exp_date > datetime.now()
+        except ValueError:
+            # If the date is not in the correct format, it's invalid
+            return False
+    email = request.args.get('email')
+    project_dict = {}
+    db = shelve.open('project.db', 'r')
+    project_dict = db['Project']
+    db.close()
+    project = project_dict.get(id)
+    if request.method == 'POST':
+        combination_durations = {
+            "1-Room HDB, Scandinavian": 1,
+            "1-Room HDB, Luxury": 2,
+            "1-Room HDB, Modern-Luxury": 3,
+            "1-Room HDB, Traditional": 4,
+            "1-Room HDB, Contemporary": 5,
+            "1-Room HDB, Farmhouse": 6,
+            "2-Room HDB, Scandinavian": 7,
+            "2-Room HDB, Luxury": 8,
+            "2-Room HDB, Modern-Luxury": 9,
+            "2-Room HDB, Traditional": 10,
+            "2-Room HDB, Contemporary": 11,
+            "2-Room HDB, Farmhouse": 12,
+            "3-Room HDB, Scandinavian": 13,
+            "3-Room HDB, Luxury": 14,
+            "3-Room HDB, Modern-Luxury": 15,
+            "3-Room HDB, Traditional": 16,
+            "3-Room HDB, Contemporary": 17,
+            "3-Room HDB, Farmhouse": 18,
+            "4-Room HDB, Scandinavian": 19,
+            "4-Room HDB, Luxury": 20,
+            "4-Room HDB, Modern-Luxury": 21,
+            "4-Room HDB, Traditional": 22,
+            "4-Room HDB, Contemporary": 23,
+            "4-Room HDB, Farmhouse": 24,
+            "5-Room HDB, Scandinavian": 25,
+            "5-Room HDB, Luxury": 26,
+            "5-Room HDB, Modern-Luxury": 27,
+            "5-Room HDB, Traditional": 28,
+            "5-Room HDB, Contemporary": 29,
+            "5-Room HDB, Farmhouse": 30
+        }
+        # Extract card details from the form
+        card_number = request.form.get('card_number')
+        expiry_date = request.form.get('expiry_date')
+        cvv = request.form.get('cvv')
+        cardholder_name = request.form.get('cardholder_name')
+
+        # Simple validation (extend this as per your requirement)
+        if len(card_number) != 16:
+            flash('Card number must be 16 digits.', 'error')
+        elif not expiry_date_valid(expiry_date):  # You need to implement this function
+            flash('Invalid expiry date.', 'error')
+        elif len(cvv) != 3:
+            flash('Invalid CVV.', 'error')
+        else:
+            project_dict = {}
+            db = shelve.open('project.db', 'r')
+            project_dict = db['Project']
+            db.close()
+            project = project_dict.get(id)
+            house_type = project.get_house_type()
+            house_theme = project.get_house_theme()
+            key1 = f"{house_type}, {house_theme}"
+            duration_months = combination_durations.get(key1, 0)
+            # Calculate total price
+            base_price_per_month = 1000
+            total_price = duration_months * base_price_per_month
+            project.set_total_price(total_price)
+            project_list = []
+            return redirect(url_for('retrieveProject',email=email))
+    return render_template('checkout.html',project= project, id = id , email = email)
 @app.route('/retrieveProject')
 def retrieveProject():
+
+    email = request.args.get('email')
     combination_durations = {
         "1-Room HDB, Scandinavian": 1,
         "1-Room HDB, Luxury": 2,
@@ -665,7 +828,7 @@ def retrieveProject():
         project_list.append(project)
         print(project_list)
         print(project.get_owner_id())
-    return render_template('retrieveProject.html',  project_list=project_list)
+    return render_template('retrieveProject.html',  project_list=project_list,email=email)
 
 # @app.route('/updateProject/<int:id>/', methods=['GET', 'POST'])
 # def update_project(id):
@@ -732,6 +895,70 @@ def delete_project(id):
     db['Project'] = project_dict
     db.close()
     return redirect(url_for('retrieveProject'))
+
+@app.route('/projectReview/<int:id>', methods=['POST','GET'])
+def project_reviews(id):
+
+    project_dict = {}
+    db = shelve.open('project.db', 'r')
+    project_dict = db['Project']
+    project = project_dict.get(id)
+    db.close()
+    if request.method == 'POST':
+        db = shelve.open('project.db', 'r')
+        project_dict = db['Project']
+        project = project_dict.get(id)
+        db.close()
+        file = request.files['image']
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        image = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        current_dict = {}
+        db = shelve.open('current.db', 'r')
+        try:
+            current_dict = db['Current']
+        except:
+            print("Error in retrieving")
+        email = current_dict['currentsession']
+        db.close()
+        print(email)
+        rating = starrating(email,request.form.get('review'),request.form.get('rating'),image)
+        add_rating(rating)
+        rating_dict = {}
+        db = shelve.open('rating.db', 'r')
+        try:
+            rating_dict = db['Rating']
+        except:
+            print("Error in retrieving Ratings")
+
+        db.close()
+
+        comments = rating.comment_get()
+        carousel_items = []
+        for rating_id, rating_obj in rating_dict.items():
+            image_filename = os.path.basename(rating_obj.get_image())
+            web_image_path = image_filename.replace('\\', '/')  # Normalize for web path
+            carousel_item = {
+                'image': web_image_path,
+                'comments': f"projectReview/{id}/{rating_obj.comment_get()}"
+            }
+            carousel_items.append(carousel_item)
+
+        # testlist = []
+        # for ada in rating_dict.items():
+        #     image_path = os.path.basename(rating.get_image())
+        #     testlist.append(image_path)
+        return render_template('about.html',carousel_items =carousel_items,email=email)
+    else:
+        return render_template('projectReview.html', project=project)
+
+@app.route('/about',methods=['POST','GET'])
+def about():
+    email = request.args.get('email')
+    ratelist = request.args.get('ratelist')
+
+    return render_template('about.html', ratelist=ratelist,email=email)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

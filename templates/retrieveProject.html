@@ -37,20 +37,29 @@
 <script type="text/javascript">
     $(document).ready(function() {
         {% for project in project_list %}
-            // Create a function scope for each project to avoid closure issues
             (function() {
                 var projectId = "{{ project.get_owner_id() }}";
                 var totalTime = {{ project.get_duration() }};
                 var remainingTimeKey = 'remainingTime' + projectId;
+                var lastUpdatedKey = 'lastUpdated' + projectId;
                 var remainingTime = localStorage.getItem(remainingTimeKey)
                     ? parseInt(localStorage.getItem(remainingTimeKey))
                     : {{ project.get_remaining_time() }};
+                var lastUpdated = localStorage.getItem(lastUpdatedKey)
+                    ? new Date(localStorage.getItem(lastUpdatedKey))
+                    : new Date();
 
                 function updateProgress() {
-                    if (remainingTime > 0) {
-                        remainingTime--;
-                        localStorage.setItem(remainingTimeKey, remainingTime);
+                    var currentDate = new Date();
+                    if (currentDate - lastUpdated >= 86400000) { // 24 hours have passed
+                        if (remainingTime > 0) {
+                            remainingTime--;
+                            localStorage.setItem(remainingTimeKey, remainingTime);
+                        }
+                        lastUpdated = currentDate;
+                        localStorage.setItem(lastUpdatedKey, lastUpdated.toISOString());
                     }
+
                     var progressText = $("#progress-bar-text-" + projectId);
                     var progressPercentage = (1 - (remainingTime / totalTime)) * 100;
                     var progressBar = $("#progress-bar-" + projectId);
@@ -60,18 +69,24 @@
                                 progressPercentage < 75 ? 'yellow' : 'green';
                     progressBar.css('background-color', color);
                     $("#timer-" + projectId).text(remainingTime + ' days remaining');
+
+                    // Check if progress is 100% and change button
+                    if (progressPercentage >= 100) {
+                        $("#update-button-" + projectId).hide(); // Hide update button
+                        $("#review-button-" + projectId).show(); // Show review button
+                    }
                 }
 
                 // Immediately update the progress bar to reflect the current state
                 updateProgress();
 
-                // Then update it every day (24 * 60 * 60 * 1000 milliseconds)
+                // Then update it every day
                 setInterval(updateProgress, 86400000);
             })();
         {% endfor %}
     });
 </script>
-
+</script>
 <h1 class="display-4">Retrieve Project</h1>
 <div>
     <table class="table table-striped">
@@ -95,14 +110,19 @@
             <td>{{ project.get_house_theme()}}</td>
             <td>{{ project.get_comments()}}</td>
             <td>
-                <h4>Countdown Timer</h4>
+                <h4>Progress</h4>
     <div id="timer-{{ project.get_owner_id() }}">Loading...</div>
     <div id="progress-bar-{{ project.get_owner_id() }}" class="progress-bar-custom">
         <div id="progress-bar-text-{{ project.get_owner_id() }}" class="progress-bar-text">0%</div>
     </div>
 
             </td>
-            <td><a href="/updateProject/{{project.get_owner_id()}}" class="btn btn-warning">Update</a></td>
+            <td>
+    <a href="/updateProject/{{project.get_owner_id()}}" id="update-button-{{project.get_owner_id()}}"  class="btn btn-warning">Update</a>
+    <a href="/projectReview/{{ session['user_id'] }}" id="review-button-{{ session['user_id'] }}" class="btn btn-primary">Review</a>
+
+</td>
+
             <td>
                 <form action="{{url_for('delete_project', id=project.get_owner_id())}}" method="POST">
                     <!-- Button to Open the Modal -->
