@@ -3,14 +3,14 @@ class customer:
     count_id = 0
 
     # initializer method
-    def __init__(self, first_name, last_name, email, password):
+    def __init__(self, first_name, last_name, email, password,image=None):
         customer.count_id += 1
         self.__customer_id = customer.count_id
         self.__first_name = first_name
         self.__last_name = last_name
         self.__email = email
         self.__password = password
-
+        self.__image = '/static/image/default.jpg'
 
     # accessor methods
     def get_customer_id(self):
@@ -38,5 +38,10 @@ class customer:
 
     def set_email(self,email):
         self.__email = email
-    def set_password(self,password):
+
+    def set_password(self, password):
         self.__password = password
+    def set_image(self, image):
+        self.__image = image
+    def get_image(self):
+        return self.__image

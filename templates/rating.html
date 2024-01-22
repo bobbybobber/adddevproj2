@@ -1,73 +1,71 @@
 {% extends "base.html" %}
-{% block title %}MonsterBob - Create Account{% endblock %}
-{% from "includes/_formHelper.html" import render_field %}
-{% block content %}
+{% block title %}Library Loan System - Retrieve Users{% endblock %}
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h3 class="text-center mb-4">Sign Up</h3>
-            <div class="card p-4">
-                <form method="POST" action="">
-                    {{ render_field(form.email, class="form-control mb-3") }}
-                    {{ render_field(form.comment, class="form-control mb-3") }}
-                    {{ render_field(form.stars, class="form-control mb-3") }}
-                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                </form>
-            </div>
-        </div>
+{% block content %}
+<section class="google-style-container mt-5">
+    <h1 class="display-4 text-center mb-4">Retrieve Users</h1>
+    <div class="text-center mb-3">
+        {% if count == 0 %}
+            <p>There are no customers.</p>
+        {% elif count == 1 %}
+            <p>There is 1 customer.</p>
+        {% else %}
+            <p>There are {{ count }} customers.</p>
+        {% endif %}
     </div>
-    <div class="table-responsive mt-5">
-        <table class="table table-bordered table-hover">
+
+    <div class="table-responsive">
+        <table class="google-style-table table-hover">
             <thead class="thead-light">
                 <tr>
+                    <th>User ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
                     <th>Email</th>
-                    <th>Comment</th>
-                    <th>Stars</th>
                     <th>Update</th>
                     <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
-                {% for user in users_list %}
+                {% for customer in Customer_list %}
                 <tr>
-                    <td>{{ user.email_get() }}</td>
-                    <td>{{ user.comment_get() }}</td>
-                    <td>{{ user.stars_get() }}</td>
-                    <td><a href="/updatecomment/{{ user.get_user_id() }}" class="btn btn-outline-warning">Update</a></td>
+                    <td>{{ customer.get_customer_id() }}</td>
+                    <td>{{ customer.get_first_name() }}</td>
+                    <td>{{ customer.get_last_name() }}</td>
+                    <td>{{ customer.get_email() }}</td>
+                    <td><a href="/updateCustomer/{{customer.get_email()}}" class="btn btn-outline-warning google-style-btn-update">Update</a></td>
                     <td>
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{ user.get_user_id() }}">Delete</button>
+                        <button type="button" class="btn btn-outline-danger google-style-btn-delete" data-bs-toggle="modal" data-bs-target="#myModal_{{customer.get_customer_id()}}">Delete</button>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</div>
 
-<!-- Modals for delete confirmation -->
-{% for user in users_list %}
-<div class="modal fade" id="myModal_{{ user.get_user_id() }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{ user.get_user_id() }}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel{{ user.get_user_id() }}">Delete Confirmation</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete {{ user.email_get() }}'s comment?
-            </div>
-            <div class="modal-footer">
-                <form action="{{ url_for('deleteComment', id=user.get_user_id()) }}" method="POST">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" class="btn btn-danger" value="Delete">
-                </form>
+    <!-- Modals for delete confirmation -->
+    {% for customer in Customer_list %}
+    <div class="modal fade" id="myModal_{{customer.get_customer_id()}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="google-style-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Delete Confirmation</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete {{customer.get_first_name()}} {{customer.get_last_name()}}?
+                </div>
+                <div class="modal-footer">
+                    <form action="{{url_for('deleteCustomer', email=customer.get_email())}}" method="POST">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <input type="submit" class="btn btn-danger" value="Delete">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% endfor %}
-
+    {% endfor %}
+</section>
 {% endblock %}

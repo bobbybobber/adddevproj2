@@ -4,66 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
-    <!-- Include Google's Material Design CSS here, if needed -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='appdev.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='appdev.css') }}">
+    <script>
+        function validateCard() {
+            var cardNumber = document.getElementById('card-number').value;
+            var expiryDate = document.getElementById('expiry-date').value;
+            var cvv = document.getElementById('cvv').value;
+
+            // Check if the card number is Visa or MasterCard
+            var visaRegex = /^4[0-9]{12}(?:[0-9]{3})?$/;
+            var masterCardRegex = /^5[1-5][0-9]{14}$/;
+            if (visaRegex.test(cardNumber)) {
+                console.log("Visa Card");
+            } else if (masterCardRegex.test(cardNumber)) {
+                console.log("MasterCard");
+            } else {
+                alert("Invalid Card Number. Please enter a valid Visa or MasterCard number.");
+                return false;
+            }
+
+            // Validate expiry date
+            var today = new Date();
+            var expiryParts = expiryDate.split('/');
+            var expiry = new Date(expiryParts[1], expiryParts[0] - 1);
+            if (today.getTime() > expiry.getTime()) {
+                alert("Card expiry date has passed.");
+                return false;
+            }
+
+            // Validate CVV
+            if (cvv.length < 3 || cvv.length > 4) {
+                alert("Invalid CVV. Please enter a 3 or 4 digit CVV number.");
+                return false;
+            }
+
+            return true;
+        }
+
+    </script>
 </head>
 <body>
-    <div class="google-container">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="google-alert-messages">
-                    {% for message in messages %}
-                        <div class="google-alert">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        <div class="google-header">
-            <h2>Checkout</h2>
-        </div>
-        <div class="google-body">
-            <h3>Your Project Summary</h3>
-
-            <table class="google-table">
-
-                {% if project %}
-                <tr><td>Project ID</td><td>{{project.get_owner_id()}}</td></tr>
-                <tr><td>Home Type</td><td>{{project.get_house_type()}}</td></tr>
-                <tr><td>Home Theme</td><td>{{project.get_house_theme()}}</td></tr>
-
-                  {% endif %}
-            </table>
-
-            <h3>Payment Information</h3>
-            <form id="payment-form" method="POST" class="google-payment-form">
-                <div class="google-form-group">
-                    <label for="card-number">Card Number</label>
-                    <input type="text" id="card-number" name="card_number" required class="google-input">
-                </div>
-
-                <div class="google-form-group">
-                    <label for="expiry-date">Expiry Date</label>
-                    <input type="text" id="expiry-date" name="expiry_date" required class="google-input">
-                </div>
-
-                <div class="google-form-group">
-                    <label for="cvv">CVV</label>
-                    <input type="text" id="cvv" name="cvv" required class="google-input">
-                </div>
-
-                <div class="google-form-group">
-                    <label for="cardholder-name">Cardholder Name</label>
-                    <input type="text" id="cardholder-name" name="cardholder_name" required class="google-input">
-                </div>
-
-                <div class="google-error" id="error-messages"></div>
-
-                <button type="submit" class="google-btn">Process Payment</button>
-            </form>
-        </div>
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="card-panel">
+        {% for message in messages %}
+        <span>{{ message }}</span>
+        {% endfor %}
     </div>
+    {% endif %}
+    {% endwith %}
+    <div class="section">
+        <h2>Checkout</h2>
+    </div>
+    <div class="section">
+        <h3>Your Project Summary</h3>
+        <table class="striped">
+            {% if project %}
+            <tr>
+                <td>Project ID</td>
+                <td>{{project.get_owner_id()}}</td>
+            </tr>
+            <tr>
+                <td>Home Type</td>
+                <td>{{project.get_house_type()}}</td>
+            </tr>
+            <tr>
+                <td>Home Theme</td>
+                <td>{{project.get_house_theme()}}</td>
+            </tr>
+            {% endif %}
+        </table>
 
-    <!-- Include any JavaScript here -->
+        <h3>Payment Information</h3>
+        <form id="payment-form" method="POST" class="col s12">
+            <div class="input-field">
+                <input type="text" id="card-number" name="card_number" required>
+                <label for="card-number">Card Number</label>
+            </div>
+
+            <div class="input-field">
+                <input type="text" id="expiry-date" name="expiry_date" required>
+                <label for="expiry-date">Expiry Date</label>
+            </div>
+
+            <div class="input-field">
+                <input type="text" id="cvv" name="cvv" required>
+                <label for="cvv">CVV</label>
+            </div>
+
+            <div class="input-field">
+                <input type="text" id="cardholder-name" name="cardholder_name" required>
+                <label for="cardholder-name">Cardholder Name</label>
+            </div>
+
+            <button type="submit" class="btn waves-effect waves-light">Process Payment</button>
+        </form>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
 </body>
 </html>

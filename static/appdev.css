@@ -139,7 +139,7 @@ a{
         background: position x 0px; ;
     }
 }
-.row{
+/*.row{
     height: 100%;
     width: 100%;
     display: flex;
@@ -147,7 +147,7 @@ a{
     text-align: start;
     margin-bottom: 30px;
     background-color:#ff6900 ;
-}
+}*/
 .row .col{
     width: 25%;
 
@@ -230,127 +230,68 @@ color:#ADD8E6;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 80px;
-    background: white;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
-    z-index: 999;
-    position: sticky;
-    top: 0;
-    left: 0;
-    margin-top:30px;
-    margin-left:25px;
-    margin-right:25px;
-    border-radius: 100px;
-    border-left:150px;
-    border-right:150px;
+    padding: 10px 5%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+#titlelogo {
+    font-size: 42px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #FF385C;
+}
+
 #navbar {
     display: flex;
     align-items: center;
     justify-content: center;
-
+    padding: 0;
+    margin: 0;
 }
 
 #navbar li {
     list-style: none;
-    padding: 0 20px;
+    padding: 0 15px;
     position: relative;
 }
 
 #navbar li a {
     text-decoration: none;
-    font-size: 30px;
+    font-size: 24px;
     font-weight: 600;
-    color: #1a1a1a;
-    transition: 0.3 ease;
+    color: #484848;
+    transition: color 0.3s ease;
 }
 
 #navbar li a:hover,
 #navbar li a.active {
-    color: #088178;
-
+    color: #FF385C;
 }
 
 #navbar li a.active::after,
 #navbar li a:hover::after {
     content: "";
-    width: 30%;
+    display: block;
+    width: 100%;
     height: 2px;
-    background-color: #088178;
+    background-color: #FF385C;
     position: absolute;
-    bottom: -4px;
-    left: 20px;
+    bottom: -10px;
+    left: 0;
 }
 
-#navitems {
-    display: flex;
-    list-style: none;
-    padding: 0 20px;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-    transition: 0.3 ease;
-    margin-bottom: 30px;
+@media (max-width: 768px) {
+    #navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #navbar li {
+        padding: 10px 0;
+    }
 }
 
-#navitems li {
-    list-style: none;
-    padding: 0 20px;
-    position: relative;
-}
-
-#navitems li a {
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-    transition: 0.3 ease;
-}
-
-#navitems li a:hover,
-#navitems li a.active {
-    color: #088178;
-
-}
-
-#navitems li a.active::after,
-#navitems li a:hover::after {
-    content: "";
-    width: 30%;
-    height: 2px;
-    background-color: #088178;
-    position: absolute;
-    bottom: -4px;
-    left: 20px;
-}
-
-#loginbtnNav{
-    position:relative;
-    color: black;
-    width:150px;
-    height:40px;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 10px;
-    background-color: white;
-    border-radius: 25px;
-    border-color: orange;
-
-}
-#registerbtnNav{
-    position:relative;
-    color: white;
-    width:150px;
-    height:40px;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 10px;
-    background-color: orange;
-    border-radius: 25px;
-    border-color: orange;
-
-}
 #coverimg {
     width: 100%;
     height: 500px;
@@ -1113,43 +1054,6 @@ width: auto; / Only be as wide as necessary */
         font-size: 14px; /* Slightly smaller font size */
     }
 }
-.pagination-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .pagination-container a, .pagination-container span {
-        display: inline-block;
-        padding: 8px 12px;
-        margin: 0 4px;
-        border: 1px solid #ddd;
-        background-color: #f8f8f8;
-        color: #007185;
-        text-decoration: none;
-        border-radius: 2px;
-        transition: background-color 0.3s;
-    }
-
-    .pagination-container a:hover {
-        border-color: #e77600;
-        background-color: #ffebc6;
-    }
-
-    .pagination-container span.current-page {
-        background-color: #e77600;
-        color: white;
-        border-color: #e77600;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 576px) {
-        .pagination-container a, .pagination-container span {
-            padding: 5px 8px;
-            font-size: 12px;
-        }
-    }
-
 /* Table Full Width */
 .table {
     width: 100%; /* Full width for table */
@@ -1195,33 +1099,42 @@ width: auto; / Only be as wide as necessary */
 }
 
 /* Custom Progress Bar */
+/* Airbnb-inspired Progress Bar Styling */
+
 .progress-bar-custom {
     width: 100%;
     height: 20px;
-    background-color: #ddd;
+    background-color: #EBEBEB; /* Light grey background for an understated look */
     border-radius: 10px;
-    position: relative;
     overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
-}
-
-.progress-bar-custom::after {
-    content: '';
-    display: block;
-    height: 100%;
-    width: 0%;
-    transition: width 0.5s ease-in-out;
-    border-radius: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Soft inner shadow for depth */
 }
 
 .progress-bar-text {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    line-height: 20px;
-    color: white;
-    font-size: 12px;
-    z-index: 1;
+    width: 0%; /* Initially set to 0% */
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease-in-out; /* Smooth transition for width changes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Dynamic background color based on progress */
+.progress-bar-green {
+    background-color: #FF5A5F; /* Airbnb's brand color for completed or near-completed progress */
+    color: white; /* White text for better readability on dark background */
+}
+
+.progress-bar-yellow {
+    background-color: #FFB400; /* Bright yellow for mid-progress */
+    color: black; /* Black text for contrast */
+}
+
+.progress-bar-red {
+    background-color: #FF385C; /* Red for early progress */
+    color: white; /* White text for contrast */
 }
 /* Carousel Full Width */
 #blogCarousel {
@@ -1289,8 +1202,9 @@ width: auto; / Only be as wide as necessary */
     border-top-right-radius: 8px;
 }
 .card-body {
-  padding: 15px;
+  /*padding: 15px;*/
   background-color: #f8f9fa;
+    flex: none;
 }
 
 .card-title {
@@ -1661,4 +1575,1136 @@ width: auto; / Only be as wide as necessary */
 .google-error {
     color: red;
     margin-top: 10px;
+}
+.google-style-login {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 40px auto;
+}
+
+.google-wrapper {
+    text-align: center;
+}
+
+.google-title {
+    color: #202124;
+    margin-bottom: 24px;
+}
+
+.google-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.google-inputbox {
+    margin-bottom: 15px;
+}
+
+.google-input {
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.google-login-btn {
+    width: 100%;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.google-login-btn:hover {
+    background-color: #1669C1;
+}
+
+.google-forgot-link, .google-register-link a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.google-forgot-link:hover, .google-register-link a:hover {
+    text-decoration: underline;
+}
+.google-style-login {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 40px auto;
+}
+
+.google-wrapper {
+    text-align: center;
+}
+
+.google-title {
+    color: #202124;
+    margin-bottom: 24px;
+}
+
+.google-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.google-inputbox {
+    margin-bottom: 15px;
+}
+
+.google-input {
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.google-login-btn {
+    width: 100%;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.google-login-btn:hover {
+    background-color: #1669C1;
+}
+
+.google-forgot-link, .google-register-link a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.google-forgot-link:hover, .google-register-link a:hover {
+    text-decoration: underline;
+}
+.card-body {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 1 !important; /* Ensure it's always visible */
+    transform: translateY(0) !important; /* In case transform was overridden */
+}
+.google-style-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+.google-style-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.google-style-table th,
+.google-style-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.google-style-table th {
+    background-color: #f8f9fa;
+    color: #202124;
+}
+
+.google-style-table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.google-style-btn-update {
+    color: #1a73e8;
+    border-color: #1a73e8;
+}
+
+.google-style-btn-update:hover {
+    background-color: #1a73e8;
+    color: white;
+}
+
+.google-style-btn-delete {
+    color: #e53935;
+    border-color: #e53935;
+}
+
+.google-style-btn-delete:hover {
+    background-color: #e53935;
+    color: white;
+}
+
+.google-style-modal-content {
+    padding: 20px;
+}
+
+.google-style-modal-title {
+    color: #202124;
+}
+
+@media (max-width: 768px) {
+    .google-style-container {
+        padding: 15px;
+    }
+}
+.google-like-form-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(32, 33, 36, 0.28);
+}
+
+.google-like-form-title {
+    color: #202124;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.google-like-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.google-like-form-input {
+    border: 1px solid #dfe1e5;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    font-size: 14px;
+}
+
+.google-like-form-input::placeholder {
+    color: #5f6368;
+}
+
+.google-like-form-input:focus {
+    border-color: #1a73e8;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.google-like-form-submit {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.google-like-form-submit:hover {
+    background-color: #185abc;
+}
+
+@media (max-width: 768px) {
+    .google-like-form-container {
+        margin: 20px;
+        padding: 15px;
+    }
+}
+/* Google Material Design Inspired Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #fafafa;
+    color: #212121;
+    margin: 0;
+    padding: 0;
+}
+
+.gmd-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.gmd-project-header h2,
+.gmd-project-body h3 {
+    color: #212121;
+}
+
+.gmd-table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+.gmd-table td,
+.gmd-table th {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.gmd-review-form .gmd-form-group {
+    margin-bottom: 20px;
+}
+
+.gmd-review-form .gmd-form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.gmd-review-form .gmd-btn {
+    background-color: #4CAF50;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+
+.gmd-review-form .gmd-btn:hover {
+    background-color: #43A047;
+}
+
+.gmd-star-rating {
+    display: flex;
+    align-items: center;
+}
+
+.gmd-star-input {
+    display: none;
+}
+
+.gmd-star-label {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.gmd-star-label:hover,
+.gmd-star-input:checked ~ .gmd-star-label {
+    color: #ffd700; /* Gold color for stars */
+}
+
+.gmd-flash-messages .alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.gmd-alert-dismissible .btn-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.75rem 1.25rem;
+    color: inherit;
+}
+
+/* Specific to flash message types */
+.alert-primary {
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #b8daff;
+}
+
+.alert-secondary {
+    color: #383d41;
+    background-color: #e2e3e5;
+    border-color: #d6d8db;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .gmd-container {
+        padding: 15px;
+        margin: 20px;
+    }
+}
+.google-container1 {
+    width: 25%;
+    height:60%;
+    margin: 0 auto; /* Centers the form horizontally */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    position: absolute; /* Changed from relative to absolute */
+    top: 50%;
+    left: 50%; /* Centers the form horizontally */
+    transform: translate(-50%, -50%); /* Adjusts for the height and width of the container */
+    /* Ensure that the container is the only element in the body for absolute centering */
+}
+
+
+.google-project-header h2 {
+    color: #212121;
+    text-align: center; /* Centers the title text */
+    font-size: 24px; /* Larger font size for the title */
+}
+
+.google-project-body h3 {
+    color: #212121;
+    text-align: center; /* Centers the subtitle text */
+    font-size: 20px; /* Smaller than the title but larger than normal text */
+    margin-top: 15px; /* Adjusts the space between title and subtitle */
+    margin-bottom:10px;
+}
+
+.google-table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+.google-table td,
+.google-table th {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.google-review-form .form-group {
+    margin-bottom: 20px;
+}
+
+.google-review-form .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.google-review-form .btn {
+    background-color: #4CAF50;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+
+.google-review-form .btn:hover {
+    background-color: #43A047;
+}
+
+.google-star-rating {
+    display: flex;
+    justify-content: center; /* Centers stars horizontally */
+    margin-bottom: 20px; /* Adds space below the star rating */
+}
+
+.google-star-input {
+    display: none;
+}
+
+.google-star-label {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.google-star-input:checked ~ .google-star-label,
+.google-star-label:hover,
+.google-star-label:hover ~ .google-star-label {
+    color: #ffd700; /* Gold color for filled stars */
+}
+
+/* Additional styles for star rating on hover */
+.google-star-rating:hover .google-star-label {
+    color: #ddd; /* Default color */
+}
+
+.google-star-rating .google-star-label:hover ~ .google-star-label {
+    color: #ddd; /* Ensures stars to the right do not highlight */
+}
+
+.flash-messages .alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.star-rating {
+    font-size: 24px; /* Star size */
+    cursor: pointer;
+    text-align: center; /* Center the stars within the container */
+    direction: rtl; /* Right to left to reverse the order of inline elements */
+}
+
+.star-input {
+    display: none; /* Hide the radio buttons */
+}
+
+.star-label {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out; /* Smooth color transition */
+}
+
+.star-label:before {
+    content: "\2605"; /* Unicode star character */
+    color: #ddd; /* Default color for stars */
+    margin: 0 2px; /* Space between stars */
+    font-size: 35px;
+}
+
+.star-input:checked ~ .star-label:before,
+.star-label:hover:before,
+.star-input:checked ~ .star-label:before,
+.star-label:hover ~ .star-label {
+    color: #ffd700; /* Gold color for filled stars */
+}
+
+/* The hover effect is applied correctly due to the reversed direction */
+.star-rating .star-input:checked ~ .star-label:before,
+.star-rating .star-label:hover ~ .star-label:before {
+    color: #ffd700; /* Gold color for filled stars */
+}
+#hero {
+    text-align: center;
+    padding: 160px 0; /* Adjust top padding to accommodate for the fixed header */
+    background-image: url('/static/image/Dramatic-Transformations-for-Your-HDB-BTO-with-Modern-Dark-Interior-Design-1-Copy.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+#hero h1 {
+    font-size: 48px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    padding: 15px 25px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #FF5A5F;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+footer {
+    background-color: #F7F7F7;
+    padding: 20px;
+    text-align: center;
+}
+
+footer p, footer a {
+    color: #484848;
+    font-size: 14px;
+    text-decoration: none;
+}
+@media (max-width: 768px) {
+#hero {
+        padding: 120px 20px;
+    }
+}
+
+.container1 {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 36px;
+    color: #484848;
+    margin-bottom: 30px;
+}
+
+/* Testimonials Section */
+#testimonials {
+    background-color: #F7F7F7;
+    padding: 40px 0;
+}
+
+.testimonial-cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.testimonial-card {
+    max-width: 300px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.testimonial-card p {
+    font-style: italic;
+    color: #767676;
+}
+
+.testimonial-card h3 {
+    font-size: 20px;
+    color: #484848;
+    margin-top: 10px;
+}
+
+/* Recent Projects Section */
+#recent-projects {
+    padding: 40px 0;
+}
+
+.project-gallery {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.project-item {
+    width: 300px;
+}
+
+.project-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.project-item h3 {
+    font-size: 20px;
+    color: #484848;
+    margin-top: 10px;
+}
+
+/* About Us Section */
+#about-us {
+    background-color: #F7F7F7;
+    padding: 40px 0;
+}
+
+#about-us p {
+    color: #484848;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .testimonial-cards, .project-gallery {
+        flex-direction: column;
+    }
+}
+p{
+margin-top:0;
+margin-bottom:1rem;
+color:white;
+}
+body, html {
+    font-family: 'Circular', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Helvetica Neue', sans-serif;
+    background-color: #F7F7F7;
+    color: #484848;
+    margin: 0;
+    padding: 0;
+}
+
+.airbnb-style-login {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+}
+
+.airbnb-wrapper {
+    padding: 20px;
+}
+
+.airbnb-title {
+    color: #FF5A60;
+    margin-bottom: 30px;
+}
+
+.airbnb-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.airbnb-inputbox {
+    margin-bottom: 20px;
+}
+
+.airbnb-input {
+    border-radius: 8px;
+    border: 1px solid #DDDDDD;
+    padding: 15px;
+    font-size: 16px;
+}
+
+.airbnb-login-btn {
+    background-color: #FF5A60;
+    color: white;
+    border: none;
+    padding: 15px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.airbnb-login-btn:hover {
+    background-color: #F53E4D;
+}
+
+.airbnb-forgot-link,
+.airbnb-register-link a {
+    color: #008489;
+    text-decoration: none;
+}
+
+.airbnb-forgot-link:hover,
+.airbnb-register-link a:hover {
+    text-decoration: underline;
+}
+
+.airbnb-register-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.airbnb-register-here {
+    font-weight: bold;
+}
+
+.flash-messages .alert {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    /* Other alert styles... */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .airbnb-style-login {
+        margin: 20px;
+    }
+}
+/* Airbnb Inspired Form Styles */
+.airbnb-form-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.airbnb-title {
+    color: #FF5A60;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.airbnb-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.airbnb-form-field {
+    margin-bottom: 1.5rem;
+}
+
+.airbnb-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #484848;
+    font-weight: bold;
+}
+
+.airbnb-required {
+    color: #FF5A60;
+}
+
+.airbnb-input,
+.airbnb-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+.airbnb-form-button {
+    padding: 1rem 1.5rem;
+    background-color: #FF5A60;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width:100%;
+}
+
+.airbnb-form-button:hover {
+    background-color: #f53f51;
+}
+.airbnb-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.airbnb-display {
+    font-size: 2rem;
+    color: #FF5A5F;
+}
+
+.airbnb-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.airbnb-thead {
+    background-color: #FF5A5F;
+    color: white;
+}
+
+.airbnb-table th, .airbnb-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.airbnb-btn {
+    background-color: #FF5A5F;
+    color: white;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.airbnb-btn:hover {
+    background-color: #ff787d;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.input-field input[type=text]:focus + label,
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #4a148c;
+    box-shadow: 0 1px 0 0 #4a148c;
+}
+
+
+.airbnb-container {
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.airbnb-title {
+    font-size: 2rem;
+    color: #FF5A5F;
+}
+
+.airbnb-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.airbnb-thead {
+    background-color: #FF5A5F;
+    color: white;
+}
+
+.airbnb-table th, .airbnb-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.airbnb-table tbody tr:hover {
+    background-color: #f2f2f2;
+}
+
+.progress-bar-custom {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    height: 20px;
+    width: 100%;
+}
+
+.progress-bar-text {
+    color: white;
+    text-align: center;
+    line-height: 20px; /* Same as height of progress bar for vertical centering */
+}
+
+.btn-outline-warning, .btn-outline-primary, .btn-outline-danger {
+    border-color: #FF5A5F;
+    color: #FF5A5F;
+}
+
+.btn-outline-warning:hover, .btn-outline-primary:hover, .btn-outline-danger:hover {
+    background-color: #FF5A5F;
+    color: white;
+}
+.btn {
+    background-image: linear-gradient(to right, #ff758c 0%, #ff7eb3 100%);
+    border: none;
+    color: white;
+    /*padding: 10px 20px;*/
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    box-shadow: 0 5px 9px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+}
+
+.btn:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+    border: none;
+    color: white;
+}
+
+.btn-outline-danger {
+    background-image: linear-gradient(to right, #ff0844 0%, #ffb199 100%);
+    border: none;
+    color: white;
+}
+.btn-outline-review {
+    background-image: linear-gradient(to right, #22c1c3 0%, #fdbb2d 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-review:hover {
+    box-shadow: 0 5px 9px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+}
+
+.btn-outline-review:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+.pagination-container, .airbnb-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination-container a, .pagination-container span, .airbnb-pagination .current-page, .airbnb-pagination .airbnb-pagination-link {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 0 4px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.pagination-container a, .pagination-container span {
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  color: #007185;
+  transition: background-color 0.3s;
+}
+
+.pagination-container a:hover {
+  border-color: #e77600;
+  background-color: #ffebc6;
+}
+
+.pagination-container span.current-page, .airbnb-pagination .current-page {
+  background-color: #FF5A60;
+  color: white;
+}
+.airbnb-form-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.airbnb-flash-messages .airbnb-alert {
+    background-color: #FF5A5F;
+    color: white;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.airbnb-btn-close {
+    float: right;
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+    color: white;
+    opacity: 0.9;
+}
+
+.airbnb-btn-close:hover {
+    opacity: 1;
+}
+
+.airbnb-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.airbnb-title {
+    color: #FF5A5F;
+    margin-bottom: 1rem;
+}
+
+.airbnb-box {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.airbnb-field {
+    margin-bottom: 1rem;
+}
+
+.airbnb-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.airbnb-submit-btn {
+    width: 100%;
+    background-color: #FF5A5F;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.airbnb-submit-btn:hover {
+    background-color: #ff7e82;
+}
+
+/* Additional global styles and resets */
+.airbnb-style-form {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.form-airbnb h1 {
+    font-size: 24px;
+    color: #FF5A5F;
+    margin-bottom: 20px;
+}
+
+.airbnb-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+.airbnb-button {
+    background-color: #FF5A5F;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.airbnb-button:hover {
+    background-color: #FF7E82;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.airbnb-register-link {
+    color: #FF5A5F;
+    text-decoration: none;
+}
+
+.airbnb-register-link:hover {
+    text-decoration: underline;
 }

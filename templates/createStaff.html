@@ -2,27 +2,40 @@
 {% block title %} MonsterBob - Create Account{% endblock %}
 {% from "includes/_formHelper.html" import render_field %}
 {% block content %}
-<div class="google-form-container">
-    <h3 class="google-title">Sign Up</h3>
-    <div class="google-form-box">
-        <form method="POST" action="/signup">
-            <div class="google-field">
-                {{render_field(form.name, class="google-input")}}
+<div class="airbnb-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="airbnb-flash-messages">
+            {% for category, message in messages %}
+            <div class="airbnb-alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
             </div>
-            <div class="google-field">
-                {{render_field(form.phonenumber, class="google-input")}}
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    <div class="airbnb-form-container">
+        <h3 class="airbnb-form-title">Sign Up</h3>
+        <form method="POST" action="/signup" class="airbnb-form">
+            <div class="airbnb-form-field">
+                {{ render_field(form.name, class="airbnb-form-input") }}
             </div>
-            <div class="google-field">
-                {{render_field(form.email, class="google-input")}}
+            <div class="airbnb-form-field">
+                {{ render_field(form.phonenumber, class="airbnb-form-input") }}
             </div>
-            <div class="google-field">
-                {{render_field(form.address, class="google-input")}}
+            <div class="airbnb-form-field">
+                {{ render_field(form.email, class="airbnb-form-input") }}
             </div>
-            <div class="google-field">
-                {{render_field(form.password, class="google-input")}}
+            <div class="airbnb-form-field">
+                {{ render_field(form.address, class="airbnb-form-input") }}
             </div>
-
-            <button type="submit" class="google-submit-btn">Submit</button>
+            <div class="airbnb-form-field">
+                {{ render_field(form.password, class="airbnb-form-input") }}
+            </div>
+            <div class="airbnb-form-field">
+                <button type="submit" class="airbnb-form-submit-btn">Submit</button>
+            </div>
         </form>
     </div>
 </div>

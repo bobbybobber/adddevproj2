@@ -1,69 +1,358 @@
 {% extends "base.html" %}
-{% block title %}Library Loan System - Retrieve Users{% endblock %}
-{% block content %}
-<section class="container-fluid mt-5">
-    <h1 class="display-4 text-center mb-4">Retrieve Users</h1>
-    <div class="text-center mb-3">
-        {% if count == 0 %}
-            <p>There are no customers.</p>
-        {% elif count == 1 %}
-            <p>There is 1 customer.</p>
-        {% else %}
-            <p>There are {{ count }} customers.</p>
-        {% endif %}
-    </div>
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="thead-light">
-                <tr>
-                    <th>User ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for customer in Customer_list %}
-                <tr>
-                    <td>{{ customer.get_customer_id() }}</td>
-                    <td>{{ customer.get_first_name() }}</td>
-                    <td>{{ customer.get_last_name() }}</td>
-                    <td>{{ customer.get_email() }}</td>
-                    <td><a href="/updateCustomer/{{customer.get_email()}}" class="btn btn-outline-warning">Update</a></td>
-                    <td>
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{customer.get_customer_id()}}">Delete</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
 
-<!-- Modals for each customer for delete confirmation -->
-{% for customer in Customer_list %}
-<div class="modal fade" id="myModal_{{customer.get_customer_id()}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="myModalLabel">Delete Confirmation</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+{% block title %}Retrieve Users{% endblock %}
+
+{% block content %}
+<section class="user-profiles">
+    {% for customer in Customer_list %}
+    <div class="user-card">
+        <div class="user-card-header">
+            <img src="{{customer.get_image()}}" alt="{{customer.get_first_name()}}'s Profile" class="user-image">
+            <h1 class="user-name">{{ customer.get_first_name() }} {{ customer.get_last_name() }}</h1>
+            <p class="user-email">{{ customer.get_email() }}</p>
+            <div class="user-actions">
+                <a href="javascript:void(0);" onclick="showModal('{{ customer.get_email() }}')"
+                   class="action-button update-button">Update</a>
             </div>
-            <div class="modal-body">
-                Are you sure you want to delete {{customer.get_first_name()}} {{customer.get_last_name()}}?
+        </div>
+        <div class="user-details">
+            <div class="details-section">
+                <p class="detail"><strong>First Name:</strong> {{customer.get_first_name()}}</p>
+                <p class="detail"><strong>Last Name:</strong> {{customer.get_last_name()}}</p>
+                <p class="detail"><strong>Email:</strong> {{customer.get_email()}}</p>
+                <!-- Password should not be displayed for security reasons -->
             </div>
-            <div class="modal-footer">
-                <form action="{{url_for('deleteCustomer', email=customer.get_email())}}" method="POST">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" class="btn btn-danger" value="Delete">
-                </form>
+            <div class="user-reviews">
+                {% for rate in ratinglist %}
+                <div class="review">
+                    <h5 class="review-author">{{ rate.email_get() }}</h5>
+                    <p class="review-content">{{ rate.comment_get() }}</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
+    {% endfor %}
+</section>
+
+<div class="modal fade" id="passwordVerificationModal" tabindex="-1" aria-labelledby="passwordVerificationModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ url_for('verify_password', email=email) }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordVerificationModalLabel">Verify Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="hidden" id="customerEmail" name="customerEmail">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="modal-button">Verify</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
-{% endfor %}
+
+<style>
+/* General Styling */
+body, h1, h2, h3, p, button {
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Airbnb Theme */
+.action-button {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #FF385C;
+    color: #FFFFFF;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.update-button {
+    background-color: #008489;
+}
+
+.action-button:hover {
+    opacity: 0.9;
+}
+
+/* User Profiles */
+.user-profiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+    gap: 20px;
+}
+
+.user-card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.user-card-header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid #EBEBEB;
+}
+
+.user-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    color: #333333;
+    margin: 10px 0;
+}
+
+.user-email {
+    color: #767676;
+    margin-bottom: 20px;
+}
+
+.details-section, .user-reviews {
+    margin-bottom: 20px;
+}
+
+.detail {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.review {
+    border-top: 1px solid #EBEBEB;
+    padding-top: 15px;
+}
+
+.review-author {
+    font-size: 16px;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.review-content {
+    font-size: 14px;
+    color: #767676;
+    line-height: 1.5;
+}
+
+.user-details {
+    padding: 20px;
+}
+
+/* Airbnb-inspired Modal Styling */
+
+/* General modal styles */
+.modal-dialog {
+    max-width: 500px; /* Adjust the width of the modal */
+    margin: 30px auto; /* Center the modal vertically and horizontally */
+}
+
+.modal-content {
+    background-color: #fff; /* White background for the modal */
+    border-radius: 8px; /* Rounded corners for the modal */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border: none; /* Removing the default border */
+}
+
+.modal-header {
+    border-bottom: 1px solid #EBEBEB; /* Light border for the header */
+    padding-bottom: 15px; /* Spacing under the header */
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif; /* Airbnb's typical font style */
+}
+
+.modal-title {
+    font-weight: bold;
+    font-size: 20px; /* Slightly larger font size */
+    color: #333333; /* Dark color for the title */
+}
+
+/* Airbnb-themed Close Button Style */
+.close {
+    float: right;
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1;
+    color: #FF5A5F; /* Airbnb brand color */
+    text-shadow: none;
+    opacity: 1;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.close:hover, .close:focus {
+    color: #ff7e82; /* Lighter shade for hover effect */
+    text-decoration: none;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding-top: 15px; /* Spacing above the body content */
+    color: #484848; /* Slightly softer color for the body text */
+    line-height: 1.5; /* Improved line height for readability */
+}
+
+.form-group {
+    margin-bottom: 1rem; /* Space between form groups */
+}
+
+.form-label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: #333333; /* Dark color for labels */
+    font-size: 16px; /* Slightly larger font size for labels */
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.modal-footer {
+    border-top: 1px solid #EBEBEB; /* Light border for the footer */
+    padding-top: 15px; /* Spacing above the footer content */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align buttons to the end (right) */
+}
+
+.modal-button {
+    color: #fff;
+    background-color: #FF385C; /* Airbnb's brand color for buttons */
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.modal-button:hover {
+    background-color: #e60023; /* Slightly darker shade on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-profiles {
+        justify-content: center;
+    }
+}
+
+
+
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Then, include Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+
+  function showModal(email) {
+    document.getElementById("customerEmail").value = email;
+
+    $('#passwordVerificationModal').modal('show');
+
+}
+    // Close modal when user clicks outside of it
+    window.onclick = function(event) {
+  // Assuming 'modal' should be the modal DOM element
+  var passwordModal = document.getElementById('passwordVerificationModal');
+  if (event.target == passwordModal) {
+    $(passwordModal).modal('hide');
+  }
+};
+
+    // Handle form submission
+    form.onsubmit = function(e) {
+    e.preventDefault();
+    var password = document.getElementById("password").value;
+    var email = document.getElementById("customerEmail").value; // Get the email from the hidden input
+
+    // AJAX request to Flask route
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/verify_password/" + encodeURIComponent(email), true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            window.location.href = "/updateCustomer/" + encodeURIComponent(email); // Redirect to update page with email
+        } else {
+            alert("Incorrect password");
+            modal.style.display = "none";
+        }
+    };
+    xhr.send("password=" + encodeURIComponent(password));
+};
+
+
+
+</script>
+<script>
+  $(document).ready(function() {
+    var error = {{ error|default(false)|tojson }};
+    if (error) {
+      $('#passwordVerificationModal').modal('show');
+      $('.modal-dialog').addClass('shake');
+    }
+  });
+
+
+
+</script>
 {% endblock %}

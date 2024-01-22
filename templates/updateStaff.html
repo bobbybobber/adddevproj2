@@ -1,45 +1,44 @@
 {% extends "base.html" %}
-{% block title %}MonsterBob - Update Staff{% endblock %}
+{% block title %}MonsterBob - Update User{% endblock %}
 {% block content %}
 {% from "includes/_formHelper.html" import render_field %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="py-5">
-                <h1 class="display-4 text-center mb-4">Update Staff</h1>
-                <form method="POST" action="">
-                    <div class="mb-3">
-                        <label class="form-label">Name</label>
-                        {{ render_field(form.name, class="form-control", placeholder="Enter name",
-                        aria-describedby="nameHelp") }}
-                        <div id="nameHelp" class="form-text">Enter the staff member's name.</div>
+
+<div class="airbnb-container mt-5">
+    <div class="airbnb-row justify-content-center">
+        <div class="airbnb-col-md-6">
+            <div class="airbnb-form-container py-5">
+                <h1 class="airbnb-form-title text-center mb-4">Update Customers</h1>
+                <form method="POST" action="" enctype="multipart/form-data">
+                    <div class="airbnb-form-group">
+                        <label class="airbnb-form-label">First Name</label>
+                        {{ render_field(form.first_name, class="airbnb-input") }}
+                        <small id="firstNameHelp" class="airbnb-form-text">Enter the customer's first name.</small>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone Number</label>
-                        {{ render_field(form.phonenumber, class="form-control", placeholder="Enter phone number",
-                        aria-describedby="phoneHelp") }}
-                        <div id="phoneHelp" class="form-text">Enter the staff member's phone number.</div>
+                    <div class="airbnb-form-group">
+                        <label class="airbnb-form-label">Last Name</label>
+                        {{ render_field(form.last_name, class="airbnb-input") }}
+                        <small id="lastNameHelp" class="airbnb-form-text">Enter the customer's last name.</small>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        {{ render_field(form.email, class="form-control", placeholder="Enter email",
-                        aria-describedby="emailHelp") }}
-                        <div id="emailHelp" class="form-text">Enter the staff member's email address.</div>
+                    <div class="airbnb-form-group">
+                        <label class="airbnb-form-label">Email</label>
+                        {{ render_field(form.email, class="airbnb-input") }}
+                        <small id="emailHelp" class="airbnb-form-text">Enter the customer's email address.</small>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        {{ render_field(form.address, class="form-control", placeholder="Enter address",
-                        aria-describedby="addressHelp") }}
-                        <div id="addressHelp" class="form-text">Enter the staff member's address.</div>
+                    <div class="airbnb-form-group">
+                        <label class="airbnb-form-label">Password</label>
+                        {{ render_field(form.password, class="airbnb-input") }}
+                        <small id="passwordHelp" class="airbnb-form-text">Enter a new password for the customer.</small>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        {{ render_field(form.password, class="form-control", placeholder="Enter new password",
-                        aria-describedby="passwordHelp") }}
-                        <div id="passwordHelp" class="form-text">Enter a new password for the staff member.</div>
+                    <div class="airbnb-form-group">
+                        <label for="image" class="airbnb-form-label">Profile Picture</label>
+                        <div class="airbnb-file-input-wrapper">
+                            <input type="file" name="image" id="image" class="airbnb-file-input" style="display: none;">
+                            <label for="image" class="airbnb-file-button">Choose File</label>
+                            <span id="file-chosen" class="airbnb-file-chosen">No file chosen</span>
+                        </div>
                     </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-block">Update</button>
+                    <div class="airbnb-form-submit">
+                        <button type="submit" class="airbnb-button">Update</button>
                     </div>
                 </form>
             </div>

@@ -2,14 +2,25 @@
     <a href="{{ url_for('home') }}" id="titlelogo">MonsterBob</a>
     <div>
         <ul id="navbar">
-            <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' else '' }}">About</a></li>
-            <li><a href="{{ url_for('create_Project2') }}" class="{{ 'active' if request.endpoint == 'create_Project2' else '' }}">Create Project</a></li>
-            <li><a href="{{ url_for('UploadImage') }}" class="{{ 'active' if request.endpoint == 'UploadImage' else '' }}">Forum</a></li>
-            <li><a href="{{ url_for('retrieveProject') }}" class="{{ 'active' if request.endpoint == 'retrieveProject' else '' }}">View project</a></li>
             {% if is_logged_in %}
-                <li><a href="{{ url_for('logout') }}" class="{{ 'active' if request.endpoint == 'logout' else '' }}">Logout</a></li>
+            <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' else '' }}">View
+                Forum</a>
+            </li>
+            <li><a href="{{ url_for('create_Project2') }}"
+                   class="{{ 'active' if request.endpoint == 'create_Project2' else '' }}">Create Project</a></li>
+            <li><a href="{{ url_for('UploadImage') }}"
+                   class="{{ 'active' if request.endpoint == 'UploadImage' else '' }}">Forum</a></li>
+            <li><a href="{{ url_for('retrieveProject') }}"
+                   class="{{ 'active' if request.endpoint == 'retrieveProject' else '' }}">View project</a></li>
+            <li>
+                <a href="{{ url_for('retrieveCustomers', email=session['email']) }}"
+                   class="{{ 'active' if request.endpoint == 'retrieveCustomers' else '' }}">View Profile</a>
+            </li>
+            <li><a href="{{ url_for('logout') }}"
+                   class="{{ 'active' if request.endpoint == 'logout' else '' }}">Logout</a></li>
             {% else %}
-                <li><a href="{{ url_for('login') }}" class="{{ 'active' if request.endpoint == 'login' else '' }}">Login/Signup</a></li>
+            <li><a href="{{ url_for('login') }}" class="{{ 'active' if request.endpoint == 'login' else '' }}">Login/Signup</a>
+            </li>
             {% endif %}
         </ul>
     </div>

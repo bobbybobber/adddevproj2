@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Library Loan System - Retrieve Project{% endblock %}
+{% block title %}Retrieve Project{% endblock %}
 {% block content %}
-<section class="container-fluid mt-5">
-    <h1 class="display-4 text-center mb-4">Retrieve Project</h1>
+<section class="airbnb-container mt-5">
+    <h1 class="airbnb-title text-center mb-4">Retrieve Project</h1>
     <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="thead-light">
+        <table class="table airbnb-table table-hover">
+            <thead class="airbnb-thead">
             <tr>
                 <th>Phone</th>
                 <th>Address</th>
@@ -13,8 +13,7 @@
                 <th>Home Theme</th>
                 <th>Comments</th>
                 <th>Progress</th>
-                <th>Update</th>
-                <th>Delete</th>
+                <th>Review</th>
             </tr>
             </thead>
             <tbody>
@@ -32,15 +31,9 @@
                     </div>
                 </td>
                 <td>
-                    <a href="/updateProject/{{ project.get_owner_id() }}" id="update-button-{{ project.get_owner_id() }}"
-                       class="btn btn-outline-warning">Update</a>
                     <a href="/projectReview/{{ project.get_owner_id() }}"
                        id="review-button-{{ project.get_owner_id() }}" class="btn btn-outline-primary"
                        style="display: none;">Review</a>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#myModal_{{ project.get_owner_id() }}">Delete</button>
                 </td>
             </tr>
             {% endfor %}
@@ -49,9 +42,9 @@
     </div>
 </section>
 
-<!-- Modals for each project for delete confirmation -->
 {% for project in project_list %}
-<div class="modal fade" id="myModal_{{ project.get_owner_id() }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="myModal_{{ project.get_owner_id() }}" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -73,4 +66,63 @@
     </div>
 </div>
 {% endfor %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        {% for project in project_list %}
+            (function() {
+                var projectId = "{{ project.get_owner_id() }}";
+                var totalTime = {{ project.get_duration() }};
+                var remainingTimeKey = 'remainingTime' + projectId;
+                var lastUpdatedKey = 'lastUpdated' + projectId;
+                var remainingTime = localStorage.getItem(remainingTimeKey)
+                    ? parseInt(localStorage.getItem(remainingTimeKey))
+                    : {{ project.get_remaining_time() }};
+                var lastUpdated = localStorage.getItem(lastUpdatedKey)
+                    ? new Date(localStorage.getItem(lastUpdatedKey))
+                    : new Date();
+
+                function updateProgress() {
+                    var currentDate = new Date();
+                    if (currentDate - lastUpdated >= 86400000) { // 24 hours have passed
+                        if (remainingTime > 0) {
+                            remainingTime--;
+                            localStorage.setItem(remainingTimeKey, remainingTime);
+                        }
+                        lastUpdated = currentDate;
+                        localStorage.setItem(lastUpdatedKey, lastUpdated.toISOString());
+                    }
+
+                    var progressPercentage = (1 - (remainingTime / totalTime)) * 100;
+                    var progressBar = $("#progress-bar-text-" + projectId);
+                    progressBar.css('width', progressPercentage + '%');
+                    progressBar.text(progressPercentage.toFixed(0) + '%'); // Update the text
+
+                    // Update progress bar color based on progress
+                    var color = progressPercentage < 50 ? 'red' :
+                                progressPercentage < 75 ? 'yellow' : 'green';
+                    progressBar.css('background-color', color);
+
+                    // Update the timer text
+                    $("#timer-" + projectId).text(remainingTime + ' days remaining');
+
+                    // Hide update button and show review button if progress is 100%
+                    if (progressPercentage >= 100) {
+                        $("#update-button-" + projectId).hide();
+                        $("#review-button-" + projectId).show();
+                    }
+                }
+
+                // Immediately update the progress bar to reflect the current state
+                updateProgress();
+
+                // Update it every day
+                setInterval(updateProgress, 86400000);
+            })();
+        {% endfor %}
+    });
+
+</script>
 {% endblock %}

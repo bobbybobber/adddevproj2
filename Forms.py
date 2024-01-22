@@ -92,3 +92,10 @@ class CreateProject(Form):
 class CreateProject2(Form):
     address = StringField('', [validators.Length(min=1, max=150), validators.DataRequired()])
     comments = TextAreaField('', [validators.Optional()])
+
+class UpdateCustomerForm(Form):
+    first_name = StringField('First Name', [validators.Length(min=1, max=150), validators.DataRequired()])
+    last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
+    email = EmailField('Email', [validators.Email(), validators.DataRequired()])
+    password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
+    image = FileField("Upload", validators=None)

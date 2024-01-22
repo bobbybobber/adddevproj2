@@ -1,5 +1,6 @@
 $(document).ready(function() {
-  // Select the card rows
+  // ... existing code ...
+    // Select the card rows
   var cardRows = $('.card-row');
 
   // Set initial position and opacity for rows
@@ -36,6 +37,13 @@ $(document).ready(function() {
   $('.carousel').carousel({
     interval: 2000 //changes the speed
   });
+
+  // Ensure card-bodies are visible after the animations
+  $('.blog-card').css({
+    'opacity': '1',
+    'transform': 'translateY(0)'
+  });
+});
 
 //  $('form').submit(function (event) {
 //    event.preventDefault(); // Prevent the default form submission behavior

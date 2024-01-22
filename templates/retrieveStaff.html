@@ -1,46 +1,51 @@
 {% extends "base.html" %}
+
 {% block title %}Library Loan System - Retrieve Users{% endblock %}
+
 {% block content %}
-<section class="container-fluid mt-5">
-    <h1 class="display-4 text-center mb-4">Retrieve Users</h1>
+<section class="airbnb-container mt-5">
+    <h1 class="airbnb-display-4 text-center mb-4">Retrieve Users</h1>
     <div class="text-center mb-3">
         {% if count == 0 %}
-            <p>There are no staff.</p>
+        <p class="airbnb-count">There are no staff.</p>
         {% elif count == 1 %}
-            <p>There is 1 staff.</p>
+        <p class="airbnb-count">There is 1 staff.</p>
         {% else %}
-            <p>There are {{ count }} staff.</p>
+        <p class="airbnb-count">There are {{ count }} staff.</p>
         {% endif %}
     </div>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Phone Number</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Password</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
+    <div class="airbnb-table-responsive">
+        <table class="airbnb-table">
+            <thead class="airbnb-thead">
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
             </thead>
             <tbody>
-                {% for staff in staff_list %}
-                <tr>
-                    <td>{{ staff.get_id() }}</td>
-                    <td>{{ staff.get_name() }}</td>
-                    <td>{{ staff.get_phonenumber() }}</td>
-                    <td>{{ staff.get_email() }}</td>
-                    <td>{{ staff.get_address() }}</td>
-                    <td>{{ staff.get_password() }}</td>
-                    <td><a href="/updateStaff/{{staff.get_email()}}" class="btn btn-outline-warning">Update</a></td>
-                    <td>
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{staff.get_id()}}">Delete</button>
-                    </td>
-                </tr>
-                {% endfor %}
+            {% for staff in staff_list %}
+            <tr>
+                <td>{{ staff.get_id() }}</td>
+                <td>{{ staff.get_name() }}</td>
+                <td>{{ staff.get_phonenumber() }}</td>
+                <td>{{ staff.get_email() }}</td>
+                <td>{{ staff.get_address() }}</td>
+                <td>
+                    <a href="/updateStaff/{{staff.get_email()}}"
+                       class="airbnb-btn airbnb-btn-outline-warning">Update</a>
+                </td>
+                <td>
+                    <button type="button" class="airbnb-btn airbnb-btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#myModal_{{staff.get_id()}}">Delete
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
@@ -48,20 +53,23 @@
 
 <!-- Modals for delete confirmation -->
 {% for staff in staff_list %}
-<div class="modal fade" id="myModal_{{staff.get_id()}}" tabindex="-1" aria-labelledby="modalLabel{{staff.get_id()}}" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel{{staff.get_id()}}">Delete Confirmation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade airbnb-modal" id="myModal_{{staff.get_id()}}" tabindex="-1"
+     aria-labelledby="modalLabel{{staff.get_id()}}" aria-hidden="true">
+    <div class="modal-dialog airbnb-modal-dialog">
+        <div class="modal-content airbnb-modal-content">
+            <div class="modal-header airbnb-modal-header">
+                <h5 class="modal-title airbnb-modal-title" id="modalLabel{{staff.get_id()}}">Delete Confirmation</h5>
+                <button type="button" class="btn-close airbnb-btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body airbnb-modal-body">
                 Are you sure you want to delete {{staff.get_name()}}?
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer airbnb-modal-footer">
                 <form action="{{url_for('deleteStaff', email=staff.get_email())}}" method="POST">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" class="btn btn-danger" value="Delete">
+                    <button type="button" class="airbnb-btn airbnb-btn-secondary" data-bs-dismiss="modal">Cancel
+                    </button>
+                    <input type="submit" class="airbnb-btn airbnb-btn-danger" value="Delete">
                 </form>
             </div>
         </div>

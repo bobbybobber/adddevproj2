@@ -2,28 +2,40 @@
 {% block title %} MonsterBob - Create Account{% endblock %}
 {% from "includes/_formHelper.html" import render_field %}
 {% block content %}
-<div class="google-form-container">
-    <div class="column is-4 is-offset-4">
-        <h3 class="google-title">Sign Up</h3>
-        <div class="google-box">
-            <form method="POST" action="/signup">
-                <div class="google-field">
+<div class="airbnb-form-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="airbnb-flash-messages">
+            {% for category, message in messages %}
+            <div class="airbnb-alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="airbnb-btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    <div class="airbnb-column">
+        <h3 class="airbnb-title">Sign Up</h3>
+        <div class="airbnb-box">
+            <form method="POST">
+                <div class="airbnb-field">
                     <div class="control">
-                        {{ render_field(form.first_name, class="google-input") }}
-                        {{ render_field(form.last_name, class="google-input") }}
+                        {{ render_field(form.first_name, class="airbnb-input") }}
+                        {{ render_field(form.last_name, class="airbnb-input") }}
                     </div>
                 </div>
-                <div class="google-field">
+                <div class="airbnb-field">
                     <div class="control">
-                        {{ render_field(form.email, class="google-input") }}
+                        {{ render_field(form.email, class="airbnb-input") }}
                     </div>
                 </div>
-                <div class="google-field">
+                <div class="airbnb-field">
                     <div class="control">
-                        {{ render_field(form.password, class="google-input") }}
+                        {{ render_field(form.password, class="airbnb-input") }}
                     </div>
                 </div>
-                <button type="submit" class="google-submit-btn">Submit</button>
+                <button type="submit" class="airbnb-submit-btn">Submit</button>
             </form>
         </div>
     </div>

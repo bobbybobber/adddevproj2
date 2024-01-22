@@ -7,19 +7,20 @@
 
 {% block content %}
 <div class="search-container">
-    <input type="text" id="searchInput" onkeyup="searchFunction()" placeholder="Search for blog posts...">
+    <input type="text" id="searchInput" placeholder="Search for blog posts...">
 </div>
 <div id="searchResults">
 </div>
 <div class="card-deck" id="blog-container">
     {% include 'partials/blog_list.html' %}
 </div>
-<div class="pagination-container">
+
+<div class="pagination-container airbnb-pagination">
     {% for i in range(1, total_pages + 1) %}
     {% if i == current_page %}
-    <span class="current-page"><strong>{{ i }}</strong></span>
+    <span class="current-page airbnb-current-page"><strong>{{ i }}</strong></span>
     {% else %}
-    <a href="javascript:void(0);" onclick="loadPage({{ i }})">{{ i }}</a>
+    <a href="javascript:void(0);" onclick="loadPage({{ i }})" class="airbnb-pagination-link">{{ i }}</a>
     {% endif %}
     {% endfor %}
 </div>
@@ -27,72 +28,66 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script>
-    function searchFunction(event) {
-        if (event.key === "Enter") {
-            let input = document.getElementById('searchInput').value.trim();
-            if (input !== '') {
-                // Use AJAX to fetch data without reloading the page
-                $.ajax({
-                    url: `/about?search=${encodeURIComponent(input)}&page=1`,
-                    type: 'GET',
-                    success: function(response) {
-                        // Update the HTML with the new content
-                        document.getElementById('blog-container').innerHTML = response;
-                    },
-                    error: function(error) {
-                        console.error("Error fetching data:", error);
-                    }
-                });
-            }
+function searchFunction(event) {
+    if (event.key === "Enter") {
+        performSearch();
+    }
+}
+
+function performSearch() {
+    let input = document.getElementById('searchInput').value.trim();
+    fetchPageData(input, 1);
+}
+
+function fetchPageData(searchQuery, pageNumber) {
+    let url = `/about?page=${pageNumber}`;
+    if (searchQuery) {
+        url += `&search=${encodeURIComponent(searchQuery)}`;
+    }
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(response) {
+            document.getElementById('blog-container').innerHTML = response.html;
+            updatePagination(response.totalPages, pageNumber, searchQuery);
+        },
+        error: function(error) {
+            console.error("Error fetching data:", error);
+        }
+    });
+}
+
+function updatePagination(totalPages, currentPage, searchQuery) {
+    const paginationContainer = document.querySelector('.pagination-container');
+    let newPaginationHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageFunction = searchQuery ?
+            `fetchPageData('${searchQuery}', ${i})` :
+            `fetchPageData('', ${i})`;
+
+        if (i === currentPage) {
+            newPaginationHTML += `<span class="current-page"><strong>${i}</strong></span>`;
+        } else {
+            newPaginationHTML += `<a href="javascript:void(0);" onclick="${pageFunction}">${i}</a>`;
         }
     }
 
-    document.getElementById('searchInput').addEventListener('keypress', searchFunction);
+    paginationContainer.innerHTML = newPaginationHTML;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keyup', searchFunction);
+    if (searchInput.value.trim() === '') {
+        // Load the first page if there is no search query when the page loads
+        fetchPageData('', 1);
+    }
+});
 
 
 
 </script>
-<script>
-    function loadPage(pageNumber) {
-        $.ajax({
-            url: `/about?page=${pageNumber}`, // Adjust the URL as needed
-            type: 'GET',
-            success: function(response) {
-                // Replace the content of the blog-container with new content
-                document.getElementById('blog-container').innerHTML = response;
-                // Update the current page in pagination
-                updatePagination(pageNumber);
-            },
-            error: function(error) {
-                console.error("Error fetching page:", error);
-            }
-        });
-    }
 
-    function updatePagination(currentPage) {
-        const paginationContainer = document.querySelector('.pagination-container');
-
-        // Remove current-page class from all links and spans
-        paginationContainer.querySelectorAll('.current-page').forEach(element => {
-            element.classList.remove('current-page');
-            if (element.tagName === 'SPAN') {
-                const pageNumber = element.innerText;
-                const newLink = document.createElement('a');
-                newLink.href = `javascript:void(0);`;
-                newLink.onclick = function() { loadPage(parseInt(pageNumber)); };
-                newLink.innerText = pageNumber;
-                element.replaceWith(newLink);
-            }
-        });
-
-        // Find the link for the current page and replace it with a span
-        const currentPageLink = paginationContainer.querySelector(`a[href='javascript:void(0);'][onclick='loadPage(${currentPage})']`);
-        if (currentPageLink) {
-            const currentSpan = document.createElement('span');
-            currentSpan.classList.add('current-page');
-            currentSpan.innerText = currentPage;
-            currentPageLink.replaceWith(currentSpan);
-        }
-    }
-</script>
 {% endblock %}
