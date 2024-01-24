@@ -2708,3 +2708,59 @@ body {
 .airbnb-register-link:hover {
     text-decoration: underline;
 }
+.blog-hero {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.blog-hero-img {
+    width: 100%;
+    height: 25vh; /* Adjust this value as needed */
+    object-fit: cover;
+    border-radius: 0; /* Typically, hero images don't have rounded corners */
+}
+
+
+.blog-hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    z-index: 2; /* Ensures the text is above the image */
+}
+
+/* Optional: Darken the image slightly so the text stands out more */
+.blog-hero-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Black with 50% opacity */
+    z-index: 1; /* Behind the text */
+}
+.blog-post-body {
+    padding: 20px;
+    text-align: left;
+    max-width: 760px; /* or your desired width */
+    margin: 0 auto; /* Centers the content */
+}
+
+.blog-post-title {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.blog-post-text {
+    color: #555;
+    font-size: 16px;
+    line-height: 1.6;
+}

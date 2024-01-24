@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}View More{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="blog-hero">
+    <img class="blog-hero-img" src="{{ url_for('static', filename='image/' + blog['image']) }}"
+         alt="{{ blog['title'] or 'No image' }}">
+</div>
+
+<!-- Text Content Section -->
+<div class="blog-post-body">
+    <h2 class="blog-post-title">{{ blog['title'] }}</h2>
+    <p class="blog-post-text">{{ blog['content'] }}</p>
+</div>
+
+{% endblock %}

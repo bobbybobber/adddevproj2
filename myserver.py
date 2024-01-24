@@ -312,48 +312,12 @@ def UploadImage():
                   "was stored in blog.db successfully with user_id ==",
                   Blog.get_blog_id(), '  ', Blog.get_blog_image())
             jsonify({'new_blog_card_html': new_blog_card_html})
-            return redirect(url_for('retrieveblog', image=fileimage, name=name, comment=comment))
+            return redirect(url_for('about', image=fileimage, name=name, comment=comment))
 
         except:
             flash('File cannot be empty!!!!!!!')
 
     return render_template('createBlog.html')
-    # Create_blog_form = CreateBlogForm(request.form)
-    # if request.method == 'POST' and Create_blog_form.validate():
-    #     Blog = blog(Create_blog_form.name.data, Create_blog_form.comment.data)
-    #     add_blog(Blog)
-    #     print(Blog.get_name(),
-    #           "was stored in blog.db successfully with user_id ==",
-    #           Blog.get_blog_id())
-
-    #     return redirect(url_for('retrieveblog'))
-    # return render_template('createBlog.html', form=Create_blog_form)
-    # if request.method == 'POST' and Create_blog_form.validate():
-    #     file = request.files.get('file')
-    # if not file:
-    #     flash('No file part')
-    #     return redirect(url_for('home'))
-    #
-    # if file.filename == '':
-    #     flash('No image selected for uploading')
-    #     return redirect(request.url)
-    #
-    # if file and allowed_file(file.filename):
-    #     filename = secure_filename(file.filename)
-    #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    #     Blog = blog(Create_blog_form.name.data,CreateBlogForm.comment.data,file)
-    #     add_blog(Blog)
-    #     print(Blog.get_name(),
-    #           "was stored in blog.db successfully with user_id ==",
-    #           Blog.get_blog_id())
-    #
-    #     flash('Image Successfully uploaded and displayed below')
-    #     return render_template('retrieveBlog.html', form=Create_blog_form)
-    # else:
-    #     flash('Allowed image types are - png, jpg, jpeg, gif')
-    #     return redirect(url_for('retrieveblog'))
-    # return render_template('createBlog.html', form=blog)
-
 
 @app.route("/retrieveblog")
 def retrieveblog():
@@ -375,8 +339,22 @@ def retrieveblog():
         blog = blog_dict.get(key)
         blog_list.append(blog)
     print(Customer_list)
-    return render_template('retrieveBlog.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list),
+    session['blog_list'] = blog_list
+    print(session['blog_list'])
+
+    return render_template('about.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list),
                            Customer_list=Customer_list, email=email)
+
+@app.route('/viewblog/<int:id>')
+def viewblog(id):
+    blog_list = session['blog_list']
+    print(blog_list)
+    if id <= len(blog_list):
+            blog = blog_list[id]  # Fetch the blog based on ID
+            return render_template('ViewBlog.html', blog=blog)
+    else:
+        return "Blog not found", 404
+
 
 
 @app.route('/updateblog/<int:id>/', methods=['GET', 'POST'])
@@ -986,24 +964,30 @@ def about():
     for key in sorted_keys:
         blog = filtered_blog_dict[key]
         blog_image = blog.get_blog_image()
+        id = blog.get_blog_id()
 
-        if blog_image:  # Check if blog_image is not None
+        if blog_image:
             image_filename = os.path.basename(blog_image)
             web_image_path = image_filename.replace('\\', '/')
+            full_path = os.path.join(app.static_folder, 'image', web_image_path)
+            print(f"Full image path: {full_path}")  # This should point to the actual file location
         else:
-            web_image_path = 'default_image.jpg'  # Provide a default image or a placeholder
+            web_image_path = 'default_image.jpg'
 
         blog_item = {
+            'id': id,
             'image': web_image_path,
             'title': blog.get_name(),
             'content': blog.get_comment(),
-            # Add other blog properties here
+            'id': blog.get_blog_id()
         }
         blog_list.append(blog_item)
+        print(f"Blog item image path: {blog_item['image']}")
 
     print("Total Pages:", total_pages)  # Debugging print statement
     # Retrieve carousel_items from session
     carousel_items = session.get('carousel_items', [])
+    session['blog_list'] = blog_list
     # Check if it's an AJAX request
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         html = render_template('partials/blog_list.html', blog_list=blog_list)

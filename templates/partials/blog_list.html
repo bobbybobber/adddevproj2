@@ -1,13 +1,12 @@
-<!-- partials/blog_list.html -->
 <div class="card-deck" id="blog-container">
     {% for blog in blog_list %}
     <div class="card" style="width: 18rem; margin-right: 20px;">
-        <img class="card-img-top" src="{{ url_for('static', filename='image/' + blog['image']) }}"
+        <img class="card-img-top" src="{{ url_for('static', filename=blog['image']) }}"
              alt="{{ blog['title'] }}" height="170px" width="291.44px">
         <div class="card-body">
             <h5 class="card-title">{{ blog['title'] }}</h5>
             <p class="card-text">{{ blog['content'] }}</p>
-            <a href="#" class="btn btn-primary">View More</a>
+            <a href="{{ url_for('viewblog', id=blog['id']) }}" class="btn btn-primary">View More</a>
         </div>
     </div>
     {% endfor %}

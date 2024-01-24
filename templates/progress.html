@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Countdown Timer</title>
+    <style>
+        #progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: green;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown Timer</h1>
+    <div id="timer">Loading...</div>
+    <div id="progress-bar">0%</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        var totalTime = 300; // Total time in seconds (e.g., 5 minutes)
+        var remainingTime = totalTime;
+
+        function updateTimer() {
+            var minutes = Math.floor(remainingTime / 60);
+            var seconds = remainingTime % 60;
+            $('#timer').text(minutes + ':' + (seconds < 10 ? '0' : '') + seconds);
+            $('#progress-bar').css('width', ((totalTime - remainingTime) / totalTime * 100) + '%');
+            $('#progress-bar').text(Math.round(((totalTime - remainingTime) / totalTime * 100)) + '%');
+
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                $('#timer').text('Time\'s up!');
+            }
+
+            remainingTime--;
+        }
+
+        var interval = setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
