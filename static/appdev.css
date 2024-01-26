@@ -2132,37 +2132,75 @@ h2 {
     margin-bottom: 30px;
 }
 
-/* Testimonials Section */
 #testimonials {
-    background-color: #F7F7F7;
+    overflow: hidden;
     padding: 40px 0;
+    background-color: #F7F7F7;
+    display: block;
+    white-space: nowrap;
 }
 
 .testimonial-cards {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 30px;
+    animation: scroll 20s linear infinite;
 }
 
 .testimonial-card {
-    max-width: 300px;
+    width: 300px; /* Set a fixed width for the cards */
     padding: 20px;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border-radius: 8px;
+    overflow: hidden;
+    flex: 0 0 auto;
+
 }
 
 .testimonial-card p {
     font-style: italic;
     color: #767676;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add ellipsis to overflowing text */
+    white-space: nowrap; /* Prevent text from wrapping to a new line */
+    max-height: 3em; /* Adjust the max height to contain the text within the card */
 }
 
 .testimonial-card h3 {
     font-size: 20px;
     color: #484848;
     margin-top: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Add ellipsis to overflowing text */
+    white-space: nowrap; /* Prevent text from wrapping to a new line */
+    max-height: 1.2em; /* Adjust the max height to contain the text within the card */
 }
 
+/* Responsive design adjustments */
+@media (min-width: 600px) and (max-width: 1023px) {
+    .testimonial-card {
+        width: 300px; /* Consistent width */
+        padding: 20px;
+        margin-right: 30px; /* Consistent spacing */
+    }
+}
+
+@media (max-width: 599px) {
+    .testimonial-card {
+        width: 250px; /* Adjust width for smaller screens */
+        padding: 15px;
+        margin-right: 20px; /* Adjust spacing for smaller screens */
+    }
+}
+
+@media (min-width: 1024px) {
+    .testimonial-card {
+        width: 350px; /* Adjust width for larger screens */
+        padding: 25px;
+        margin-right: 40px; /* Adjust spacing for larger screens */
+    }
+}
 /* Recent Projects Section */
 #recent-projects {
     padding: 40px 0;
@@ -2763,4 +2801,49 @@ body {
     color: #555;
     font-size: 16px;
     line-height: 1.6;
+}
+@keyframes scroll {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        /* Assuming 6 original cards, the translation is 100% (the full width of the original set). */
+        transform: translateX(-100%);
+    }
+}
+.tag-list{
+width:30rem;
+font-family:"Montserrat";
+position:relative;
+overflow:hidden;
+}
+.inner{
+width:fit-content;
+display:flex;
+gap:1rem;
+animation: loop 5s linear infinite;
+}
+
+.tag{
+display:flex;
+align-items:center;
+gap:0 0.2rem;
+font-size:0.9rem;
+background-color:#334155;
+padding:0.7rem 1rem;
+border-radius:0.4rem;
+box-shadow:
+0 0.1rem 0.2rem #00000033,
+0 0.1rem 0.5rem #0000004d,
+0 0.2rem 1.5rem #00000066;
+}
+.tag span{
+font-size:1.2rem;
+color:#64748b;
+}
+.fade{
+position:absolute;
+background: linear-gradient(90deg, #1e293b,transparent 30%,transparent 70%,#1e293b);
+inset: 0;
+pointer-events:none;
 }
