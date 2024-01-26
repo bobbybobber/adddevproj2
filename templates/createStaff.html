@@ -1,40 +1,43 @@
 {% extends "base.html" %}
-{% block title %} MonsterBob - Create Account{% endblock %}
+{% block title %} MonsterBob - Create Account {% endblock %}
 {% from "includes/_formHelper.html" import render_field %}
 {% block content %}
-<div class="airbnb-container">
+<div class="monsterbob-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="airbnb-flash-messages">
-            {% for category, message in messages %}
-            <div class="airbnb-alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
+    {% if messages %}
+    <div class="monsterbob-flash-messages">
+        {% for category, message in messages %}
+        <div class="monsterbob-alert alert-{{ category }}" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
         </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
-    <div class="airbnb-form-container">
-        <h3 class="airbnb-form-title">Sign Up</h3>
-        <form method="POST" action="/signup" class="airbnb-form">
-            <div class="airbnb-form-field">
-                {{ render_field(form.name, class="airbnb-form-input") }}
+    <div class="monsterbob-form-container">
+        <h3 class="monsterbob-form-title">Sign Up</h3>
+        <form method="POST" class="monsterbob-form">
+            <div class="monsterbob-form-field">
+                {{ render_field(form.name, class="monsterbob-form-input") }}
             </div>
-            <div class="airbnb-form-field">
-                {{ render_field(form.phonenumber, class="airbnb-form-input") }}
+            <div class="monsterbob-form-field">
+                {{ render_field(form.phonenumber, class="monsterbob-form-input") }}
             </div>
-            <div class="airbnb-form-field">
-                {{ render_field(form.email, class="airbnb-form-input") }}
+            <div class="monsterbob-form-field">
+                {{ render_field(form.email, class="monsterbob-form-input") }}
             </div>
-            <div class="airbnb-form-field">
-                {{ render_field(form.address, class="airbnb-form-input") }}
+            <div class="monsterbob-form-field">
+                {{ render_field(form.address, class="monsterbob-form-input") }}
             </div>
-            <div class="airbnb-form-field">
-                {{ render_field(form.password, class="airbnb-form-input") }}
+            <div class="monsterbob-form-field">
+                {{ render_field(form.password, class="monsterbob-form-input") }}
             </div>
-            <div class="airbnb-form-field">
-                <button type="submit" class="airbnb-form-submit-btn">Submit</button>
+            <div class="monsterbob-form-field">
+                {{ form.role(class="monsterbob-form-select") }}
+            </div>
+            <div class="monsterbob-form-field">
+                <button type="submit" class="monsterbob-form-submit-btn">Submit</button>
             </div>
         </form>
     </div>

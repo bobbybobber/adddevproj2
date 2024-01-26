@@ -11,6 +11,10 @@ class CreateStaffForm(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     address = StringField('Address', [validators.Length(min=1, max=150), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
+    role = role = SelectField('Role',
+                              choices=[('Manager', 'Manager'), ('Senior Consultant', 'Senior Consultant'),
+                                       ('Consultant', 'Consultant')],
+                              validators=[validators.DataRequired()])
 
 
 class CreateBlogForm(FlaskForm):
@@ -27,7 +31,6 @@ class CreateCustomerForm(Form):
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
 
 
-
 class logininformation(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
@@ -42,9 +45,6 @@ class DocumentUploadForm(Form):
 class UploadFileForm(FlaskForm):
     file = FileField("Upload", validators=[DataRequired()])
     submit = SubmitField("Upload")
-
-
-
 
 
 class ratingcomment(Form):
@@ -80,12 +80,12 @@ class CreateProject(Form):
     phone = StringField('', [validators.Length(min=8), validators.DataRequired()])
     address = StringField('', [validators.Length(min=1, max=150), validators.DataRequired()])
     house_type = RadioField('', choices=[('AP', 'Appartment'), ('BUN', 'Bungalow'), ('HDB2', '2-Room HDB'),
-                                                   ('HDB3', '3-Room HDB'), ('HDB4', '4-Room HDB'),
-                                                   ('HDB5', '5-Room HDB')
+                                         ('HDB3', '3-Room HDB'), ('HDB4', '4-Room HDB'),
+                                         ('HDB5', '5-Room HDB')
         , ('CON', 'Condominium')], validators=[validators.DataRequired()])
     house_theme = RadioField('', choices=[('Scandanavian'), ('Luxury'), ('Modern-Luxury'),
-                                                     ('Traditional'), ('Contemporary'),
-                                                     ('Farmhouse')], validators=[validators.DataRequired()])
+                                          ('Traditional'), ('Contemporary'),
+                                          ('Farmhouse')], validators=[validators.DataRequired()])
     comments = TextAreaField('', [validators.Optional()])
 
 
@@ -93,9 +93,17 @@ class CreateProject2(Form):
     address = StringField('', [validators.Length(min=1, max=150), validators.DataRequired()])
     comments = TextAreaField('', [validators.Optional()])
 
+
 class UpdateCustomerForm(Form):
     first_name = StringField('First Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     last_name = StringField('Last Name', [validators.Length(min=1, max=150), validators.DataRequired()])
+    email = EmailField('Email', [validators.Email(), validators.DataRequired()])
+    password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
+    image = FileField("Upload", validators=None)
+
+
+class UpdateStaffForm(Form):
+    name = StringField('Name', [validators.Length(min=1, max=150), validators.DataRequired()])
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
     image = FileField("Upload", validators=None)

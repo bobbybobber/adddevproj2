@@ -2,23 +2,33 @@
     <a href="{{ url_for('home') }}" id="titlelogo">MonsterBob</a>
     <div>
         <ul id="navbar">
-            {% if is_logged_in %}
+            {% if 'email' in session %}
+            {% if session['user_type'] == 'customer' %}
+            <!-- Customer specific links -->
             <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' else '' }}">View
-                Forum</a>
-            </li>
+                Forum</a></li>
             <li><a href="{{ url_for('create_Project2') }}"
                    class="{{ 'active' if request.endpoint == 'create_Project2' else '' }}">Create Project</a></li>
             <li><a href="{{ url_for('UploadImage') }}"
                    class="{{ 'active' if request.endpoint == 'UploadImage' else '' }}">Forum</a></li>
             <li><a href="{{ url_for('retrieveProject') }}"
                    class="{{ 'active' if request.endpoint == 'retrieveProject' else '' }}">View project</a></li>
-            <li>
-                <a href="{{ url_for('retrieveCustomers', email=session['email']) }}"
-                   class="{{ 'active' if request.endpoint == 'retrieveCustomers' else '' }}">View Profile</a>
-            </li>
+            <li><a href="{{ url_for('retrieveCustomers', email=session['email']) }}"
+                   class="{{ 'active' if request.endpoint == 'retrieveCustomers' else '' }}">View Profile</a></li>
+            {% elif session['user_type'] == 'staff' %}
+            <!-- Staff specific links -->
+            <li><a href="#">Manage Projects</a></li>
+            {% if session['role'] =='Manager'%}
+            <li><a href="#">Manage Staff</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('retrieveStaff', email=session['email']) }}"
+                   class="{{ 'active' if request.endpoint == 'retrieveStaff' else '' }}">View Profile</a></li>
+            {% endif %}
+            <!-- Common logout link for both customer and staff -->
             <li><a href="{{ url_for('logout') }}"
                    class="{{ 'active' if request.endpoint == 'logout' else '' }}">Logout</a></li>
             {% else %}
+            <!-- Link for users who are not logged in -->
             <li><a href="{{ url_for('login') }}" class="{{ 'active' if request.endpoint == 'login' else '' }}">Login/Signup</a>
             </li>
             {% endif %}

@@ -3,41 +3,36 @@
 {% block content %}
 {% from "includes/_formHelper.html" import render_field %}
 
-<div class="airbnb-container mt-5">
-    <div class="airbnb-row justify-content-center">
-        <div class="airbnb-col-md-6">
-            <div class="airbnb-form-container py-5">
-                <h1 class="airbnb-form-title text-center mb-4">Update Customers</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center" style="height:100%;">
+        <div class="col-md-6">
+            <div class="form-container py-5">
+                <h1 class="form-title text-center mb-4">Update Staff</h1>
                 <form method="POST" action="" enctype="multipart/form-data">
-                    <div class="airbnb-form-group">
-                        <label class="airbnb-form-label">First Name</label>
-                        {{ render_field(form.first_name, class="airbnb-input") }}
-                        <small id="firstNameHelp" class="airbnb-form-text">Enter the customer's first name.</small>
+                    <div class="form-group">
+                        <label class="form-label"></label>
+                        {{ render_field(form.name, class="airbnb-input") }}
+                        <small id="nameHelp" class="form-text">Enter the staff member's name.</small>
                     </div>
-                    <div class="airbnb-form-group">
-                        <label class="airbnb-form-label">Last Name</label>
-                        {{ render_field(form.last_name, class="airbnb-input") }}
-                        <small id="lastNameHelp" class="airbnb-form-text">Enter the customer's last name.</small>
-                    </div>
-                    <div class="airbnb-form-group">
-                        <label class="airbnb-form-label">Email</label>
+                    <div class="form-group">
+                        <label class="form-label"></label>
                         {{ render_field(form.email, class="airbnb-input") }}
-                        <small id="emailHelp" class="airbnb-form-text">Enter the customer's email address.</small>
+                        <small id="emailHelp" class="form-text">Enter the staff member's email address.</small>
                     </div>
-                    <div class="airbnb-form-group">
-                        <label class="airbnb-form-label">Password</label>
+                    <div class="form-group">
+                        <label class="form-label"></label>
                         {{ render_field(form.password, class="airbnb-input") }}
-                        <small id="passwordHelp" class="airbnb-form-text">Enter a new password for the customer.</small>
+                        <small id="passwordHelp" class="form-text">Enter a new password for the staff member.</small>
                     </div>
-                    <div class="airbnb-form-group">
-                        <label for="image" class="airbnb-form-label">Profile Picture</label>
+                    <div class="form-group">
+                        <label for="image" class="form-label">Profile Picture</label>
                         <div class="airbnb-file-input-wrapper">
                             <input type="file" name="image" id="image" class="airbnb-file-input" style="display: none;">
                             <label for="image" class="airbnb-file-button">Choose File</label>
-                            <span id="file-chosen" class="airbnb-file-chosen">No file chosen</span>
+                            <span id="file-chosen">No file chosen</span>
                         </div>
                     </div>
-                    <div class="airbnb-form-submit">
+                    <div class="form-submit">
                         <button type="submit" class="airbnb-button">Update</button>
                     </div>
                 </form>
@@ -45,4 +40,115 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* General Styling */
+    body, h1, h2, h3, p, label, button, input {
+        font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    /* Airbnb Theme for Forms */
+    .form-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Lighter shadow */
+    margin: auto;
+    max-width: 500px; /* Adjust the width as necessary */
+}
+
+    .form-title {
+        color: #FF385C;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-text {
+        color: #767676;
+    }
+
+    .airbnb-input, .airbnb-file-input {
+        display: block;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    .airbnb-button {
+        display: block;
+        width: 100%;
+        padding: .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #fff;
+        background-color: #FF385C;
+        border: none;
+        border-radius: .25rem;
+        cursor: pointer;
+    }
+
+    .airbnb-button:hover {
+        background-color: #E22A50;
+    }
+
+    .form-submit {
+        margin-top: 1rem;
+    }
+
+    .airbnb-file-input-wrapper {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.airbnb-file-button {
+    background-color: #FF385C;
+    color: white;
+    padding: .375rem .75rem;
+    border-radius: .25rem;
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+.airbnb-file-button:hover {
+    background-color: #E22A50;
+}
+
+#file-chosen {
+    margin-left: .5rem;
+    font-size: .875rem;
+    color: #495057;
+}
+
+</style>
+
+<script>
+document.getElementById('image').addEventListener('change', function() {
+  var fileName = document.getElementById('image').files[0].name;
+  document.getElementById('file-chosen').textContent = fileName;
+});
+
+</script>
+
+
 {% endblock %}

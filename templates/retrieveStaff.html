@@ -1,79 +1,349 @@
 {% extends "base.html" %}
 
-{% block title %}Library Loan System - Retrieve Users{% endblock %}
+{% block title %}Retrieve Staff{% endblock %}
 
 {% block content %}
-<section class="airbnb-container mt-5">
-    <h1 class="airbnb-display-4 text-center mb-4">Retrieve Users</h1>
-    <div class="text-center mb-3">
-        {% if count == 0 %}
-        <p class="airbnb-count">There are no staff.</p>
-        {% elif count == 1 %}
-        <p class="airbnb-count">There is 1 staff.</p>
-        {% else %}
-        <p class="airbnb-count">There are {{ count }} staff.</p>
-        {% endif %}
-    </div>
-    <div class="airbnb-table-responsive">
-        <table class="airbnb-table">
-            <thead class="airbnb-thead">
-            <tr>
-                <th>User ID</th>
-                <th>Name</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Update</th>
-                <th>Delete</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for staff in staff_list %}
-            <tr>
-                <td>{{ staff.get_id() }}</td>
-                <td>{{ staff.get_name() }}</td>
-                <td>{{ staff.get_phonenumber() }}</td>
-                <td>{{ staff.get_email() }}</td>
-                <td>{{ staff.get_address() }}</td>
-                <td>
-                    <a href="/updateStaff/{{staff.get_email()}}"
-                       class="airbnb-btn airbnb-btn-outline-warning">Update</a>
-                </td>
-                <td>
-                    <button type="button" class="airbnb-btn airbnb-btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#myModal_{{staff.get_id()}}">Delete
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<!-- Modals for delete confirmation -->
-{% for staff in staff_list %}
-<div class="modal fade airbnb-modal" id="myModal_{{staff.get_id()}}" tabindex="-1"
-     aria-labelledby="modalLabel{{staff.get_id()}}" aria-hidden="true">
-    <div class="modal-dialog airbnb-modal-dialog">
-        <div class="modal-content airbnb-modal-content">
-            <div class="modal-header airbnb-modal-header">
-                <h5 class="modal-title airbnb-modal-title" id="modalLabel{{staff.get_id()}}">Delete Confirmation</h5>
-                <button type="button" class="btn-close airbnb-btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+<section class="user-profiles">
+    {% for staff in staff_list %}
+    <div class="user-card">
+        <div class="user-card-header">
+            <img src="{{staff.get_image()}}" alt="{{staff.get_name()}}'s Profile" class="user-image">
+            <h1 class="user-name">{{ staff.get_name() }}</h1>
+            <p class="user-email">{{ staff.get_email() }}</p>
+            <div class="user-actions">
+                <a href="javascript:void(0);" onclick="showModal('{{ staff.get_email() }}')"
+                   class="action-button update-button">Update</a>
             </div>
-            <div class="modal-body airbnb-modal-body">
-                Are you sure you want to delete {{staff.get_name()}}?
+        </div>
+        <div class="user-details">
+            <div class="details-section">
+                <p class="detail"><strong>First Name: </strong> {{staff.get_name()}}</p>
+                <p class="detail"><strong>Email: </strong> {{staff.get_email()}}</p>
+                <p class="detail"><strong>Phone Number: </strong> {{staff.get_phonenumber()}}</p>
+                 <p class="detail"><strong>Address: </strong> {{staff.get_address()}}</p>
+                <p class="detail"><strong>Role: </strong> {{staff.get_role()}}</p>
+                <!-- More details can be added here -->
             </div>
-            <div class="modal-footer airbnb-modal-footer">
-                <form action="{{url_for('deleteStaff', email=staff.get_email())}}" method="POST">
-                    <button type="button" class="airbnb-btn airbnb-btn-secondary" data-bs-dismiss="modal">Cancel
-                    </button>
-                    <input type="submit" class="airbnb-btn airbnb-btn-danger" value="Delete">
-                </form>
+            <div class="user-reviews">
+                <!-- Reviews or other information related to the staff -->
+                {% for rate in ratinglist %}
+                <div class="review">
+                    <h5 class="review-author">{{ rate.email_get() }}</h5>
+                    <p class="review-content">{{ rate.comment_get() }}</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
+    {% endfor %}
+</section>
+
+<!-- Password Verification Modal -->
+<div class="modal fade" id="passwordVerificationModal" tabindex="-1" aria-labelledby="passwordVerificationModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ url_for('verify_passwordstaff', email=email) }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordVerificationModalLabel">Verify Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="hidden" id="staffEmail" name="staffEmail">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="modal-button">Verify</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
-{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function showModal(email) {
+        document.getElementById("staffEmail").value = email;
+        $('#passwordVerificationModal').modal('show');
+    }
+
+    // Close modal when user clicks outside of it
+    window.onclick = function(event) {
+        var passwordModal = document.getElementById('passwordVerificationModal');
+        if (event.target == passwordModal) {
+            $(passwordModal).modal('hide');
+        }
+    };
+
+    // Handle form submission
+    var form = document.querySelector('form'); // Assuming there's only one form
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        var password = document.getElementById("password").value;
+        var email = document.getElementById("staffEmail").value; // Get the email from the hidden input
+
+        // AJAX request to Flask route
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/verify_passwordstaff/" + encodeURIComponent(email), true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onload = function() {
+            if (xhr.status == 200) {
+                window.location.href = "/updateStaff/" + encodeURIComponent(email); // Redirect to update page with email
+            } else {
+                alert("Incorrect password");
+                $('#passwordVerificationModal').modal('hide');
+            }
+        };
+        xhr.send("password=" + encodeURIComponent(password));
+    };
+
+    $(document).ready(function() {
+        var error = {{ error|default(false)|tojson }};
+        if (error) {
+            $('#passwordVerificationModal').modal('show');
+            $('.modal-dialog').addClass('shake');
+        }
+    });
+</script>
+<style>
+/* General Styling */
+body, h1, h2, h3, p, button {
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Airbnb Theme */
+.action-button {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #FF385C;
+    color: #FFFFFF;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.update-button {
+    background-color: #008489;
+}
+
+.action-button:hover {
+    opacity: 0.9;
+}
+
+/* User Profiles */
+.user-profiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+    gap: 20px;
+}
+
+.user-card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.user-card-header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid #EBEBEB;
+}
+
+.user-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    color: #333333;
+    margin: 10px 0;
+}
+
+.user-email {
+    color: #767676;
+    margin-bottom: 20px;
+}
+
+.details-section, .user-reviews {
+    margin-bottom: 20px;
+}
+
+.detail {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.review {
+    border-top: 1px solid #EBEBEB;
+    padding-top: 15px;
+}
+
+.review-author {
+    font-size: 16px;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.review-content {
+    font-size: 14px;
+    color: #767676;
+    line-height: 1.5;
+}
+
+.user-details {
+    padding: 20px;
+}
+
+/* Airbnb-inspired Modal Styling */
+
+/* General modal styles */
+.modal-dialog {
+    max-width: 500px; /* Adjust the width of the modal */
+    margin: 30px auto; /* Center the modal vertically and horizontally */
+}
+
+.modal-content {
+    background-color: #fff; /* White background for the modal */
+    border-radius: 8px; /* Rounded corners for the modal */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border: none; /* Removing the default border */
+}
+
+.modal-header {
+    border-bottom: 1px solid #EBEBEB; /* Light border for the header */
+    padding-bottom: 15px; /* Spacing under the header */
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif; /* Airbnb's typical font style */
+}
+
+.modal-title {
+    font-weight: bold;
+    font-size: 20px; /* Slightly larger font size */
+    color: #333333; /* Dark color for the title */
+}
+
+/* Airbnb-themed Close Button Style */
+.close {
+    float: right;
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1;
+    color: #FF5A5F; /* Airbnb brand color */
+    text-shadow: none;
+    opacity: 1;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.close:hover, .close:focus {
+    color: #ff7e82; /* Lighter shade for hover effect */
+    text-decoration: none;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding-top: 15px; /* Spacing above the body content */
+    color: #484848; /* Slightly softer color for the body text */
+    line-height: 1.5; /* Improved line height for readability */
+}
+
+.form-group {
+    margin-bottom: 1rem; /* Space between form groups */
+}
+
+.form-label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: #333333; /* Dark color for labels */
+    font-size: 16px; /* Slightly larger font size for labels */
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.modal-footer {
+    border-top: 1px solid #EBEBEB; /* Light border for the footer */
+    padding-top: 15px; /* Spacing above the footer content */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align buttons to the end (right) */
+}
+
+.modal-button {
+    color: #fff;
+    background-color: #FF385C; /* Airbnb's brand color for buttons */
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.modal-button:hover {
+    background-color: #e60023; /* Slightly darker shade on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-profiles {
+        justify-content: center;
+    }
+}
+
+
+
+</style>
+
 {% endblock %}

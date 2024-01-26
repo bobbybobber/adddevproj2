@@ -2847,3 +2847,91 @@ background: linear-gradient(90deg, #1e293b,transparent 30%,transparent 70%,#1e29
 inset: 0;
 pointer-events:none;
 }
+.monsterbob-container {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #484848;
+}
+
+.monsterbob-form-container {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.monsterbob-form-title {
+    color: #FF5A5F;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.monsterbob-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.monsterbob-form-field {
+    margin-bottom: 15px;
+}
+
+.monsterbob-form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.monsterbob-form-select {
+    margin-top:15px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+.monsterbob-form-submit-btn {
+    background-color: #FF5A5F;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.monsterbob-form-submit-btn:hover {
+    background-color: #f53b50;
+}
+
+.monsterbob-flash-messages {
+    margin-bottom: 20px;
+}
+
+.monsterbob-alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.alert-success {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.alert-error {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+.close {
+    float: right;
+    font-size: 20px;
+    line-height: 20px;
+    color: #000;
+    cursor: pointer;
+}

@@ -1,6 +1,6 @@
 class staff:
     count_id = 0
-    def __init__(self,name,phonenumber,email,address,password):
+    def __init__(self,name,phonenumber,email,address,password,role,image=None):
         staff.count_id += 1
         self.__staff_id = staff.count_id
         self.__name = name
@@ -8,6 +8,8 @@ class staff:
         self.__email = email
         self.__address = address
         self.__password = password
+        self.__image = '/static/image/default.jpg'
+        self.__role = role
 
 
     def get_id(self):
@@ -46,5 +48,13 @@ class staff:
     def set_id(self,id):
         self.__staff_id = id
 
+    def set_image(self, image):
+        self.__image = image
+    def get_image(self):
+        return self.__image
 
+    def get_role(self):
+        return self.__role
+    def set_role(self,role):
+        self.__role = role
 

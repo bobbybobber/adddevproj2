@@ -157,17 +157,23 @@ def login():
             if bcrypt.checkpw(entered_password.encode('utf-8'), user.get_password()):
                 session['email'] = user.get_email()
                 session['user_id'] = str(uuid.uuid4())
-                session['user_type'] = 'customer' if email in customer_dict else 'staff'
-                return redirect(url_for('retrieveCustomers', email=email)) if session[
-                                                                                  'user_type'] == 'customer' else redirect(
-                    url_for('retrieveStaff', email=email))
+
+                if email in staff_dict:
+                    # Retrieve the staff object and set the role in the session
+                    staff_member = staff_dict.get(email)
+                    session['user_type'] = 'staff'
+                    session['role'] = staff_member.get_role()
+                    return redirect(url_for('retrieveStaff', email=email))
+                else:
+                    session['user_type'] = 'customer'
+                    return redirect(url_for('retrieveCustomers', email=email))
             else:
                 flash("Invalid username or password", "danger")
         else:
             flash("Invalid username or password", "danger")
-    is_logged_in = 'email' in session  # Check if user is logged in
-    return render_template('Startpage.html', form=create_login_form, is_logged_in=is_logged_in)
 
+    is_logged_in = 'email' in session
+    return render_template('Startpage.html', form=create_login_form, is_logged_in=is_logged_in)
 
 # Customer Name and comment CRUD
 # def allowed_file(filename):
@@ -186,7 +192,7 @@ def create_staff():
     create_Staff_form = CreateStaffForm(request.form)
     if request.method == 'POST' and create_Staff_form.validate():
         Staff = staff(create_Staff_form.name.data, create_Staff_form.phonenumber.data, create_Staff_form.email.data,
-                      create_Staff_form.address.data, create_Staff_form.password.data)
+                      create_Staff_form.address.data, create_Staff_form.password.data, create_Staff_form.role.data)
         staff_dict = {}
         db = shelve.open('staff.db', 'c')
         try:
@@ -210,7 +216,13 @@ def create_staff():
             print("duplicate email found!")
             print("duplicate email found!")
         else:
+            Staff.set_role(create_Staff_form.role.data)
+            session['role'] = Staff.get_role()
+            session['email'] = Staff.get_email()
             add_staff(Staff)
+            print(Staff.get_role())
+            print("Session role set to:", session['role'])
+            print(session['role'])
             print(Staff.get_name(),
                   "was stored in staff.db successfully with user_id ==",
                   Staff.get_id())
@@ -221,40 +233,66 @@ def create_staff():
 
 @app.route("/retrieveStaff")
 def retrieveStaff():
+    email = session['email']
+    role = session['role']
     staff_dict = {}
     db = shelve.open('staff.db', 'r')
     staff_dict = db['Staff']
     db.close()
-
     staff_list = []
-    for key in staff_dict:
-        staff = staff_dict.get(key)
+    if email in staff_dict:
+        staff = staff_dict.get(email)
         staff_list.append(staff)
+    if role == 'Manager':
+        print('I am a manager')
+
+    if role == 'Senior Consultant':
+        print('I am senior consultant')
+
+    if role == 'Consultant':
+        print("I am a consultant")
+
 
     return render_template('retrieveStaff.html', count=len(staff_list), staff_list=staff_list)
 
 
 @app.route("/updateStaff/<string:email>/", methods=['GET', 'POST'])
 def updateStaff(email):
-    Update_staff_form = CreateStaffForm(request.form)
+    update_staff_form = UpdateStaffForm(request.form)
 
-    if request.method == 'POST' and Update_staff_form.validate():
+    if request.method == 'POST' and update_staff_form.validate():
         staff_dict = {}
         db = shelve.open('staff.db', 'w')
         staff_dict = db['Staff']
 
-        # Check if the customer exists in the dictionary
+        # Check if the staff exists in the dictionary
         if email in staff_dict:
             Staff = staff_dict[email]
-            Staff.set_name(Update_staff_form.name.data)
-            Staff.set_phonenumber(Update_staff_form.phonenumber.data)
-            Staff.set_email(Update_staff_form.email.data)
-            Staff.set_address(Update_staff_form.address.data)
-            Staff.set_password(Update_staff_form.password.data)
+            Staff.set_name(update_staff_form.name.data)
+            print(update_staff_form.password.data)
+            passwordhash = update_staff_form.password.data
+            password2 = hash_password(passwordhash)
+
+            Staff.set_password(password2)
+
+            try:
+                file = request.files['image']
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            except:
+                image = 'default'
+            if image == "default":
+                Staff.set_image("default")
+            else:
+                Staff.set_image(image)
+                print(Staff.get_image())
+
+            Staff.set_email(update_staff_form.email.data)
             db['Staff'] = staff_dict
             db.close()
             flash('Staff updated successfully', 'success')
-            return redirect(url_for('retrieveStaff'))
+            return redirect(url_for('retrieveStaff', email=email))
 
     else:
         staff_dict = {}
@@ -262,19 +300,16 @@ def updateStaff(email):
         staff_dict = db['Staff']
         db.close()
 
-        # Check if the customer exists in the dictionary
+        # Check if the staff exists in the dictionary
         if email in staff_dict:
             Staff = staff_dict[email]
-            Update_staff_form.name.data = Staff.get_name()
-            Update_staff_form.phonenumber.data = Staff.get_phonenumber()
-            Update_staff_form.email.data = Staff.get_email()
-            Update_staff_form.address.data = Staff.get_address()
-            Update_staff_form.password.data = Staff.get_password()
-
-            return render_template('updateStaff.html', form=Update_staff_form)
+            update_staff_form.name.data = Staff.get_name()
+            update_staff_form.email.data = Staff.get_email()
+            update_staff_form.password.data = Staff.get_password()
+            return render_template('updateStaff.html', form=update_staff_form, email=email)
 
     flash('Staff not found', 'error')
-    return redirect(url_for('retrieveStaff'))
+    return redirect(url_for('updateStaff'))
 
 
 @app.route("/deleteStaff/<string:email>", methods=['POST'])
@@ -319,6 +354,7 @@ def UploadImage():
 
     return render_template('createBlog.html')
 
+
 @app.route("/retrieveblog")
 def retrieveblog():
     email = request.args.get('email')
@@ -345,16 +381,16 @@ def retrieveblog():
     return render_template('about.html', count=len(blog_list), blog_list=blog_list, Ccounter=len(Customer_list),
                            Customer_list=Customer_list, email=email)
 
+
 @app.route('/viewblog/<int:id>')
 def viewblog(id):
     blog_list = session['blog_list']
     print(blog_list)
     if id <= len(blog_list):
-            blog = blog_list[id]  # Fetch the blog based on ID
-            return render_template('ViewBlog.html', blog=blog)
+        blog = blog_list[id]  # Fetch the blog based on ID
+        return render_template('ViewBlog.html', blog=blog)
     else:
         return "Blog not found", 404
-
 
 
 @app.route('/updateblog/<int:id>/', methods=['GET', 'POST'])
@@ -1038,6 +1074,50 @@ def verify_password(email):
 
         db.close()
         return render_template('retrieveCustomer.html', count=len(Customer_list), Customer_list=Customer_list,
+                               email=email, countre=len(ratinglist), ratinglist=ratinglist, error=True)
+
+
+@app.route('/verify_passwordstaff/<string:email>/', methods=['POST'])
+def verify_passwordstaff(email):
+    entered_password = request.form['password']
+    db = shelve.open('staff.db', 'r')
+    staff_dict = db['Staff']
+    db.close()
+
+    user = staff_dict.get(email)
+    print(user)
+    print(entered_password.encode('utf-8'))
+    print(user.get_password())
+    if user and bcrypt.checkpw(entered_password.encode('utf-8'), user.get_password()):
+        return redirect(url_for('updateStaff', email=email))
+    else:
+        flash('Incorrect password', 'error')
+
+        staff_dict = {}
+        db = shelve.open('staff.db', 'r')
+        staff_dict = db['Staff']
+        db.close()
+
+        Staff_list = []
+        if email in staff_dict:
+            staff = staff_dict.get(email)
+            Staff_list.append(staff)
+
+        rating_dict = {}
+        db = shelve.open('rating.db', 'c')
+        try:
+            rating_dict = db['Rating']
+        except:
+            print("Error in retrieving")
+
+        ratinglist = []
+        for rating in rating_dict:
+            rating2 = rating_dict.get(rating)
+            if email == rating2.email_get():
+                ratinglist.append(rating2)
+
+        db.close()
+        return render_template('retrieveStaff.html', count=len(Staff_list), staff_list=Staff_list,
                                email=email, countre=len(ratinglist), ratinglist=ratinglist, error=True)
 
 

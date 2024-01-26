@@ -45,6 +45,8 @@ def add_staff(staff):
     except:
         print("Error in retrieving Staff from Staff.db.")
 
+    hashed_password = hash_password(staff.get_password())
+    staff.set_password(hashed_password)
     staff.set_id(get_key(staff_dict))
     staff_dict[staff.get_email()] = staff
     db['Staff'] = staff_dict
