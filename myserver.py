@@ -64,6 +64,9 @@ def logout():
             else:
                 session.clear()
                 return redirect(url_for('home'))
+        else:
+            session.clear()
+            return redirect(url_for('home'))
 
 
 def allowed_file(filename):
