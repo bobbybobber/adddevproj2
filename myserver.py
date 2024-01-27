@@ -1,5 +1,4 @@
 from datetime import timedelta
-
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from Customers import customer
 from Staff import staff
@@ -19,7 +18,6 @@ app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
 UPLOAD_FOLDER = os.path.normpath(os.path.join('static', 'image'))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['UPLOAD_FOLDER'] = 'C:\\Users\\Ervin\\Desktop\\adddevproj2\\static\\image'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 
@@ -48,12 +46,26 @@ otp = randint(000000, 999999)
 
 @app.route('/logout')
 def logout():
-    session.clear()
-    return redirect(url_for('home'))
+    email = session['email']
+    with shelve.open('staff.db', 'w') as db:
+        staff_dict = db.get('Staff', {})
+        user = staff_dict.get(email)
+        if email in staff_dict:
+            if session['role'] != "Manager":
+                staff_member = staff_dict.get(email)
+                staff_member.set_timeout(datetime.now())
+                with shelve.open('staff.db', 'w') as db:
+                    staff_dict[email] = staff_member  # Update the object in the dictionary
+                    db['Staff'] = staff_dict  # Save the updated dictionary back to the database
+
+                print('time out', staff_member.get_timeout())
+                session.clear()
+                return redirect(url_for('home'))
+            else:
+                session.clear()
+                return redirect(url_for('home'))
 
 
-# @app.route('/viewprofile/<string:email>')
-# def viewprofile(email):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -159,10 +171,18 @@ def login():
                 session['user_id'] = str(uuid.uuid4())
 
                 if email in staff_dict:
-                    # Retrieve the staff object and set the role in the session
                     staff_member = staff_dict.get(email)
                     session['user_type'] = 'staff'
                     session['role'] = staff_member.get_role()
+                    if staff_member.get_role() != "Manager":
+                        staff_member.set_timein(datetime.now())
+                        with shelve.open('staff.db', 'w') as db:
+                            staff_dict[email] = staff_member  # Update the object in the dictionary
+                            db['Staff'] = staff_dict  # Save the updated dictionary back to the database
+
+                        print('time in', staff_member.get_timein())
+                        return redirect(url_for('retrieveStaff', email=email))
+
                     return redirect(url_for('retrieveStaff', email=email))
                 else:
                     session['user_type'] = 'customer'
@@ -175,24 +195,15 @@ def login():
     is_logged_in = 'email' in session
     return render_template('Startpage.html', form=create_login_form, is_logged_in=is_logged_in)
 
-# Customer Name and comment CRUD
-# def allowed_file(filename):
-#     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-#
-#
-# def get_filenames(directory_path):
-#     if os.path.exists(directory_path):
-#         return os.listdir(directory_path)
-#     else:
-#         print(f"The directory '{directory_path}' does not exist.")
-#         return []
+
 # Staff CRUD
 @app.route("/createStaff", methods={'GET', 'POST'})
 def create_staff():
     create_Staff_form = CreateStaffForm(request.form)
     if request.method == 'POST' and create_Staff_form.validate():
         Staff = staff(create_Staff_form.name.data, create_Staff_form.phonenumber.data, create_Staff_form.email.data,
-                      create_Staff_form.address.data, create_Staff_form.password.data, create_Staff_form.role.data)
+                      create_Staff_form.address.data, create_Staff_form.password.data, create_Staff_form.role.data,
+                      datetime.now(), "")
         staff_dict = {}
         db = shelve.open('staff.db', 'c')
         try:
@@ -213,13 +224,16 @@ def create_staff():
         print(customer_dict)
         print(Staff.get_email())
         if Staff.get_email() in customer_dict or Staff.get_email() in staff_dict:
-            print("duplicate email found!")
+            flash('Email already exists!!.')
             print("duplicate email found!")
         else:
             Staff.set_role(create_Staff_form.role.data)
             session['role'] = Staff.get_role()
             session['email'] = Staff.get_email()
             add_staff(Staff)
+            Staff.set_timein(datetime.now())
+            Staff.set_timeout('')
+            staff_dict[Staff.get_email()] = Staff  # Update staff member object in staff_dict
             print(Staff.get_role())
             print("Session role set to:", session['role'])
             print(session['role'])
@@ -252,8 +266,50 @@ def retrieveStaff():
     if role == 'Consultant':
         print("I am a consultant")
 
-
     return render_template('retrieveStaff.html', count=len(staff_list), staff_list=staff_list)
+
+
+@app.route("/managestaff")
+def managestaff():
+    # Make sure the user is logged in
+    email = session.get('email')
+    if not email:
+        # Redirect to the login page if not logged in
+        return redirect(url_for('login'))
+
+    # Open the database and retrieve staff data
+    staff_dict = {}
+    db = shelve.open('staff.db', 'r')
+    staff_dict = db.get('Staff', {})
+    db.close()
+
+    # Create a list for staff, excluding managers
+    staff_list = []
+    for key in staff_dict:
+        staff_member = staff_dict.get(key)
+        # Add staff members who are not managers
+        if staff_member.get_role().lower() != 'manager':
+            # Format timein and timeout
+            timein = staff_member.get_timein()
+            timeout = staff_member.get_timeout()
+            if timein:
+                staff_member.timein_formatted = timein.strftime("%Y:%m:%d: %H:%M:%S")
+            else:
+                staff_member.timein_formatted = "Not Set"
+
+            if timeout:
+                staff_member.timeout_formatted = timeout.strftime("%Y:%m:%d: %H:%M:%S")
+            else:
+                staff_member.timeout_formatted = "Not Set"
+
+            staff_list.append(staff_member)
+            print("My time in", staff_member.get_timein())
+            print("My time out", staff_member.get_timeout())
+            print(staff_member)
+    print(staff_list)
+
+    # Render the managestaff template with the staff list
+    return render_template('managestaff.html', count=len(staff_list), staff_list=staff_list)
 
 
 @app.route("/updateStaff/<string:email>/", methods=['GET', 'POST'])
@@ -841,11 +897,6 @@ def retrieveProject():
     db = shelve.open('project.db', 'r')
     project_dict = db['Project']
     db.close()
-    # comment_list = []
-    # for key in comment_dict:
-    #     comment = comment_dict.get(key)
-    #
-    #     comment_list.append(comment)
     email = session['email']
     project_list = []
     for key in project_dict:

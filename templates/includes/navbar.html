@@ -19,7 +19,10 @@
             <!-- Staff specific links -->
             <li><a href="#">Manage Projects</a></li>
             {% if session['role'] =='Manager'%}
-            <li><a href="#">Manage Staff</a></li>
+            <li><a href="{{ url_for('managestaff') }}"
+                   class="{{ 'active' if request.endpoint == 'managestaff' else '' }}">Manage Staff</a></li>
+            <li><a href="{{ url_for('create_staff') }}"
+                   class="{{ 'active' if request.endpoint == 'create_staff' else '' }}">Create Staff</a></li>
             {% endif %}
             <li><a href="{{ url_for('retrieveStaff', email=session['email']) }}"
                    class="{{ 'active' if request.endpoint == 'retrieveStaff' else '' }}">View Profile</a></li>

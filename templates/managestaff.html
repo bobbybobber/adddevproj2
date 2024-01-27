@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Project Summary - Checkout{% endblock %}
+{% block content %}
+<style>
+/* Ensure that the DataTables table fills its container */
+.dataTables_wrapper {
+    width: 100%;
+}
+
+/* Set the DataTables table to full width */
+#staffTable {
+    width: 100% !important; /* The !important is to override any inline styles applied by DataTables */
+}
+
+/* Style for the sort button */
+#sortNames {
+    margin-bottom: 10px; /* Space between sort button and table */
+}
+
+/* Ensure visibility and proper styling of length and search inputs */
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    display: inline-block;
+    width: auto; /* Adjust width as needed */
+    margin: 0 10px;
+}
+
+/* Responsive considerations */
+@media (max-width: 767px) {
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        float: none;
+        text-align: center;
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+        margin: 10px 0;
+    }
+}
+
+/* Custom styles for DataTables control elements */
+.custom-select {
+    display: inline-block;
+    width: auto; /* Adjust as necessary */
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    line-height: 1.5;
+    background: url('data:image/svg+xml;charset=UTF-8, ...') no-repeat right 0.75rem center/8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.dataTables_length label,
+.dataTables_filter label {
+    display: flex;
+    align-items: center;
+}
+
+</style>
+<div class="airbnb-container mt-5">
+    <h1 class="airbnb-display text-center mb-4">Manage Staff</h1>
+    <div class="text-center mb-3">
+        <button id="sortNames" class="btn btn-info">Sort Names Alphabetically</button>
+    </div>
+    <div class="table-responsive">
+        <table id="staffTable" class="table airbnb-table">
+            <thead class="airbnb-thead">
+            <tr>
+                <th>Staff Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+            </tr>
+            <tr> <!-- Search boxes -->
+                <th><input type="text" placeholder="Search names" class="form-control searchInput"/></th>
+                <th><input type="text" placeholder="Search phones" class="form-control searchInput"/></th>
+                <th><input type="text" placeholder="Search emails" class="form-control searchInput"/></th>
+                <th><input type="text" placeholder="Search addresses" class="form-control searchInput"/></th>
+                <th><input type="text" placeholder="Search time in" class="form-control searchInput"/></th>
+                <th><input type="text" placeholder="Search time out" class="form-control searchInput"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for staff in staff_list %}
+            <tr>
+                <td>{{ staff.get_name() }}</td>
+                <td>{{ staff.get_phonenumber() }}</td>
+                <td>{{ staff.get_email() }}</td>
+                <td>{{ staff.get_address() }}</td>
+                <td>{{ staff.timein_formatted }}</td> <!-- Use the formatted time -->
+                <td>{{ staff.timeout_formatted }}</td> <!-- Use the formatted time -->
+            </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    var table = $('#staffTable').DataTable({
+        pagingType: "full_numbers",
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        responsive: true,
+        language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Search staff..."
+        },
+        dom: 'lfrtip',
+        initComplete: function() {
+            this.api().columns().every(function() {
+                var column = this;
+                $('input', this.header()).on('keyup change', function() {
+                    if (column.search() !== this.value) {
+                        column.search(this.value).draw();
+                    }
+                });
+            });
+        }
+    });
+
+    // Custom Sort Button Event
+    $('#sortNames').on('click', function() {
+        var currentOrder = table.order();
+        if (currentOrder[0] && currentOrder[0][0] === 0 && currentOrder[0][1] === 'asc') {
+            table.order([0, 'desc']).draw();
+        } else {
+            table.order([0, 'asc']).draw();
+        }
+    });
+});
+
+</script>
+{% endblock %}

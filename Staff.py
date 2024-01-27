@@ -1,6 +1,6 @@
 class staff:
     count_id = 0
-    def __init__(self,name,phonenumber,email,address,password,role,image=None):
+    def __init__(self,name,phonenumber,email,address,password,role,timein,timeout,image=None):
         staff.count_id += 1
         self.__staff_id = staff.count_id
         self.__name = name
@@ -10,6 +10,8 @@ class staff:
         self.__password = password
         self.__image = '/static/image/default.jpg'
         self.__role = role
+        self.__timein = timein
+        self.__timeout = timeout
 
 
     def get_id(self):
@@ -58,3 +60,11 @@ class staff:
     def set_role(self,role):
         self.__role = role
 
+    def get_timein(self):
+        return self.__timein
+    def set_timein(self,timein):
+        self.__timein = timein
+    def get_timeout(self):
+        return self.__timeout
+    def set_timeout(self,timeout):
+        self.__timeout = timeout

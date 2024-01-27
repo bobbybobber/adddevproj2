@@ -2,105 +2,198 @@
 {% block title %}MonsterBob - Landing{% endblock %}
 
 {% block content %}
-<section id="hero">
-    <h1>Transform Your Space</h1>
-    <p>Quality renovation to make your house feel like home.</p>
-    <a href="#" class="cta-button">Get Your Free Consultation</a>
-</section>
-<section id="testimonials">
-    <h2>Client Testimonials</h2>
-    <div class="testimonial-cards">
-        <!-- Original cards -->
-        <div class="testimonial-card">
-            <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
-            <h3>Jane Doe</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
-            <h3>John Smith</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
-            <h3>Mary Johnson</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
-            <h3>Jane Doe</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
-            <h3>John Smith</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
-            <h3>Mary Johnson</h3>
-        </div>
-        <!-- Original cards -->
-        <div class="testimonial-card">
-            <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
-            <h3>Jane Doe</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
-            <h3>John Smith</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
-            <h3>Mary Johnson</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
-            <h3>Jane Doe</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
-            <h3>John Smith</h3>
-        </div>
-        <div class="testimonial-card">
-            <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
-            <h3>Mary Johnson</h3>
-        </div>
-    </div>
+<style>
+#loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Initially 100%, adjusted by media queries */
+    height: 100vh; /* Initially 100vh, adjusted by media queries */
+    background-color: white; /* White background, typical for Airbnb */
+    border-radius: 15px; /* Rounded corners for a modern look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
 
-</section>
+#loader svg {
+    width: 100%; /* SVG fills the loader */
+    height: auto; /* Maintain aspect ratio */
+}
 
-<section id="recent-projects">
-    <div class="container1">
-        <h2>Recent Projects</h2>
-        <div class="project-gallery">
-            <!-- Project 1 -->
-            <div class="project-item">
-                <img src="/static/image/Best-Modern-Kitchen-Ideas-To-Quadruple-Functionality-With-Style-Banner-1.jpg"
-                     alt="Project 1 Image">
-                <h3>Modern Kitchen Redesign</h3>
+#loader svg text {
+    fill: #FF5A5F; /* Airbnb's signature red color */
+    stroke: #FF5A5F; /* Same color for the stroke */
+    stroke-width: 0.5;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: text-draw 5s ease-out forwards, text-fill 4s ease-out 4s forwards;
+    text-anchor: middle; /* Center text horizontally */
+    dominant-baseline: middle; /* Center text vertically */
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif; /* Airbnb's font, with fallbacks */
+}
+
+@keyframes text-draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes text-fill {
+    from {
+        fill: transparent;
+    }
+    to {
+        fill: #FF5A5F; /* Or your desired text color */
+    }
+}
+/* Media queries for different screen sizes */
+@media (max-width: 1200px) {
+    #loader {
+        width: 80%;
+        height: 80vh;
+    }
+}
+
+@media (max-width: 768px) {
+    #loader {
+        width: 90%;
+        height: 90vh;
+    }
+}
+
+@media (max-width: 480px) {
+    #loader {
+        width: 100%;
+        height: 100vh;
+    }
+}
+
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const loader = document.getElementById('loader');
+    const mainContent = document.getElementById('main-content');
+
+    // Display the loader for 3 seconds before showing the main content
+    setTimeout(function() {
+        loader.style.display = 'none';
+        mainContent.style.display = 'block';
+    }, 3000); // Adjust this time as needed
+});
+
+</script>
+
+<div id="loader">
+    <svg viewBox="0 0 200 100">
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="transparent" stroke="#FF5A5F"
+              stroke-width="1">MonsterBob
+        </text>
+    </svg>
+</div>
+<div id="main-content" style="display: none;">
+    <section id="hero">
+        <h1>Transform Your Space</h1>
+        <p>Quality renovation to make your house feel like home.</p>
+        <a href="#" class="cta-button">Get Your Free Consultation</a>
+    </section>
+    <section id="testimonials">
+        <h2>Client Testimonials</h2>
+        <div class="testimonial-cards">
+            <!-- Original cards -->
+            <div class="testimonial-card">
+                <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
+                <h3>Jane Doe</h3>
             </div>
-            <!-- Project 2 -->
-            <div class="project-item">
-                <img src="/static/image/luxurey-bathroom-remodel.jpg" alt="Project 2 Image">
-                <h3>Elegant Bathroom Remodel</h3>
+            <div class="testimonial-card">
+                <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
+                <h3>John Smith</h3>
             </div>
-            <div class="project-item">
-                <img src="/static/image/sidekix-media-0sDzRgrN_pI-unsplash.jpg" alt="Project 2 Image"
-                     style="width:300px; height:168.3px;">
-                <h3>Living Room Transformation</h3>
+            <div class="testimonial-card">
+                <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
+                <h3>Mary Johnson</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
+                <h3>Jane Doe</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
+                <h3>John Smith</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
+                <h3>Mary Johnson</h3>
+            </div>
+            <!-- Original cards -->
+            <div class="testimonial-card">
+                <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
+                <h3>Jane Doe</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
+                <h3>John Smith</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
+                <h3>Mary Johnson</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"We are so pleased with the renovation! It's like living in a brand new home."</p>
+                <h3>Jane Doe</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"The attention to detail and quality of work was outstanding. Highly recommend!"</p>
+                <h3>John Smith</h3>
+            </div>
+            <div class="testimonial-card">
+                <p>"Exceptional craftsmanship and a team dedicated to excellence. I couldn't be happier!"</p>
+                <h3>Mary Johnson</h3>
             </div>
         </div>
-    </div>
-</section>
-<section id="about-us">
-    <div class="container1">
-        <h2>About Us</h2>
-        <p>We are a team of passionate renovators dedicated to transforming spaces into comfortable, functional, and
-            stylish homes. </p>
-    </div>
-</section>
-<footer>
-    <p>Contact us at MonsterBob@renovations.com</p>
-    <!-- Add social media links -->
-    <ul>
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">Terms of Service</a></li>
-    </ul>
-</footer>
 
+    </section>
+
+    <section id="recent-projects">
+        <div class="container1">
+            <h2>Recent Projects</h2>
+            <div class="project-gallery">
+                <!-- Project 1 -->
+                <div class="project-item">
+                    <img src="/static/image/Best-Modern-Kitchen-Ideas-To-Quadruple-Functionality-With-Style-Banner-1.jpg"
+                         alt="Project 1 Image">
+                    <h3>Modern Kitchen Redesign</h3>
+                </div>
+                <!-- Project 2 -->
+                <div class="project-item">
+                    <img src="/static/image/luxurey-bathroom-remodel.jpg" alt="Project 2 Image">
+                    <h3>Elegant Bathroom Remodel</h3>
+                </div>
+                <div class="project-item">
+                    <img src="/static/image/sidekix-media-0sDzRgrN_pI-unsplash.jpg" alt="Project 2 Image"
+                         style="width:300px; height:168.3px;">
+                    <h3>Living Room Transformation</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="about-us">
+        <div class="container1">
+            <h2>About Us</h2>
+            <p>We are a team of passionate renovators dedicated to transforming spaces into comfortable, functional, and
+                stylish homes. </p>
+        </div>
+    </section>
+    <footer>
+        <p>Contact us at MonsterBob@renovations.com</p>
+        <!-- Add social media links -->
+        <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+        </ul>
+    </footer>
+</div>
 {% endblock %}
