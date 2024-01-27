@@ -40,9 +40,9 @@ function performSearch() {
 }
 
 function fetchPageData(searchQuery, pageNumber) {
-    let url = `/about?page=${pageNumber}`;
+    let url = /about?page=${pageNumber};
     if (searchQuery) {
-        url += `&search=${encodeURIComponent(searchQuery)}`;
+        url += &search=${encodeURIComponent(searchQuery)};
     }
 
     $.ajax({
@@ -64,13 +64,13 @@ function updatePagination(totalPages, currentPage, searchQuery) {
 
     for (let i = 1; i <= totalPages; i++) {
         const pageFunction = searchQuery ?
-            `fetchPageData('${searchQuery}', ${i})` :
-            `fetchPageData('', ${i})`;
+            fetchPageData('${searchQuery}', ${i}) :
+            fetchPageData('', ${i});
 
         if (i === currentPage) {
-            newPaginationHTML += `<span class="current-page"><strong>${i}</strong></span>`;
+            newPaginationHTML += <span class="current-page"><strong>${i}</strong></span>;
         } else {
-            newPaginationHTML += `<a href="javascript:void(0);" onclick="${pageFunction}">${i}</a>`;
+            newPaginationHTML += <a href="javascript:void(0);" onclick="${pageFunction}">${i}</a>;
         }
     }
 

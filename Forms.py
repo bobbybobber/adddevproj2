@@ -107,3 +107,15 @@ class UpdateStaffForm(Form):
     email = EmailField('Email', [validators.Email(), validators.DataRequired()])
     password = PasswordField('Password', [validators.length(min=5, max=15), validators.data_required()])
     image = FileField("Upload", validators=None)
+class update_Project_form(Form):
+    phone = StringField('', [validators.Length(min=8), validators.DataRequired()])
+    address = StringField('', [validators.Length(min=1, max=150), validators.DataRequired()])
+    house_type = RadioField('', choices=[('AP', 'Appartment'), ('BUN', 'Bungalow'), ('HDB2', '2-Room HDB'),
+                                         ('HDB3', '3-Room HDB'), ('HDB4', '4-Room HDB'),
+                                         ('HDB5', '5-Room HDB')
+        , ('CON', 'Condominium')], validators=[validators.DataRequired()])
+    house_theme = RadioField('', choices=[('Scandanavian'), ('Luxury'), ('Modern-Luxury'),
+                                          ('Traditional'), ('Contemporary'),
+                                          ('Farmhouse')], validators=[validators.DataRequired()])
+    comments = TextAreaField('', [validators.Optional()])
+    status = StringField('', [validators.Length(min=1), validators.DataRequired()])

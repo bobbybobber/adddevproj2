@@ -5,7 +5,7 @@ from Customers import customer
 
 class Project:
     count_id = 0
-    def __init__(self, address, phone,  house_type, house_theme, comments,start_date=None,total_price=None,email = None):
+    def __init__(self, address, phone,  house_type, house_theme, comments,start_date=None,total_price=None,email = None,status=None):
 
         Project.count_id += 1
         self.__user_id = Project.count_id
@@ -17,7 +17,7 @@ class Project:
         self.__start_date = start_date if start_date else datetime.now()
         self.__total_price = None
         self.__email = None
-
+        self.__status = "just started"
     def get_owner_id(self):
         return self.__user_id
     def get_phone(self):
@@ -116,3 +116,8 @@ class Project:
         return self.__email
     def set_email(self, email):
         self.__email = email
+    def get_status(self):
+        return self.__status
+
+    def set_status(self, status):
+        self.__status = status

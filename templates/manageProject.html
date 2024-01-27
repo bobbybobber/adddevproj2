@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Retrieve Project{% endblock %}
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<section class="airbnb-container mt-5">
+    <h1 class="airbnb-title text-center mb-4">Retrieve Project</h1>
+    <div class="table-responsive">
+        <table class="table airbnb-table table-hover">
+            <thead class="airbnb-thead">
+            <tr>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Home Type</th>
+                <th>Home Theme</th>
+                <th>Comments</th>
+                <th>Progress</th>
+                <th>Review</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for project in project_list %}
+            <tr>
+                <td>{{ project.get_phone() }}</td>
+                <td>{{ project.get_address() }}</td>
+                <td>{{ project.get_house_type() }}</td>
+                <td>{{ project.get_house_theme() }}</td>
+                <td>{{ project.get_comments() }}</td>
+                <td>{{ project.get_status() }}
+
+                </td>
+                <td>
+                    <a href="/updateProject/{{ project.get_owner_id() }}"
+                        class="btn btn-outline-primary"
+                      >update</a>
+                </td>
+                <td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal_{{ project.get_owner_id() }}">
+            Delete
+        </button></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% for project in project_list %}
+<div class="modal fade" id="myModal_{{ project.get_owner_id() }}" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this project?
+            </div>
+            <div class="modal-footer">
+                <form action="{{url_for('delete_project', id=project.get_owner_id())}}" method="POST">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% endblock %}

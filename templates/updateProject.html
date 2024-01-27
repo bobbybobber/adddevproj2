@@ -9,16 +9,48 @@
                 <h1 class="display-4 text-center mb-4">Update Customers</h1>
                 <form method="POST" action="">
                     <div class="mb-3">
+                         <div class="form-group">
                         <label class="form-label">Address</label>
-                        {{ render_field(form.address, class="form-control", placeholder="Enter address",
-                        aria-describedby="addressHelp") }}
-                        <div id="addressHelp" class="form-text">Enter the customer's address.</div>
+                        {{ render_field(form.address, class="airbnb-input") }}
+
                     </div>
+
+                    </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Comments</label>
-                        {{ render_field(form.comments, class="form-control", placeholder="Enter comments",
-                        aria-describedby="commentsHelp") }}
-                        <div id="commentsHelp" class="form-text">Enter any additional comments.</div>
+                         <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        {{ render_field(form.phone, class="airbnb-input") }}
+
+                    </div>
+                    </div>
+                     <div class="mb-3">
+                         <div class="form-group">
+                        <label class="form-label">house_type</label>
+                        {{ render_field(form.house_type, class="airbnb-input") }}
+
+                    </div>
+                    </div>
+                     <div class="mb-3">
+                         <div class="form-group">
+                        <label class="form-label">house_theme</label>
+                        {{ render_field(form.house_theme, class="airbnb-input") }}
+
+                    </div>
+                    </div>
+                     <div class="mb-3">
+                         <div class="form-group">
+                        <label class="form-label">comments</label>
+                        {{ render_field(form.comments, class="airbnb-input") }}
+
+                    </div>
+                    </div>
+                     <div class="mb-3">
+                         <div class="form-group">
+                        <label class="form-label">status</label>
+                        {{ render_field(form.status, class="airbnb-input") }}
+
+                    </div>
                     </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-block">Update</button>

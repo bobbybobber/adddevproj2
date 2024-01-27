@@ -267,8 +267,106 @@ def retrieveStaff():
         print("I am a consultant")
 
     return render_template('retrieveStaff.html', count=len(staff_list), staff_list=staff_list)
+@app.route('/manageProject')
+def manageProject():
+    combination_durations = {
+        "1-Room HDB, Scandinavian": 1,
+        "1-Room HDB, Luxury": 2,
+        "1-Room HDB, Modern-Luxury": 3,
+        "1-Room HDB, Traditional": 4,
+        "1-Room HDB, Contemporary": 5,
+        "1-Room HDB, Farmhouse": 6,
+        "2-Room HDB, Scandinavian": 7,
+        "2-Room HDB, Luxury": 8,
+        "2-Room HDB, Modern-Luxury": 9,
+        "2-Room HDB, Traditional": 10,
+        "2-Room HDB, Contemporary": 11,
+        "2-Room HDB, Farmhouse": 12,
+        "3-Room HDB, Scandinavian": 13,
+        "3-Room HDB, Luxury": 14,
+        "3-Room HDB, Modern-Luxury": 15,
+        "3-Room HDB, Traditional": 16,
+        "3-Room HDB, Contemporary": 17,
+        "3-Room HDB, Farmhouse": 18,
+        "4-Room HDB, Scandinavian": 19,
+        "4-Room HDB, Luxury": 20,
+        "4-Room HDB, Modern-Luxury": 21,
+        "4-Room HDB, Traditional": 22,
+        "4-Room HDB, Contemporary": 23,
+        "4-Room HDB, Farmhouse": 24,
+        "5-Room HDB, Scandinavian": 25,
+        "5-Room HDB, Luxury": 26,
+        "5-Room HDB, Modern-Luxury": 27,
+        "5-Room HDB, Traditional": 28,
+        "5-Room HDB, Contemporary": 29,
+        "5-Room HDB, Farmhouse": 30
+    }
+    project_dict = {}
+    db = shelve.open('project.db', 'r')
+    project_dict = db['Project']
+    db.close()
+    email = session['email']
+    project_list = []
+    for key in project_dict:
+        project = project_dict.get(key)
 
 
+        house_type = project.get_house_type()
+        house_theme = project.get_house_theme()
+        key1 = f"{house_type}, {house_theme}"
+        print(f"House Type: {house_type}, House Theme: {house_theme}")
+        print(f"Generated Key: {key1}")
+        duration_months = combination_durations.get(key1, 0)
+        # Debugging prints
+        print(f"Combination: {key1}, Duration in months: {duration_months}")
+        start_date = project.get_start_date()
+        print(f"Start Date: {start_date}")
+        end_date = start_date + timedelta(days=duration_months * 30)
+        remaining_days = (end_date - start_date).days
+        print(f"End Date: {end_date}, Remaining Days: {remaining_days}")
+        project.set_remaining_time(remaining_days)
+        project_list.append(project)
+        print(project_list)
+        print(project.get_owner_id())
+    return render_template('manageProject.html', project_list=project_list, email=email)
+@app.route('/updateProject/<int:id>/', methods=['GET', 'POST'])
+def update_Project(id):
+    update_customer_form = update_Project_form(request.form)
+
+    if request.method == 'POST' and update_customer_form.validate():
+        project_dict = {}
+        db = shelve.open('project.db', 'w')
+        project_dict = db['Project']
+
+        # Check if the customer exists in the dictionary
+        if id in project_dict:
+            Project = project_dict[id]
+            Project.set_address(request.form['address'])
+            Project.set_phone(request.form['phone'])
+            Project.set_house_type(request.form['house_type'])
+            Project.set_house_theme(request.form['house_theme'])
+            Project.set_comments(request.form['comments'])
+            Project.set_status(request.form['status'])
+
+            db['Project'] = project_dict
+            db.close()
+            flash('Customer updated successfully', 'success')
+        return redirect(url_for('manageProject'))
+
+    else:
+        project_dict = {}
+        db = shelve.open('project.db', 'r')
+        project_dict = db['Project']
+        db.close()
+        # Check if the customer exists in the dictionary
+        if id in project_dict:
+            Project = project_dict[id]
+
+            print('hello')
+            return render_template('updateProject.html', form=update_customer_form)
+
+        flash('Customer not found', 'error')
+    return redirect(url_for('updateProject'))
 @app.route("/managestaff")
 def managestaff():
     # Make sure the user is logged in
@@ -306,7 +404,7 @@ def managestaff():
             print("My time in", staff_member.get_timein())
             print("My time out", staff_member.get_timeout())
             print(staff_member)
-    print(staff_list)
+        print(staff_list)
 
     # Render the managestaff template with the staff list
     return render_template('managestaff.html', count=len(staff_list), staff_list=staff_list)
