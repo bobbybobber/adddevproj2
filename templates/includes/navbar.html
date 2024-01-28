@@ -17,7 +17,7 @@
                    class="{{ 'active' if request.endpoint == 'retrieveCustomers' else '' }}">View Profile</a></li>
             {% elif session['user_type'] == 'staff' %}
             <!-- Staff specific links -->
-            <li><a href="{{ url_for('manageProject') }}'active' if request.endpoint == 'manageProject' else '' }}">Manage Projects</a></li>
+            <li><a href="{{ url_for('manageProject') }}" class="{{ 'active' if request.endpoint == 'manageProject' else '' }}">Manage Projects</a></li>
             {% if session['role'] =='Manager'%}
             <li><a href="{{ url_for('managestaff') }}"
                    class="{{ 'active' if request.endpoint == 'managestaff' else '' }}">Manage Staff</a></li>

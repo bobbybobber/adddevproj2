@@ -1,11 +1,65 @@
 {% extends "base.html" %}
-{% block additional_css %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-{% endblock %}
 
 {% block title %}MonsterBob - Home{% endblock %}
 
 {% block content %}
+{% block additional_css %}
+<style>
+#blog-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Adjust this to flex-start if you want cards to align to the left */
+    align-items: flex-start;
+    width: 100%;
+}
+
+#blog-container .card {
+    flex: 0 0 calc((100% / 3) - 1rem - (2 * 10px)); /* Subtract the gap and the total horizontal margin */
+    margin: 10px; /* Adjust the margin as needed */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    #blog-container .card .card-img-top {
+        width: 100%;
+        height: auto;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    #blog-container .card .card-body {
+        padding: 15px;
+        background-color: #f8f9fa;
+        flex: 1;
+    }
+
+    #blog-container .card .btn-primary {
+        align-self: center;
+        margin-top: auto;
+    }
+
+    @media screen and (max-width: 992px) {
+    #blog-container .card {
+        flex: 0 0 calc(50% - 1rem - (2 * 10px)); /* 2 cards per row on medium devices */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #blog-container .card {
+        flex: 0 0 calc(50% - 1rem - (2 * 10px)); /* 2 cards per row on smaller devices */
+    }
+}
+
+@media screen and (max-width: 576px) {
+    #blog-container .card {
+        flex: 0 0 calc(100% - 1rem - (2 * 10px)); /* Full width on extra small devices */
+    }
+}
+</style>
+{% endblock %}
 <div class="search-container">
     <input type="text" id="searchInput" placeholder="Search for blog posts...">
 </div>
@@ -40,9 +94,11 @@ function performSearch() {
 }
 
 function fetchPageData(searchQuery, pageNumber) {
-    let url = /about?page=${pageNumber};
+    // Corrected: String should be enclosed with backticks `` for template literals or quotes '' for string literals.
+    let url = `/about?page=${pageNumber}`;
     if (searchQuery) {
-        url += &search=${encodeURIComponent(searchQuery)};
+        // Corrected: Use `&` directly inside a template literal.
+        url += `&search=${encodeURIComponent(searchQuery)}`;
     }
 
     $.ajax({
@@ -58,19 +114,21 @@ function fetchPageData(searchQuery, pageNumber) {
     });
 }
 
+
 function updatePagination(totalPages, currentPage, searchQuery) {
     const paginationContainer = document.querySelector('.pagination-container');
     let newPaginationHTML = '';
 
     for (let i = 1; i <= totalPages; i++) {
+        // Corrected: Template strings with backticks to include JavaScript expressions correctly.
         const pageFunction = searchQuery ?
-            fetchPageData('${searchQuery}', ${i}) :
-            fetchPageData('', ${i});
+            `fetchPageData('${searchQuery}', ${i})` :
+            `fetchPageData('', ${i})`;
 
         if (i === currentPage) {
-            newPaginationHTML += <span class="current-page"><strong>${i}</strong></span>;
+            newPaginationHTML += `<span class="current-page"><strong>${i}</strong></span>`;
         } else {
-            newPaginationHTML += <a href="javascript:void(0);" onclick="${pageFunction}">${i}</a>;
+            newPaginationHTML += `<a href="javascript:void(0);" onclick="${pageFunction}">${i}</a>`;
         }
     }
 
@@ -85,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchPageData('', 1);
     }
 });
+
 
 
 
