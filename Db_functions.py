@@ -13,6 +13,7 @@ def get_key(my_dict):
         my_key = 1
     else:
         my_key = len(my_dict.keys()) + 1
+        print(my_key)
     return my_key
 
 
@@ -86,21 +87,28 @@ def add_comment(comment):
     # Test codes
     db.close()
 
+def get_project(db, project_dict):
+    last_id = db.get('last_id', 0)  # Get the last project id; default to 0 if not found.
+    new_id = last_id + 1
+    db['last_id'] = new_id  # Update the last id in the database.
+    return new_id
+
 def add_project(project):
-    project_dict = {}
     db = shelve.open('project.db', 'c')
     try:
         project_dict = db['Project']
-    except:
-        print("Error in retrieving Users from user.db.")
+    except KeyError:  # Changed from a general exception to a more specific one.
+        print("Error in retrieving Projects from project.db.")
+        project_dict = {}  # Ensuring project_dict is initialized if not found.
 
-    project.set_owner_id(get_key(project_dict))
+    project.set_owner_id(get_project(db , project_dict))
     project_dict[project.get_owner_id()] = project
     db['Project'] = project_dict
-    print(project.get_phone(), "was stored in blog.db successfully with user_id ==",
+    print(project.get_phone(), "was stored in project.db successfully with project_id ==",
           project.get_owner_id())
-    # Test codes
     db.close()
+
+
 
 def add_rating(starrating):
     rating_dict = {}

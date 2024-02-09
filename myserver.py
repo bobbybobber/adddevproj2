@@ -1,5 +1,6 @@
 from datetime import timedelta
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, send_file, \
+    render_template_string
 from Customers import customer
 from Staff import staff
 from Forms import *
@@ -13,6 +14,13 @@ import os
 import uuid
 from random import *
 import bcrypt
+import pandas as pd
+from flask import send_file
+
+latest_excel_file_path = None
+
+
+
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -770,10 +778,6 @@ def view_project():
 
 @app.route('/rating', methods=['GET', 'POST'])
 def rating():
-    # users_list = []
-    # for key in users_dict:
-    #     user = users_dict.get(key)
-    #     users_list.append(user)
     comment_dict = {}
     db = shelve.open('comment.db', 'r')
     comment_dict = db['comments']
@@ -881,12 +885,10 @@ def projectSummary(id):
 @app.route('/checkout/<int:id>/', methods=['GET', 'POST'])
 def checkout(id):
     def expiry_date_valid(expiry_date):
-        # Expected format: MM/YY
         try:
             exp_date = datetime.strptime(expiry_date, "%m/%y")
             return exp_date > datetime.now()
         except ValueError:
-            # If the date is not in the correct format, it's invalid
             return False
 
     email = request.args.get('email')
@@ -934,10 +936,9 @@ def checkout(id):
         cvv = request.form.get('cvv')
         cardholder_name = request.form.get('cardholder_name')
 
-        # Simple validation (extend this as per your requirement)
         if len(card_number) != 16:
             flash('Card number must be 16 digits.', 'error')
-        elif not expiry_date_valid(expiry_date):  # You need to implement this function
+        elif not expiry_date_valid(expiry_date):
             flash('Invalid expiry date.', 'error')
         elif len(cvv) != 3:
             flash('Invalid CVV.', 'error')
@@ -955,11 +956,12 @@ def checkout(id):
             base_price_per_month = 1000
             total_price = duration_months * base_price_per_month
             project.set_total_price(total_price)
+            db = shelve.open('project.db', 'w')
+            db['Project'] = project_dict
+            db.close()
             project_list = []
             return redirect(url_for('retrieveProject', email=email))
     return render_template('checkout.html', project=project, id=id, email=email)
-
-
 @app.route('/retrieveProject')
 def retrieveProject():
     combination_durations = {
@@ -1272,6 +1274,147 @@ def verify_passwordstaff(email):
         return render_template('retrieveStaff.html', count=len(Staff_list), staff_list=Staff_list,
                                email=email, countre=len(ratinglist), ratinglist=ratinglist, error=True)
 
+@app.route('/report/',methods=['POST','GET'])
+def generateReport():
+    global latest_excel_file_path
+    combination_durations = {
+        "1-Room HDB, Scandinavian": 1,
+        "1-Room HDB, Luxury": 2,
+        "1-Room HDB, Modern-Luxury": 3,
+        "1-Room HDB, Traditional": 4,
+        "1-Room HDB, Contemporary": 5,
+        "1-Room HDB, Farmhouse": 6,
+        "2-Room HDB, Scandinavian": 7,
+        "2-Room HDB, Luxury": 8,
+        "2-Room HDB, Modern-Luxury": 9,
+        "2-Room HDB, Traditional": 10,
+        "2-Room HDB, Contemporary": 11,
+        "2-Room HDB, Farmhouse": 12,
+        "3-Room HDB, Scandinavian": 13,
+        "3-Room HDB, Luxury": 14,
+        "3-Room HDB, Modern-Luxury": 15,
+        "3-Room HDB, Traditional": 16,
+        "3-Room HDB, Contemporary": 17,
+        "3-Room HDB, Farmhouse": 18,
+        "4-Room HDB, Scandinavian": 19,
+        "4-Room HDB, Luxury": 20,
+        "4-Room HDB, Modern-Luxury": 21,
+        "4-Room HDB, Traditional": 22,
+        "4-Room HDB, Contemporary": 23,
+        "4-Room HDB, Farmhouse": 24,
+        "5-Room HDB, Scandinavian": 25,
+        "5-Room HDB, Luxury": 26,
+        "5-Room HDB, Modern-Luxury": 27,
+        "5-Room HDB, Traditional": 28,
+        "5-Room HDB, Contemporary": 29,
+        "5-Room HDB, Farmhouse": 30
+    }
+    project_dict = {}
+    project_list = []
+
+    # Open the shelve database and retrieve project data
+    with shelve.open('project.db', 'r') as db:
+        project_dict = db.get('Project', {})
+        for project in project_dict.values():
+            project_list.append(project)
+
+    if project_list:
+        projects_data = [{
+            "Address": project.get_address(),
+            "Phone": project.get_phone(),
+            "House Type": project.get_house_type(),
+            "House Theme": project.get_house_theme(),
+            "Comments": project.get_comments(),
+            "Start Date": project.get_start_date().strftime("%Y-%m-%d"),
+            "Total Price": project.get_total_price(),
+            "Email": project.get_email(),
+            "Status": project.get_status()
+        } for project in project_list]
+        print(project_list, 'tis the list\n')
+        print(projects_data, 'this the file')
+        df = pd.DataFrame(projects_data)
+        datetime_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        excel_file_name = f'Report_{datetime_str}.xlsx'
+        excel_file_path = os.path.join('static/temp_reports/', excel_file_name)
+
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(excel_file_path), exist_ok=True)
+
+        # Save DataFrame to Excel
+        df.to_excel(excel_file_path, index=False, engine='openpyxl')
+        latest_excel_file_path = excel_file_path
+        # Redirect to another page after saving the file
+        return redirect(url_for('get_latest_report'))
+    else:
+        latest_excel_file_path = None
+        # Render a simple message if there are no projects
+        return render_template_string('<p>No projects found for the current user.</p>')
+
+@app.route('/get-latest-report')
+def get_latest_report():
+    global latest_excel_file_path
+    if latest_excel_file_path:
+        file_url = latest_excel_file_path
+        return render_template('dashboard.html', file_url=file_url)
+    else:
+        return "No report available", 404
+
+
+@app.route('/staff_reply')
+def staff_reply():
+    return render_template('staff_reply.html')
+
+# Route to send a message from the customer
+@app.route('/send-message', methods=['POST'])
+def send_message():
+    data = request.json
+    customer_id = data['customer_id']
+    message = data['message']
+
+    with shelve.open('chat_data') as chat_data:
+        # If a staff member has joined, use that staff_id; otherwise, set to None
+        staff_id = chat_data.get(f"customer_{customer_id}_staff", None)
+        messages = chat_data.get(f"customer_{customer_id}_messages", [])
+        messages.append({
+            'from': customer_id,
+            'to': staff_id,
+            'message': message,
+            'timestamp': datetime.now().isoformat()
+        })
+        chat_data[f"customer_{customer_id}_messages"] = messages
+        print(chat_data)
+
+    return jsonify({'status': 'success'}), 200
+
+# Route for staff to join a chat
+@app.route('/join-chat', methods=['POST'])
+def join_chat():
+    data = request.json
+    customer_id = data['customer_id']
+    staff_id = data['staff_id']
+
+    with shelve.open('chat_data') as chat_data:
+        # Assign the staff to the customer chat
+        chat_data[f"customer_{customer_id}_staff"] = staff_id
+    print(chat_data)
+    return jsonify({'status': 'success'}), 200
+
+# Route to get messages for a specific chat
+@app.route('/get-messages/<int:customer_id>', methods=['GET'])
+def get_messages(customer_id):
+    with shelve.open('chat_data') as chat_data:
+        messages = chat_data.get(f"customer_{customer_id}_messages", [])
+        print(messages)
+    return jsonify(messages), 200
+
+# Route for staff to see list of customers waiting for reply
+@app.route('/active-chats', methods=['GET'])
+def active_chats():
+    with shelve.open('chat_data') as chat_data:
+        # Assuming we store a list of active customer IDs when chat starts
+        active_chats = chat_data.get('active_chats', [])
+    print(active_chats)
+    return jsonify(active_chats), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

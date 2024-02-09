@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}MonsterBob - Staff Reply{% endblock %}
+{% block content %}
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: #F7F7F7;
+        height: 100%;
+        color: #484848;
+    }
+
+    #container {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #active-chats {
+        width: 25%; /* Set a fixed width for active chats */
+        height: 100vh;
+        overflow-y: auto;
+        position: fixed; /* Fixed position makes the column sticky */
+        top: 0;
+        left: 0;
+        background-color: white;
+        border-right: 2px solid #EBEBEB;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    #selected-chat {
+        /* Adjust flex settings to allow for a fixed input bar at the bottom */
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        margin-left: 25%; /* Assuming the active chats take up 25% of the container */
+        width: 75%; /* Adjust this width to match the remaining space */
+        height: 100vh;
+    }
+
+    #messages-list {
+        overflow-y: auto; /* Enables scrolling */
+        flex-grow: 1; /* Takes up all available space except for the input bar */
+        padding-bottom: 5px; /* Optional: Space between messages and input bar */
+    }
+
+    #input-bar {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background: white;
+        border-top: 2px solid #EBEBEB;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        z-index: 2; /* Ensure it's above the messages list */
+        border-radius:10px;
+    }
+
+    #staff-reply-input {
+        flex-grow: 1;
+        border: none;
+        padding: 10px 16px;
+        margin-right: 10px;
+        border-radius: 20px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+
+    #send-reply {
+        padding: 0;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #send-reply-icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+        background: url('/static/image/1486164461-send_79678.svg') no-repeat center center;
+        background-size: 24px 24px;
+        transition: filter 0.3s; /* Smooth transition for the filter */
+    }
+
+    #send-reply:hover #send-reply-icon {
+        filter: brightness(0) saturate(100%) invert(27%) sepia(99%) saturate(7487%) hue-rotate(191deg) brightness(91%) contrast(101%);
+    }
+
+    .chat-entry {
+        background-color: #e9e9e9;
+        border-radius: 16px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+
+    .chat-entry.client {
+        background-color: #FF5A5F;
+        color: white;
+        align-self: flex-end;
+    }
+
+    .chat-entry.staff {
+        background-color: #ebebeb;
+        align-self: flex-start;
+    }
+
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const messagesList = document.getElementById('messages-list');
+    const replyInput = document.getElementById('staff-reply-input');
+    const sendReplyButton = document.getElementById('send-reply');
+
+    // Function to load messages from local storage and display them
+    function loadMessages() {
+        let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        messagesList.innerHTML = ''; // Clear the list before displaying new messages
+        messages.forEach((msg) => {
+            let messageDiv = document.createElement('div');
+            messageDiv.textContent = `${msg.from}: ${msg.message}`; // Use template literals for string formatting
+            messagesList.appendChild(messageDiv);
+        });
+        // Scroll to the bottom of the messages container
+        messagesList.scrollTop = messagesList.scrollHeight;
+    }
+
+    // Function to save a message to local storage
+    function saveMessage(message, sender) {
+        let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        messages.push({ message, from: sender, timestamp: new Date().toISOString() });
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
+        loadMessages(); // Refresh the message list
+    }
+
+    // Event listener for the send reply button
+    sendReplyButton.addEventListener('click', function() {
+        const reply = replyInput.value;
+        if (reply.trim() !== '') {
+            saveMessage(reply, 'staff'); // Save message as staff's reply
+            replyInput.value = ''; // Clear input after sending
+        }
+    });
+
+    // Poll for new messages every 3 seconds to simulate real-time updates
+    setInterval(loadMessages, 3000);
+
+    // Load messages initially when the document is ready
+    loadMessages();
+});
+
+
+
+</script>
+
+</head>
+<body>
+<div id="container">
+    <div id="active-chats">
+        <h2>Active Chats</h2>
+        <!-- Active customer chats will be listed here -->
+    </div>
+    <div id="selected-chat">
+        <h1>Staff Reply Page</h1>
+        <h2>Selected Chat</h2>
+        <div id="messages-list">
+            <!-- Messages for the selected chat will be displayed here -->
+        </div>
+        <div id="input-bar">
+            <input type="text" id="staff-reply-input" placeholder="Type your reply here..."/>
+            <button id="send-reply">
+                <span id="send-reply-icon"></span> <!-- This will be the send icon -->
+            </button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+        // Function to load active chats
+        function loadActiveChats() {
+            fetch('/active-chats').then(response => response.json()).then(activeChats => {
+                const activeChatsList = document.getElementById('active-chats');
+                // Clear the list before appending new active chats
+                activeChatsList.innerHTML = '';
+
+                activeChats.forEach(customerId => {
+                    const chatButton = document.createElement('button');
+                    chatButton.textContent = 'Chat with Customer ' + customerId;
+                    chatButton.onclick = function() {
+                        joinChat(customerId);
+                    };
+                    activeChatsList.appendChild(chatButton);
+                });
+            });
+        }
+
+        // Function for staff to join a chat
+        function joinChat(customerId) {
+            // For demonstration purposes, let's assume staff_id is available
+            const staffId = 'YOUR_STAFF_ID'; // Replace with actual staff ID logic
+            fetch('/join-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    customer_id: customerId,
+                    staff_id: staffId
+                })
+            }).then(response => {
+                if (response.ok) {
+                    loadMessages(customerId);
+                }
+            });
+        }
+
+        // Function to load messages for a specific chat
+        function loadMessages(customerId) {
+            fetch(/get-messages/${customerId}).then(response => response.json()).then(messages => {
+                const messagesList = document.getElementById('messages-list');
+                messagesList.innerHTML = ''; // Clear current messages
+
+                messages.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.textContent = message.from + ': ' + message.message;
+                    messagesList.appendChild(messageElement);
+                });
+            });
+        }
+
+        // Function to send a staff reply
+        document.getElementById('send-reply').addEventListener('click', function() {
+            const replyInput = document.getElementById('staff-reply-input');
+            const message = replyInput.value;
+            const customerId = 'CUSTOMER_ID'; // Replace with logic to get the current customer's ID
+
+            if(message.trim() !== '') {
+                fetch('/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        customer_id: customerId,
+                        staff_id: 'YOUR_STAFF_ID', // Replace with actual staff ID
+                        message: message
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        replyInput.value = ''; // Clear input after sending
+                        loadMessages(customerId); // Reload messages
+                    }
+                });
+            }
+        });
+
+        // Call loadActiveChats on page load to show active chats
+        document.addEventListener("DOMContentLoaded", loadActiveChats);
+
+
+
+
+
+</script>
+</body>
+{% endblock %}

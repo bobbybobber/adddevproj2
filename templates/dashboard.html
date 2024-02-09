@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Airbnb Themed Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+    color: #333;
+}
+
+header {
+    background-color: #FF5A5F;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+.container {
+    margin: 20px;
+}
+
+footer {
+    background-color: #FF5A5F;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+.chart-container {
+    width: 100%;
+    max-width: 800px; /* Adjust this value as needed */
+    margin: auto;
+}
+
+/* Ensure the chart canvas is responsive */
+#myChart {
+    width: 100% !important;
+    max-height: 400px; /* Adjust this value as needed */
+}
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Dashboard</h1>
+    <canvas id="myChart"></canvas> <!-- Canvas for Chart.js -->
+</div>
+
+<script>
+function fetchAndRenderChart() {
+const reportUrl = "{{ file_url }}"
+    fetch("{{ file_url }}")
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+            const workbook = XLSX.read(buffer, { type: 'buffer' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            // Example: Using 'House Type' (categorical) and 'Total Price' (numeric)
+            const labels = jsonData.map(row => row['House Type']);
+            const data = jsonData.map(row => row['Total Price']);
+
+            const chartType = determineChartType(data);
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Price by House Type',
+                        data: data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+}
+
+function determineChartType(data) {
+    // Simple logic to determine chart type
+    if (data.every(item => !isNaN(parseFloat(item)) && isFinite(item))) {
+        // Data is numeric
+        return 'bar'; // 'line' or 'bar' could be suitable for numeric data
+    } else {
+        // Data is categorical or mixed
+        return 'pie'; // 'pie' or 'doughnut' for categorical data
+    }
+}
+
+fetchAndRenderChart();
+
+</script>
+
+<footer>
+    <p>© 2024 MonsterBob Dashboard. All rights reserved.</p>
+</footer>
+</body>
+</html>

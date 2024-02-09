@@ -18,6 +18,7 @@
             {% elif session['user_type'] == 'staff' %}
             <!-- Staff specific links -->
             <li><a href="{{ url_for('manageProject') }}" class="{{ 'active' if request.endpoint == 'manageProject' else '' }}">Manage Projects</a></li>
+            <li><a href="{{ url_for('staff_reply') }}" class="{{ 'active' if request.endpoint == 'staff_reply' else '' }}">Manage chat</a></li>
             {% if session['role'] =='Manager'%}
             <li><a href="{{ url_for('managestaff') }}"
                    class="{{ 'active' if request.endpoint == 'managestaff' else '' }}">Manage Staff</a></li>

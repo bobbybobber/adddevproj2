@@ -2,6 +2,73 @@
 {% block title %}MonsterBob - Create Project{% endblock %}
 
 {% block content %}
+<style>
+    /* Style for the content section */
+    .airbnb-intro-section {
+        padding: 40px;
+        background-color: #fff;
+        border-bottom: 1px solid #EBEBEB;
+        margin-bottom: 20px;
+        transition: all 0.5s ease-in-out;
+        margin-top:15px;
+    }
+
+    /* Initial state before user scrolls to the form */
+    .airbnb-form-container {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    }
+
+    /* Style for the form and its fields */
+    .airbnb-form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* ... other styles for form fields ... */
+
+    /* Style for the form button */
+    .airbnb-form-button {
+        background-color: #FF5A5F;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .airbnb-form-button:hover {
+        background-color: #e04e4a;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const formContainer = document.querySelector('.airbnb-form-container');
+
+    window.addEventListener('scroll', () => {
+        const formPosition = formContainer.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight;
+
+        // Check if the form is within the viewport
+        if (formPosition < screenPosition) {
+            formContainer.style.opacity = '1';
+            formContainer.style.transform = 'translateY(0)';
+        }
+    });
+});
+</script>
+
+<div class="airbnb-intro-section">
+    <h2>Welcome to Project Creation</h2>
+    <p>Get started with your project by filling out the details below. We will guide you through each step.</p>
+</div>
+
 <div class="airbnb-form-container">
     <h3 class="airbnb-title">Create Project</h3>
     <form method="POST" action="/createProject2" class="airbnb-form">
@@ -49,5 +116,6 @@
             <input type="submit" class="airbnb-form-button" value="Submit">
         </div>
     </form>
+</div>
 </div>
 {% endblock %}
