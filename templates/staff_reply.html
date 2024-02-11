@@ -164,116 +164,36 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </script>
 
-</head>
 <body>
-<div id="container">
-    <div id="active-chats">
-        <h2>Active Chats</h2>
-        <!-- Active customer chats will be listed here -->
-    </div>
-    <div id="selected-chat">
-        <h1>Staff Reply Page</h1>
-        <h2>Selected Chat</h2>
-        <div id="messages-list">
-            <!-- Messages for the selected chat will be displayed here -->
-        </div>
-        <div id="input-bar">
-            <input type="text" id="staff-reply-input" placeholder="Type your reply here..."/>
-            <button id="send-reply">
-                <span id="send-reply-icon"></span> <!-- This will be the send icon -->
-            </button>
-        </div>
-    </div>
+<div>
+
+    <button id="join-chat">Join Chat</button>
+    <ul id="messages"></ul>
+    <input type="text" id="reply-message" placeholder="Reply here...">
+    <button id="send-reply">Send Reply</button>
 </div>
 
-</div>
-
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 <script>
-        // Function to load active chats
-        function loadActiveChats() {
-            fetch('/active-chats').then(response => response.json()).then(activeChats => {
-                const activeChatsList = document.getElementById('active-chats');
-                // Clear the list before appending new active chats
-                activeChatsList.innerHTML = '';
-
-                activeChats.forEach(customerId => {
-                    const chatButton = document.createElement('button');
-                    chatButton.textContent = 'Chat with Customer ' + customerId;
-                    chatButton.onclick = function() {
-                        joinChat(customerId);
-                    };
-                    activeChatsList.appendChild(chatButton);
-                });
-            });
-        }
-
-        // Function for staff to join a chat
-        function joinChat(customerId) {
-            // For demonstration purposes, let's assume staff_id is available
-            const staffId = 'YOUR_STAFF_ID'; // Replace with actual staff ID logic
-            fetch('/join-chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    customer_id: customerId,
-                    staff_id: staffId
-                })
-            }).then(response => {
-                if (response.ok) {
-                    loadMessages(customerId);
-                }
-            });
-        }
-
-        // Function to load messages for a specific chat
-        function loadMessages(customerId) {
-            fetch(/get-messages/${customerId}).then(response => response.json()).then(messages => {
-                const messagesList = document.getElementById('messages-list');
-                messagesList.innerHTML = ''; // Clear current messages
-
-                messages.forEach(message => {
-                    const messageElement = document.createElement('div');
-                    messageElement.textContent = message.from + ': ' + message.message;
-                    messagesList.appendChild(messageElement);
-                });
-            });
-        }
-
-        // Function to send a staff reply
-        document.getElementById('send-reply').addEventListener('click', function() {
-            const replyInput = document.getElementById('staff-reply-input');
-            const message = replyInput.value;
-            const customerId = 'CUSTOMER_ID'; // Replace with logic to get the current customer's ID
-
-            if(message.trim() !== '') {
-                fetch('/send-message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        customer_id: customerId,
-                        staff_id: 'YOUR_STAFF_ID', // Replace with actual staff ID
-                        message: message
-                    })
-                }).then(response => {
-                    if (response.ok) {
-                        replyInput.value = ''; // Clear input after sending
-                        loadMessages(customerId); // Reload messages
-                    }
-                });
-            }
-        });
-
-        // Call loadActiveChats on page load to show active chats
-        document.addEventListener("DOMContentLoaded", loadActiveChats);
+    const socket = io();
+    document.getElementById('join-chat').onclick = function() {
+        socket.emit('staff-join', 'staff@example.com'); // Use a unique identifier for the staff
+    };
 
 
+    socket.on('Chat', function(data) {
+        const messages = document.getElementById('messages');
+        const msgElement = document.createElement('li');
+        msgElement.textContent = ${data.username}: ${data.message};
+        messages.appendChild(msgElement);
+    });
 
+    document.getElementById('send-reply').onclick = function() {
+        const messageInput = document.getElementById('reply-message');
+        socket.emit('new_message2', messageInput.value);
+        messageInput.value = '';
 
-
-</script>
+    };
+    </script>
 </body>
 {% endblock %}

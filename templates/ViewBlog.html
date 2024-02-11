@@ -1,18 +1,383 @@
 {% extends "base.html" %}
 {% block title %}View More{% endblock %}
-
+{% from "includes/_formHelper.html" import render_field %}
 {% block content %}
+<style>
+  /* Ensure the carousel takes full width */
+  #blogCarousel {
+    width: 100%;
+    margin-top: 0;
+    position: relative; /* Ensure relative positioning for absolute child elements */
+  }
 
-<!-- Hero Section -->
-<div class="blog-hero">
-    <img class="blog-hero-img" src="{{ url_for('static', filename='image/' + blog['image']) }}"
-         alt="{{ blog['title'] or 'No image' }}">
+  .title {
+    font-size: 40px;
+    font-family: 'Circular', 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Airbnb's font style */
+  }
+
+  /* Set the height of the carousel */
+  .carousel-inner {
+    height: 75vh; /* 75% of the viewport height */
+  }
+
+  /* Ensure images cover the full area and are centered */
+  .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the area without stretching */
+    object-position: center; /* Center the image within the area */
+  }
+
+  /* Position the carousel controls in a more visible manner */
+  .carousel-control-prev, .carousel-control-next {
+    width: 5%; /* Increase hit area for better UX */
+  }
+
+  .carousel-control-prev-icon, .carousel-control-next-icon {
+    width: 50px; /* Increase size for visibility */
+    height: 50px;
+    background-size: 100%, 100%;
+    background-image: none; /* Remove the default background */
+  }
+
+  /* Add custom icons or use text */
+  .carousel-control-prev-icon:after,
+  .carousel-control-next-icon:after {
+    content: '⟨'; /* Add custom text content */
+    font-size: 30px; /* Adjust size as needed */
+    color: #FF5A5F; /* Airbnb red color for the arrows */
+  }
+
+  .carousel-control-next-icon:after {
+    content: '⟩'; /* Add custom text content */
+  }
+
+  /* Adjust the position of the control icons */
+  .carousel-control-prev {
+    left: 10px; /* Adjust spacing from the left */
+  }
+
+  .carousel-control-next {
+    right: 10px; /* Adjust spacing from the right */
+  }
+
+  /* Ensure text is readable and styled */
+  .carousel-item h1 {
+    position: absolute;
+    bottom: 20%;
+    left: 10%;
+    color: white; /* Ensure text color contrasts well with the overlay */
+    font-family: 'Circular', 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Airbnb's font style */
+  }
+#blogCarousel .carousel-indicators {
+    position: absolute;
+    bottom: 10px; /* Position at the bottom of the carousel */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-65%); /* Align center */
+    list-style: none; /* Removes default list styling */
+    display: flex;
+    justify-content: center; /* Flexbox centering */
+    width: 100%;
+    padding: 0; /* Reset any padding */
+  }
+
+  #blogCarousel .carousel-indicators li {
+    background-color: rgba(255, 90, 95, 0.5); /* Semi-transparent red for inactive indicators */
+    width: 12px; /* Diameter of the circles */
+    height: 12px;
+    border-radius: 50%; /* Make them round */
+    cursor: pointer;
+    margin: 0 5px; /* Space between the circles */
+    list-style-type: none; /* Remove list style */
+  }
+
+  #blogCarousel .carousel-indicators .active {
+    background-color: #ff5a5f; /* Full red color for active indicator */
+    opacity: 1; /* Fully opaque for active indicator */
+  }
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .carousel-indicators li {
+      width: 8px; /* Smaller diameter on smaller devices */
+      height: 8px;
+    }
+
+    .carousel-indicators .active {
+      width: 10px; /* Slightly larger diameter for active indicator on smaller devices */
+      height: 10px;
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+
+<div>
+    <h1 class="title">{{ blog['title'] }}</h1>
 </div>
+<div id="blogCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
 
-<!-- Text Content Section -->
+    <!-- Carousel indicators -->
+    <ol class="carousel-indicators">
+        {% for image in images %}
+        <li data-bs-target="#blogCarousel" data-bs-slide-to="{{ loop.index0 }}"
+            class="{{ 'active' if loop.first }}"></li>
+        {% endfor %}
+    </ol>
+    <!-- Carousel slides -->
+    <div class="carousel-inner">
+        {% for image in images %}
+        <div class="carousel-item {{ 'active' if loop.first }}">
+            <img src="{{ url_for('static', filename='image/' + image) }}" class="d-block w-100"
+                 alt="{{ blog['title'] }}">
+        </div>
+        {% endfor %}
+
+
+    </div>
+    <!-- Carousel controls -->
+    {% if images | length > 1 %}
+    <a class="carousel-control-prev" href="#blogCarousel" role="button" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#blogCarousel" role="button" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </a>
+    {% endif %}
+
+</div>
 <div class="blog-post-body">
-    <h2 class="blog-post-title">{{ blog['title'] }}</h2>
     <p class="blog-post-text">{{ blog['content'] }}</p>
 </div>
+<!-- Button to Open the Modal for Updating Blog -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">
+    Update Blog
+</button>
+
+<!-- The Modal for Blog Update -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Blog</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- CSRF token placeholder; ensure to include this for security -->
+                {{ form.hidden_tag() }}
+
+                <!-- Title Update Section -->
+                <div class="mb-3">
+                    <label for="update-name" class="form-label">Blog Title</label>
+                    <input type="text" class="form-control" id="update-name" placeholder="Enter blog title"
+                           value="{{ blog.title }}">
+                    <button type="button" class="btn btn-secondary mt-2"
+                            onclick="updateField('name', {{ blog['id'] }})">Update Title
+                    </button>
+                </div>
+
+                <!-- Comment Update Section -->
+                <div class="mb-3">
+                    <label for="update-comment" class="form-label">Blog Content</label>
+                    <textarea class="form-control" id="update-comment" placeholder="Write your blog content here">{{ blog.comment }}</textarea>
+                    <button type="button" class="btn btn-secondary mt-2"
+                            onclick="updateField('comment', {{ blog['id'] }})">Update Comment
+                    </button>
+                </div>
+
+                <!-- Image Removal Section -->
+                <div class="mb-3">
+                    <label class="form-label">Current Images:</label>
+                    {% for image in images %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="images_to_remove" value="{{ image }}"
+                               id="remove-image-{{ loop.index }}">
+                        <label class="form-check-label" for="remove-image-{{ loop.index }}">
+                            <img src="{{ url_for('static', filename='image/' + image) }}" alt="Blog Image"
+                                 style="max-width: 100px; height: auto;">
+                        </label>
+                    </div>
+                    {% endfor %}
+                    <button type="button" class="btn btn-danger mt-2" onclick="removeSelectedImages({{ blog['id'] }})">
+                        Remove Selected Images
+                    </button>
+                </div>
+                <!-- Image Upload Section -->
+                <div class="mb-3">
+                    <label for="upload-image" class="form-label">Upload New Image(s)</label>
+                    <input type="file" class="form-control" id="upload-image" multiple>
+                    <button type="button" class="btn btn-success mt-2" onclick="uploadImage({{ blog['id'] }})">Upload
+                        Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+
+    function handleRequestError(xhr) {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
+            alert('An error occurred: ' + xhr.status + ' ' + xhr.statusText);
+        }
+    }
+
+    window.updateField = function(fieldName, blogId) {
+        var value = document.getElementById('update-' + fieldName).value;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/update_blog_field/" + blogId, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE) {
+                if (this.status === 200) {
+                    alert(fieldName + ' updated successfully');
+                    if (fieldName === 'name') {
+                        Array.from(document.getElementsByClassName('title')).forEach(element => {
+                            element.textContent = value;
+                        });
+                    } else if (fieldName === 'comment') {
+                        Array.from(document.getElementsByClassName('blog-post-text')).forEach(element => {
+                            element.textContent = value;
+                        });
+                    }
+                    updateModal.hide();
+                } else {
+                    handleRequestError(this);
+                }
+            }
+        };
+
+        var data = "field=" + encodeURIComponent(fieldName) + "&value=" + encodeURIComponent(value) + "&csrf_token=" + encodeURIComponent(csrfToken);
+        xhr.send(data);
+    };
+
+    function handleRequestError(xhr) {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
+            alert('An error occurred: ' + xhr.status + ' ' + xhr.statusText);
+        }
+    }
+
+    function updateCarouselAndImageList(remainingImages) {
+        const carouselIndicators = document.querySelector('.carousel-indicators');
+        const carouselInner = document.querySelector('.carousel-inner');
+
+        carouselIndicators.innerHTML = '';
+        carouselInner.innerHTML = '';
+
+        remainingImages.forEach((image, index) => {
+            // Add new indicator
+            const indicator = document.createElement('li');
+            indicator.setAttribute('data-bs-target', '#blogCarousel');
+            indicator.setAttribute('data-bs-slide-to', index);
+            if (index === 0) {
+                indicator.classList.add('active');
+            }
+            carouselIndicators.appendChild(indicator);
+
+            // Add new carousel item
+            const carouselItem = document.createElement('div');
+            carouselItem.className = 'carousel-item' + (index === 0 ? ' active' : '');
+            const imgTag = document.createElement('img');
+            imgTag.className = 'd-block w-100'; // Add your image classes here
+            imgTag.src = '/path/to/your/images/folder/' + image; // Update with the correct path
+            carouselItem.appendChild(imgTag);
+
+            carouselInner.appendChild(carouselItem);
+        });
+    }
+        function removeSelectedImages(event, blogId) {
+        event.preventDefault();
+        var checkedBoxes = document.querySelectorAll('input[name="images_to_remove"]:checked');
+        var imageNames = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/delete_blog_images/" + blogId, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE) {
+                if (this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    alert(response.message);
+                    updateCarouselAndImageList(response.remainingImages);
+                    updateModal.hide();
+                } else {
+                    handleRequestError(this);
+                }
+            }
+        };
+
+        xhr.send(JSON.stringify({ images: imageNames }));
+    }
+
+    function uploadImage(blogId) {
+        var fileInput = document.getElementById('upload-image');
+        var formData = new FormData();
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('images', fileInput.files[i]);
+        }
+        formData.append('csrf_token', csrfToken);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload_blog_images/' + blogId, true);
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE) {
+                if (this.status === 200) {
+                    alert('Images uploaded successfully');
+                    updateModal.hide();
+                } else {
+                    handleRequestError(this);
+                }
+            }
+        };
+
+        xhr.send(formData);
+    }
+  document.body.addEventListener('click', function(event) {
+        if (event.target.matches('.update-button')) {
+            event.preventDefault();
+            var fieldName = event.target.getAttribute('data-field-name');
+            var blogId = event.target.getAttribute('data-blog-id');
+            updateField(fieldName, blogId);
+        } else if (event.target.matches('.delete-button')) {
+            event.preventDefault();
+            var blogId = event.target.getAttribute('data-blog-id');
+            removeSelectedImages(event, blogId);
+        } else if (event.target.matches('.upload-button')) {
+            event.preventDefault();
+            var blogId = event.target.getAttribute('data-blog-id');
+            uploadImage(blogId);
+        }
+    });
+});
+});
+
+
+</script>
 
 {% endblock %}

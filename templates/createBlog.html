@@ -4,16 +4,16 @@
 <form method="post" action="" enctype="multipart/form-data" class="form-container airbnb-form">
     <h3 class="title">Create Blog Post</h3>
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show airbnb-alert" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show airbnb-alert" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
     <div class="form-field">
         <label for="name" class="label">Name</label>
@@ -22,14 +22,15 @@
 
     <div class="form-field">
         <label for="comment" class="label">Comment</label>
-        <textarea name="comment" id="comment" class="textarea airbnb-textarea" placeholder="Write your comment here"></textarea>
+        <textarea name="comment" id="comment" class="textarea airbnb-textarea"
+                  placeholder="Write your comment here"></textarea>
     </div>
 
     <div class="form-field">
-        <label for="image" class="label">Blog Image</label>
+        <label for="image" class="label">Blog Images</label>
         <div class="file-input-container">
-            <input type="file" name="image" id="image" class="file-input airbnb-file-input">
-            <span class="file-input-label airbnb-file-input-label">Choose file...</span>
+            <input type="file" name="image[]" id="image" class="file-input airbnb-file-input" multiple>
+            <span class="file-input-label airbnb-file-input-label">Choose files...</span>
         </div>
     </div>
 

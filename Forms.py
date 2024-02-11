@@ -15,7 +15,10 @@ class CreateStaffForm(Form):
                               choices=[('Manager', 'Manager'), ('Senior Consultant', 'Senior Consultant'),
                                        ('Consultant', 'Consultant')],
                               validators=[validators.DataRequired()])
-
+class UpdateBlogForm(FlaskForm):
+    name = StringField('Blog Title', validators=[DataRequired()], render_kw={"placeholder": "Enter blog title"})
+    comment = TextAreaField('Blog Content', validators=[DataRequired()], render_kw={"placeholder": "Write your blog content here"})
+    image = FileField('Update Image(s)', validators=[FileAllowed(['jpg', 'png', 'gif', 'jpeg'], 'Images only!')], render_kw={"multiple": True})
 
 class CreateBlogForm(FlaskForm):
     name = StringField('Name', [validators.Length(min=1, max=150), validators.DataRequired()])

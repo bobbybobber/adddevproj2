@@ -29,5 +29,19 @@ class blog:
 
     def set_comment(self, comment):
         self.__comment = comment
-    def set_blog_image(self,image):
-        self.__image = image
+
+    def set_blog_image(self, images):
+        # Check if self.__image already exists and is a list
+        if hasattr(self, '_blog__image') and isinstance(self.__image, list):
+            # If 'images' is already a list, extend the existing list
+            if isinstance(images, list):
+                self.__image.extend(images)
+            else:
+                # If 'images' is a single image, append it to the existing list
+                self.__image.append(images)
+        else:
+            # If self.__image doesn't exist or isn't a list, create a new list
+            if isinstance(images, list):
+                self.__image = images
+            else:
+                self.__image = [images]

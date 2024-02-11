@@ -750,9 +750,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: url('construction-image.jpg') no-repeat center center fixed;
-    background-size: cover;
+    max-height: 100vh;
 }
 
 .wrapper {
@@ -2140,7 +2138,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Create 3 columns */
     gap: 10px; /* Space between the images */
-    width: 30%; /* Container takes up half of the parent's width */
+    width: 40%; /* Container takes up half of the parent's width */
     align-content: start; /* Aligns grid items at the start of the container */
 }
 .rounded-rectangle {
@@ -2166,7 +2164,7 @@ body {
 
 #hero h1 {
     margin-top:23vh;
-    font-size: 48px;
+    font-size: 60px;
     color: #fff;
     margin-bottom: 20px;
 }
@@ -2275,7 +2273,13 @@ h2 {
 
 .testimonial-cards {
     /* Apply the scrolling animation */
-    animation: scroll 60s linear infinite;
+    animation: scroll 180s linear infinite;
+}
+.testimonial-cards:hover {
+    animation-play-state: paused;
+}
+.testimonial-cards-reverse:hover {
+    animation-play-state: paused;
 }
 @media (max-width: 599px) {
     .testimonial-card {
@@ -2433,6 +2437,7 @@ body, html {
 
 .airbnb-forgot-link,
 .airbnb-register-link a {
+margin-right:200px;
     color: #008489;
     text-decoration: none;
 }
@@ -2909,7 +2914,7 @@ body {
 .blog-post-body {
     padding: 20px;
     text-align: left;
-    max-width: 760px; /* or your desired width */
+    max-width: 100%; /* or your desired width */
     margin: 0 auto; /* Centers the content */
 }
 
@@ -2921,7 +2926,7 @@ body {
 
 .blog-post-text {
     color: #555;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.6;
 }
 .tag-list{
@@ -3065,7 +3070,7 @@ pointer-events:none;
     display: flex;
     justify-content: flex-start;
     gap: 30px;
-    animation: scrollReverse 60s linear infinite;
+    animation: scrollReverse 180s linear infinite;
 }
 .chatbox {
     position: fixed;

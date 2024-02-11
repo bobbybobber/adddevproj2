@@ -1,8 +1,13 @@
 <div class="card-deck" id="blog-container">
     {% for blog in blog_list %}
     <div class="card">
-        <img class="card-img-top" src="{{ url_for('static', filename='image/' + blog['image']) }}"
-             alt="{{ blog['title'] }}" height="170px" width="291.44px">
+        {% if blog['images'] %} <!-- Check if there are images -->
+            <img class="card-img-top" src="{{ url_for('static', filename='image/' + blog['images'][0]) }}"
+                 alt="{{ blog['title'] }}" height="170px" width="291.44px">
+        {% else %}
+            <img class="card-img-top" src="{{ url_for('static', filename='image/default_image.jpg') }}"
+                 alt="Default Image" height="170px" width="291.44px">
+        {% endif %}
         <div class="card-body">
             <h5 class="card-title">{{ blog['title'] }}</h5>
             <p class="card-text">{{ blog['content'] }}</p>

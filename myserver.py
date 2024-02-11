@@ -1,6 +1,9 @@
 from datetime import timedelta
+
+import socketio
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, send_file, \
     render_template_string
+from flask_wtf.csrf import CSRFProtect
 from Customers import customer
 from Staff import staff
 from Forms import *
@@ -16,11 +19,9 @@ from random import *
 import bcrypt
 import pandas as pd
 from flask import send_file
+from events import socketio
 
 latest_excel_file_path = None
-
-
-
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -278,6 +279,8 @@ def retrieveStaff():
         print("I am a consultant")
 
     return render_template('retrieveStaff.html', count=len(staff_list), staff_list=staff_list)
+
+
 @app.route('/manageProject')
 def manageProject():
     combination_durations = {
@@ -321,7 +324,6 @@ def manageProject():
     for key in project_dict:
         project = project_dict.get(key)
 
-
         house_type = project.get_house_type()
         house_theme = project.get_house_theme()
         key1 = f"{house_type}, {house_theme}"
@@ -340,6 +342,8 @@ def manageProject():
         print(project_list)
         print(project.get_owner_id())
     return render_template('manageProject.html', project_list=project_list, email=email)
+
+
 @app.route('/updateProject/<int:id>/', methods=['GET', 'POST'])
 def update_Project(id):
     update_customer_form = update_Project_form(request.form)
@@ -378,6 +382,8 @@ def update_Project(id):
 
         flash('Customer not found', 'error')
     return redirect(url_for('updateProject'))
+
+
 @app.route("/managestaff")
 def managestaff():
     # Make sure the user is logged in
@@ -490,32 +496,43 @@ def deleteStaff(email):
 
 
 # Blog CRUD
-@app.route("/createblog", methods={'GET', 'POST'})
+@app.route("/createblog", methods=['GET', 'POST'])
 def UploadImage():
     email = request.args.get('email')
     if request.method == 'POST':
-        file = request.files['image']
+        files = request.files.getlist('image[]')  # To handle multiple files
         name = request.form['name']
         comment = request.form['comment']
-        filename = secure_filename(file.filename)
+
+        # Initialize a list to hold the filenames for saving and later reference
+        filenames = []
+
         try:
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            image = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            for file in files:
+                if file:  # Ensure a file is present
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+                    # Store just the filename or a relative path as needed
+                    filenames.append(filename)
 
-            Blog = blog(name, comment, str(image))
+            # Create a new blog instance
+            Blog = blog(name, comment, filenames)  # Directly pass the list of filenames
 
-            add_blog(Blog)
-            Blog.set_blog_image(image)
-            fileimage = Blog.get_blog_image()
-            new_blog_card_html = render_template('blog_card.html', blog=Blog, email=email, name=name, comment=comment)
-            print(Blog.get_name(),
-                  "was stored in blog.db successfully with user_id ==",
-                  Blog.get_blog_id(), '  ', Blog.get_blog_image())
-            jsonify({'new_blog_card_html': new_blog_card_html})
-            return redirect(url_for('about', image=fileimage, name=name, comment=comment))
+            add_blog(Blog)  # Assuming this function adds the blog to your database or storage
+            print(Blog.get_blog_image())
+            # No need to call set_blog_image if the __init__ method already handles image setting
+            # However, if additional image processing is required, you can call it here
 
-        except:
-            flash('File cannot be empty!!!!!!!')
+            # Retrieve image information for redirection or rendering
+            fileimages = Blog.get_blog_image()  # This will now return a list of image filenames
+
+            # Render a template or redirect as needed
+            # Passing 'fileimages' as a list of filenames to the template or redirect URL
+            return redirect(url_for('about', name=name, comment=comment))
+
+        except Exception as e:
+            flash('An error occurred: {}'.format(e))
 
     return render_template('createBlog.html')
 
@@ -549,11 +566,14 @@ def retrieveblog():
 
 @app.route('/viewblog/<int:id>')
 def viewblog(id):
-    blog_list = session['blog_list']
-    print(blog_list)
-    if id <= len(blog_list):
-        blog = blog_list[id]  # Fetch the blog based on ID
-        return render_template('ViewBlog.html', blog=blog)
+    blog_list = session.get('blog_list', [])
+    blog = next((item for item in blog_list if item['id'] == id), None)
+
+    if blog:
+        images = blog.get('images')
+        session['images'] = images
+        form = UpdateBlogForm()  # Create an instance of the form to pass to the template
+        return render_template('ViewBlog.html', blog=blog, images=images, form=form)
     else:
         return "Blog not found", 404
 
@@ -561,40 +581,141 @@ def viewblog(id):
 @app.route('/updateblog/<int:id>/', methods=['GET', 'POST'])
 def update_blog(id):
     email = request.args.get('email')
-    Update_blog_form = CreateBlogForm(request.form)
+
+    db = shelve.open('blog.db', 'c')
+    blog_dict = db.get('Blog', {})
+
+    if id not in blog_dict:
+        db.close()
+        flash('Blog not found', 'error')
+        return redirect(url_for('retrieveblog'))
+
+    blog = blog_dict[id]
+    Update_blog_form = UpdateBlogForm(obj=blog)
 
     if request.method == 'POST' and Update_blog_form.validate():
-        blog_dict = {}
-        db = shelve.open('blog.db', 'w')
-        blog_dict = db['Blog']
+        # Update title and content
+        blog.set_name(Update_blog_form.name.data)
+        blog.set_comment(Update_blog_form.comment.data)
 
-        # Check if the customer exists in the dictionary
+        # Handle image updates
+        images_to_remove = request.form.getlist('images_to_remove')
+        updated_images = update_blog_images(request.files.getlist('image'), blog.get_blog_image(), images_to_remove)
+
+        if updated_images is not None:
+            blog.set_blog_image(updated_images)
+
+        blog_dict[id] = blog
+        db['Blog'] = blog_dict
+        db.close()
+        flash('Blog updated successfully', 'success')
+        return redirect(url_for('retrieveblog'))
+
+    db.close()
+    existing_images = blog.get_blog_image()
+    return render_template('updateBlog.html', form=Update_blog_form, id=id, email=email,
+                           existing_images=existing_images)
+
+
+@app.route('/update_blog_field/<int:id>', methods=['POST'])
+def update_blog_field(id):
+    field = request.form.get('field')  # Get the field name
+    value = request.form.get('value')  # Get the value
+    db = shelve.open('blog.db', 'w')  # Open the shelve database in write mode
+    blog_dict = db.get('Blog', {})
+
+    try:
         if id in blog_dict:
-            Blog = blog_dict[id]
-            Blog.set_name(Update_blog_form.name.data)
-            Blog.set_comment(Update_blog_form.comment.data)
-            db['Blog'] = blog_dict
-            db.close()
-            print("update successful")
-            flash('Blog updated successfully', 'success')
-            return redirect(url_for('retrieveblog'))
+            blog = blog_dict[id]
+            if field == 'name':
+                blog.set_name(value)
+            elif field == 'comment':
+                blog.set_comment(value)
+            blog_dict[id] = blog  # Update the blog in the dictionary
+            db['Blog'] = blog_dict  # Save the updated dictionary back to the database
+            print(blog_dict)
+            print(blog.get_name())
+            print(blog.get_comment())
+            return jsonify({"field": field, "value": value}), 200
+        else:
+            return 'Blog not found', 404
+    finally:
+        db.close()  # Ensure the database is closed properly
 
+
+@app.route('/upload_blog_images/<int:id>', methods=['POST'])
+def upload_blog_images(id):
+    db = shelve.open('blog.db', 'w')
+    blog_dict = db.get('Blog', {})
+    blog = blog_dict.get(id)
+    blog = blog_dict[id]
+    if not blog:
+        db.close()
+        return jsonify({"message": "Blog not found"}), 404
+
+    # No images to remove on a fresh upload, so pass an empty list
+    images_to_remove = []
+    uploaded_files = request.files.getlist('images')
+    existing_images = blog.get_blog_image() if blog.get_blog_image() else []
+
+    # Call the update function to process the images
+    updated_images = update_blog_images(uploaded_files, existing_images, images_to_remove)
+
+    if updated_images is not None:
+        blog.set_blog_image(updated_images)
+        blog_dict[id] = blog
+        db['Blog'] = blog_dict
+        db.close()
+        print(blog.get_blog_image())
+        return jsonify({"message": "Images uploaded successfully"}), 200
     else:
-        blog_dict = {}
-        db = shelve.open('blog.db', 'r')
-        blog_dict = db['Blog']
+        db.close()
+        return jsonify({"message": "An error occurred while updating images"}), 500
+
+
+def update_blog_images(uploaded_files, existing_images, images_to_remove):
+    # Retain existing images not marked for removal and add new images
+    filenames = [img for img in existing_images if img not in images_to_remove]
+
+    for file in uploaded_files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            filenames.append(filename)
+
+    return filenames
+
+
+@app.route('/delete_blog_images/<int:id>', methods=['POST'])
+def delete_blog_images(id):
+    image_names_to_remove = request.form.getlist('images_to_remove')
+    print(image_names_to_remove)
+    db = shelve.open('blog.db', writeback=True)
+    blog_dict = db.get('Blog', {})
+
+    if id not in blog_dict:
+        db.close()
+        return jsonify({"error": "Blog not found"}), 404
+
+    blog = blog_dict[id]
+    if blog:
+        existing_images = blog.get_blog_image()
+        print('existing images',existing_images)
+
+        # Filter out images to keep
+        images_to_keep = [img for img in existing_images if img not in image_names_to_remove]
+
+        setattr(blog, 'images', images_to_keep)  # Update images attribute
+        print('updated images',images_to_keep)
+        blog_dict[id] = blog
+        db['Blog'] = blog_dict
         db.close()
 
-        # Check if the customer exists in the dictionary
-        if id in blog_dict:
-            Blog = blog_dict[id]
-            Update_blog_form.name.data = Blog.get_name()
-            Update_blog_form.comment.data = Blog.get_comment()
+        return jsonify({"message": "Images deleted successfully", "remainingImages": images_to_keep})
+    else:
+        print('No blog found')
 
-            return render_template('updateBlog.html', form=Update_blog_form, id=id, email=email)
-
-    flash('Blog not found', 'error')
-    return redirect(url_for('retrieveblog'))
 
 
 @app.route('/deleteblog/<int:id>', methods=['POST'])
@@ -962,6 +1083,8 @@ def checkout(id):
             project_list = []
             return redirect(url_for('retrieveProject', email=email))
     return render_template('checkout.html', project=project, id=id, email=email)
+
+
 @app.route('/retrieveProject')
 def retrieveProject():
     combination_durations = {
@@ -1153,28 +1276,30 @@ def about():
     sorted_keys = sorted(filtered_blog_dict.keys())[(page - 1) * per_page: page * per_page]
     for key in sorted_keys:
         blog = filtered_blog_dict[key]
-        blog_image = blog.get_blog_image()
-        id = blog.get_blog_id()
+        blog_images = blog.get_blog_image()
 
-        if blog_image:
-            image_filename = os.path.basename(blog_image)
-            web_image_path = image_filename.replace('\\', '/')
-            full_path = os.path.join(app.static_folder, 'image', web_image_path)
-            print(f"Full image path: {full_path}")  # This should point to the actual file location
-        else:
-            web_image_path = 'default_image.jpg'
+        # Ensure blog_images is a list
+        if not isinstance(blog_images, list):
+            blog_images = [blog_images]  # Wrap single image in a list for consistency
+
+        web_image_paths = []
+        for image in blog_images:
+            if image:
+                image_filename = os.path.basename(image)
+                web_image_path = image_filename.replace('\\', '/')
+                web_image_paths.append(web_image_path)
+            else:
+                web_image_paths.append('default_image.jpg')  # Default image if none
 
         blog_item = {
-            'id': id,
-            'image': web_image_path,
+            'id': blog.get_blog_id(),
+            'images': web_image_paths,  # Now a list of image paths
             'title': blog.get_name(),
             'content': blog.get_comment(),
-            'id': blog.get_blog_id()
         }
         blog_list.append(blog_item)
-        print(f"Blog item image path: {blog_item['image']}")
-
-    print("Total Pages:", total_pages)  # Debugging print statement
+        session["blog_list"] = blog_list
+    print("Total Pages:", total_pages)
     # Retrieve carousel_items from session
     carousel_items = session.get('carousel_items', [])
     session['blog_list'] = blog_list
@@ -1274,7 +1399,8 @@ def verify_passwordstaff(email):
         return render_template('retrieveStaff.html', count=len(Staff_list), staff_list=Staff_list,
                                email=email, countre=len(ratinglist), ratinglist=ratinglist, error=True)
 
-@app.route('/report/',methods=['POST','GET'])
+
+@app.route('/report/', methods=['POST', 'GET'])
 def generateReport():
     global latest_excel_file_path
     combination_durations = {
@@ -1350,6 +1476,7 @@ def generateReport():
         # Render a simple message if there are no projects
         return render_template_string('<p>No projects found for the current user.</p>')
 
+
 @app.route('/get-latest-report')
 def get_latest_report():
     global latest_excel_file_path
@@ -1364,57 +1491,16 @@ def get_latest_report():
 def staff_reply():
     return render_template('staff_reply.html')
 
-# Route to send a message from the customer
-@app.route('/send-message', methods=['POST'])
-def send_message():
-    data = request.json
-    customer_id = data['customer_id']
-    message = data['message']
 
-    with shelve.open('chat_data') as chat_data:
-        # If a staff member has joined, use that staff_id; otherwise, set to None
-        staff_id = chat_data.get(f"customer_{customer_id}_staff", None)
-        messages = chat_data.get(f"customer_{customer_id}_messages", [])
-        messages.append({
-            'from': customer_id,
-            'to': staff_id,
-            'message': message,
-            'timestamp': datetime.now().isoformat()
-        })
-        chat_data[f"customer_{customer_id}_messages"] = messages
-        print(chat_data)
+def create_app():
+    app = Flask(__name__, static_url_path='/static')
+    app.config['SECRET_KEY'] = 'supersecretkey'
+    UPLOAD_FOLDER = os.path.normpath(os.path.join('static', 'image'))
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+    socketio.init_app(app)
+    return app
 
-    return jsonify({'status': 'success'}), 200
-
-# Route for staff to join a chat
-@app.route('/join-chat', methods=['POST'])
-def join_chat():
-    data = request.json
-    customer_id = data['customer_id']
-    staff_id = data['staff_id']
-
-    with shelve.open('chat_data') as chat_data:
-        # Assign the staff to the customer chat
-        chat_data[f"customer_{customer_id}_staff"] = staff_id
-    print(chat_data)
-    return jsonify({'status': 'success'}), 200
-
-# Route to get messages for a specific chat
-@app.route('/get-messages/<int:customer_id>', methods=['GET'])
-def get_messages(customer_id):
-    with shelve.open('chat_data') as chat_data:
-        messages = chat_data.get(f"customer_{customer_id}_messages", [])
-        print(messages)
-    return jsonify(messages), 200
-
-# Route for staff to see list of customers waiting for reply
-@app.route('/active-chats', methods=['GET'])
-def active_chats():
-    with shelve.open('chat_data') as chat_data:
-        # Assuming we store a list of active customer IDs when chat starts
-        active_chats = chat_data.get('active_chats', [])
-    print(active_chats)
-    return jsonify(active_chats), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

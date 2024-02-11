@@ -28,7 +28,6 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    /* ... other styles for form fields ... */
 
     /* Style for the form button */
     .airbnb-form-button {
@@ -45,6 +44,7 @@
     .airbnb-form-button:hover {
         background-color: #e04e4a;
     }
+
 </style>
 
 <script>
@@ -62,60 +62,63 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 });
+
 </script>
 
 <div class="airbnb-intro-section">
     <h2>Welcome to Project Creation</h2>
     <p>Get started with your project by filling out the details below. We will guide you through each step.</p>
+
+
+
+    <div class="airbnb-form-container">
+        <h3 class="airbnb-title">Create Project</h3>
+        <form method="POST" action="/createProject2" class="airbnb-form">
+            <div class="airbnb-form-field">
+                <label for="phone" class="airbnb-label">Phone <span class="airbnb-required">*</span></label>
+                <input type="text" id="phone" name="phone" class="airbnb-input" required>
+            </div>
+
+            <div class="airbnb-form-field">
+                <label for="address" class="airbnb-label">Address <span class="airbnb-required">*</span></label>
+                <input type="text" id="address" name="address" class="airbnb-input" required>
+            </div>
+
+            <div class="airbnb-form-field">
+                <label for="house_type" class="airbnb-label">House Type <span class="airbnb-required">*</span></label>
+                <select id="house_type" name="house_type" class="airbnb-input" required>
+                    <option value="">Select...</option>
+                    <option value="1-Room HDB">1-Room HDB</option>
+                    <option value="2-Room HDB">2-Room HDB</option>
+                    <option value="3-Room HDB">3-Room HDB</option>
+                    <option value="4-Room HDB">4-Room HDB</option>
+                    <option value="5-Room HDB">5-Room HDB</option>
+                </select>
+            </div>
+
+            <div class="airbnb-form-field">
+                <label for="house_theme" class="airbnb-label">House Theme <span class="airbnb-required">*</span></label>
+                <select id="house_theme" name="house_theme" class="airbnb-input" required>
+                    <option value="">Select...</option>
+                    <option value="Scandinavian">Scandinavian</option>
+                    <option value="Luxury">Luxury</option>
+                    <option value="Modern-Luxury">Modern-Luxury</option>
+                    <option value="Traditional">Traditional</option>
+                    <option value="Contemporary">Contemporary</option>
+                    <option value="Farmhouse">Farmhouse</option>
+                </select>
+            </div>
+
+            <div class="airbnb-form-field">
+                <label for="comments" class="airbnb-label">Comments</label>
+                <textarea id="comments" name="comments" class="airbnb-input" rows="4"></textarea>
+            </div>
+
+            <div class="airbnb-form-field">
+                <input type="submit" class="airbnb-form-button" value="Submit">
+            </div>
+        </form>
+    </div>
 </div>
 
-<div class="airbnb-form-container">
-    <h3 class="airbnb-title">Create Project</h3>
-    <form method="POST" action="/createProject2" class="airbnb-form">
-        <div class="airbnb-form-field">
-            <label for="phone" class="airbnb-label">Phone <span class="airbnb-required">*</span></label>
-            <input type="text" id="phone" name="phone" class="airbnb-input" required>
-        </div>
-
-        <div class="airbnb-form-field">
-            <label for="address" class="airbnb-label">Address <span class="airbnb-required">*</span></label>
-            <input type="text" id="address" name="address" class="airbnb-input" required>
-        </div>
-
-        <div class="airbnb-form-field">
-            <label for="house_type" class="airbnb-label">House Type <span class="airbnb-required">*</span></label>
-            <select id="house_type" name="house_type" class="airbnb-input" required>
-                <option value="">Select...</option>
-                <option value="1-Room HDB">1-Room HDB</option>
-                <option value="2-Room HDB">2-Room HDB</option>
-                <option value="3-Room HDB">3-Room HDB</option>
-                <option value="4-Room HDB">4-Room HDB</option>
-                <option value="5-Room HDB">5-Room HDB</option>
-            </select>
-        </div>
-
-        <div class="airbnb-form-field">
-            <label for="house_theme" class="airbnb-label">House Theme <span class="airbnb-required">*</span></label>
-            <select id="house_theme" name="house_theme" class="airbnb-input" required>
-                <option value="">Select...</option>
-                <option value="Scandinavian">Scandinavian</option>
-                <option value="Luxury">Luxury</option>
-                <option value="Modern-Luxury">Modern-Luxury</option>
-                <option value="Traditional">Traditional</option>
-                <option value="Contemporary">Contemporary</option>
-                <option value="Farmhouse">Farmhouse</option>
-            </select>
-        </div>
-
-        <div class="airbnb-form-field">
-            <label for="comments" class="airbnb-label">Comments</label>
-            <textarea id="comments" name="comments" class="airbnb-input" rows="4"></textarea>
-        </div>
-
-        <div class="airbnb-form-field">
-            <input type="submit" class="airbnb-form-button" value="Submit">
-        </div>
-    </form>
-</div>
-</div>
 {% endblock %}

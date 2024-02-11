@@ -1,10 +1,19 @@
-{% macro render_field(field) %}
-  {{ field.label }}
-  {{ field(**kwargs)|safe }}
+{% macro render_field(field, class=None, placeholder=None, aria_describedby=None) %}
+  {% if field.label %}
+    <label for="{{ field.id }}">{{ field.label.text }}</label>
+  {% endif %}
+  {% if field.type == 'TextAreaField' %}
+    <textarea id="{{ field.id }}" name="{{ field.name }}"
+              class="{{ class }}" placeholder="{{ placeholder }}"
+              aria-describedby="{{ aria_describedby }}">{{ field._value() }}</textarea>
+  {% else %}
+    <input type="{{ field.type }}" id="{{ field.id }}" name="{{ field.name }}"
+           class="{{ class }}" placeholder="{{ placeholder }}"
+           aria-describedby="{{ aria_describedby }}" value="{{ field._value() }}"/>
+  {% endif %}
   {% if field.errors %}
     {% for error in field.errors %}
       <div class="text-danger">{{ error }}</div>
     {% endfor %}
   {% endif %}
 {% endmacro %}
-
