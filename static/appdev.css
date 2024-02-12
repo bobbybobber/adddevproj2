@@ -621,7 +621,128 @@ footer {
     color: #202124; /* Dark gray color */
     margin-bottom: 20px; /* Space below the title */
     font-size: 24px; /* Larger font size */
+    font-weight:700;
+    color: #FF5A5F;
 }
+#textcreateproj{
+color:black;
+font-size:20px;
+font-weight:500;
+text-align:center;
+}
+
+
+#housethemebanner {
+    background-color: #FF5A5F; /* Airbnb's signature coral-pink color */
+    color: #ffffff; /* White text color for contrast */
+    height: 30vh; /* Adjusted to 30% of the viewport height */
+    display: flex;
+    align-items: center; /* Vertically center the text */
+    justify-content: center; /* Horizontally center the text */
+    font-family: 'Circular', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 2.5rem; /* Slightly smaller text size for balance */
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s ease; /* Smooth transition for aesthetic */
+}
+
+/* Base styles */
+.themewrapper {
+    background-color: #F7F7F7;
+}
+
+.theme {
+    padding: 20px 0; /* Reduced padding */
+    display: flex;
+    margin-bottom: 20px;
+    max-height: 400px; /* Set a max-height */
+    overflow: hidden;
+    transition: all 0.3s ease-in-out; /* Smooth transition for the animation */
+}
+.description-leftside {
+    width: 50%;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left; /* Align text to the left */
+    font-size: 16px; /* Starting font size */
+    font-weight: 400;
+    color: #484848;
+    line-height: 1.6;
+}
+
+.image-rightside {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Hide any overflow */
+}
+
+.image-rightside img {
+    max-width: 100%; /* Limit image width */
+    max-height: 100%; /* Limit image height */
+    object-fit: contain; /* Maintain aspect ratio without cropping */
+}
+
+.roomtitle {
+    font-size: 24px; /* Starting font size for titles */
+    font-weight: 700;
+    color: #FF5A5F;
+    margin-bottom: 0.5em;
+    text-align:center;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .description-leftside, .image-rightside {
+        width: 100%; /* Stack items on smaller screens */
+        padding: 10px;
+    }
+
+    .theme {
+        height: auto; /* Adjust height automatically based on content */
+    }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .theme {
+        flex-direction: column; /* Stack the content vertically on small screens */
+        max-height: none; /* Remove max-height on smaller devices */
+    }
+
+    .description-leftside, .image-rightside {
+        width: 100%; /* Full width on small screens */
+    }
+
+    .description-leftside {
+        order: 2;
+    }
+
+    .image-rightside {
+        order: 1;
+    }
+
+    .image-rightside img {
+        width: 100%; /* Full width images on small screens */
+        height: auto; /* Auto height for aspect ratio */
+    }
+}
+@media (max-width: 480px) {
+    .roomtitle {
+        font-size: 18px; /* Even smaller font size for small screens */
+    }
+
+    .description-leftside {
+        font-size: 12px; /* Smaller font size for body text on small screens */
+    }
+}
+
 
 .form-field {
     margin-bottom: 16px; /* Space between each form field */
@@ -1830,14 +1951,6 @@ width: auto; / Only be as wide as necessary */
         padding: 15px;
     }
 }
-/* Google Material Design Inspired Styles */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #fafafa;
-    color: #212121;
-    margin: 0;
-    padding: 0;
-}
 
 .gmd-container {
     max-width: 600px;
@@ -2208,6 +2321,7 @@ h2 {
     font-size: 36px;
     color: #484848;
     margin-bottom: 30px;
+    font-weight:800;
 }
 
 #testimonials {
@@ -2330,7 +2444,7 @@ h2 {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 5%;
+    gap: 7%;
 }
 .project-item .testimonial-card h5{
 margin-top:10px;
@@ -2344,8 +2458,8 @@ font-size:25px;
 }
 
 .project-item img {
-    width: 100%;
-    height: auto;
+    width:100%;
+    height:200px;
     border-radius: 8px;
 }
 
@@ -2354,7 +2468,14 @@ font-size:25px;
     color: #484848;
     margin-top: 10px;
 }
-
+#sectionheader{
+text-align:center;
+margin-left:4.5%;
+}
+#projectheader{
+text-align:center;
+font-weight:900;
+}
 /* About Us Section */
 #about-us {
     background-color: #F7F7F7;
@@ -2377,13 +2498,6 @@ margin-top:0;
 margin-bottom:1rem;
 color:white;
 }
-body, html {
-    font-family: 'Circular', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Helvetica Neue', sans-serif;
-    background-color: #F7F7F7;
-    color: #484848;
-    margin: 0;
-    padding: 0;
-}
 
 .airbnb-style-login {
     max-width: 400px;
@@ -2401,6 +2515,8 @@ body, html {
 .airbnb-title {
     color: #FF5A60;
     margin-bottom: 30px;
+    font-weight:800;
+    font-s
 }
 
 .airbnb-form {
@@ -2836,6 +2952,7 @@ body {
     font-size: 24px;
     color: #FF5A5F;
     margin-bottom: 20px;
+    font-weight:900;
 }
 
 .airbnb-input {

@@ -3,7 +3,6 @@
 
 {% block content %}
 <style>
-    /* Style for the content section */
     .airbnb-intro-section {
         padding: 40px;
         background-color: #fff;
@@ -12,9 +11,17 @@
         transition: all 0.5s ease-in-out;
         margin-top:15px;
     }
-
+    .airbnb-input, .airbnb-label{
+    font-size:15px;
+    }
     /* Initial state before user scrolls to the form */
     .airbnb-form-container {
+            max-width: 800px;
+    margin: auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         opacity: 0;
         transform: translateY(50px);
         transition: opacity 1s ease-in-out, transform 1s ease-in-out;
@@ -45,9 +52,50 @@
         background-color: #e04e4a;
     }
 
-</style>
+/* Initial state */
+.theme {
+    opacity: 0;
+    transform: translateY(20%);
+    transition: opacity 1.5s ease, transform 1.5s ease;
+}
 
+/* State when the section is in the viewport */
+.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+</style>
 <script>
+// Function to add 'in-view' class to sections when they enter the viewport
+function addClassWhenInView(entries, observer) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+        } else {
+            entry.target.classList.remove('in-view');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const themeSections = document.querySelectorAll('.theme');
+
+    const observerOptions = {
+        root: null, // relative to document viewport
+        rootMargin: '0px', // margin around root
+        threshold: 0.1 // Adjusted to trigger as soon as the section begins to come into view
+    };
+
+    // Instantiate the observer with the function to run when observing
+    const observer = new IntersectionObserver(addClassWhenInView, observerOptions);
+
+    // Observe each '.theme' section
+    themeSections.forEach(section => {
+        observer.observe(section);
+    });
+});
+
 document.addEventListener('DOMContentLoaded', (event) => {
     const formContainer = document.querySelector('.airbnb-form-container');
 
@@ -63,25 +111,131 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
+
 </script>
 
 <div class="airbnb-intro-section">
-    <h2>Welcome to Project Creation</h2>
-    <p>Get started with your project by filling out the details below. We will guide you through each step.</p>
-
-
-
+    <h2 class="createprojtitle" style="text-align:center;">Welcome to Project Creation</h2>
+    <section id="housethemebanner">
+        House Themes we offer
+    </section>
+    <section class="themewrapper">
+        <section class="theme">
+            <div class="description-leftside">
+                <h3 class="roomtitle">Scandinavian</h3>
+                A Scandinavian-themed house embodies simplicity, functionality, and natural elements. Characterized by
+                clean
+                lines, minimalist design, and a neutral color palette, it creates a serene and cozy atmosphere. Light
+                woods,
+                white walls, and touches of texture accentuate the feeling of spaciousness and warmth. Functional
+                furniture
+                with sleek, modern designs adds to the aesthetic while prioritizing comfort and practicality.
+            </div>
+            <div class="image-rightside">
+                <img src="/static/image/Scandinavian house pic.png">
+            </div>
+        </section>
+        <section class="theme">
+            <div class="description-leftside">
+                <h3 class="roomtitle">Luxury</h3>
+                A luxury-themed house exudes opulence, elegance, and sophistication. Featuring high-end finishes, lavish
+                furnishings, and exquisite detailing, every aspect of the design is meticulously curated for indulgence
+                and
+                comfort. Grand spaces, rich materials like marble, velvet, and gold accents, along with custom fixtures,
+                create an atmosphere of grandeur and refinement. State-of-the-art technology seamlessly integrates with
+                timeless craftsmanship, offering a lifestyle of unparalleled luxury and prestige.
+            </div>
+            <div class="image-rightside">
+                <img src="/static/image/Luxury house pic.png">
+            </div>
+        </section>
+        <section class="theme">
+            <div class="description-leftside">
+                <h3 class="roomtitle">Modern Luxury</h3>
+                A Modern Luxury-themed house seamlessly blends contemporary aesthetics with opulent comfort. Clean
+                lines,
+                minimalist design, and sleek finishes create a sophisticated ambiance, while luxurious materials and
+                high-end amenities elevate the space to new heights of indulgence. Innovative architectural elements and
+                cutting-edge technology complement luxurious furnishings and bespoke details, offering a refined living
+                experience that embodies both style and substance.
+            </div>
+            <div class="image-rightside">
+                <img src="/static/image/Modern Lux house pic.png">
+            </div>
+        </section>
+        <section class="theme">
+            <div class="description-leftside">
+                <h3 class="roomtitle">Traditional</h3>
+                A Traditional-themed house evokes timeless charm, classic elegance, and a
+                sense of heritage. Characterized by architectural elements like pitched roofs, dormer windows, and
+                symmetrical facades, it exudes warmth and familiarity. Inside, you'll find cozy spaces adorned with
+                ornate
+                moldings, wood paneling, and antique furnishings that create a welcoming atmosphere. Rich colors, such
+                as
+                deep reds, blues, and greens, along with patterned textiles and heirloom accents, add depth and
+                character.
+                This style celebrates craftsmanship, history, and a sense of belonging, offering a comforting retreat
+                that
+                stands the test of time.
+            </div>
+            <div class="image-rightside">
+                <img src="/static/image/traditional house pic.png">
+            </div>
+        </section>
+        <section class="theme">
+            <div class="description-leftside">
+                <h3 class="roomtitle">Contemporary</h3>
+                A Contemporary-themed house embodies sleek sophistication, clean lines, and innovative design. It
+                embraces
+                the latest trends in architecture and interior styling, featuring open floor plans, geometric shapes,
+                and
+                minimalist aesthetics. Neutral color palettes, along with a focus on natural light and space, create an
+                airy
+                and uncluttered environment. High-quality materials like glass, steel, and concrete are often used to
+                add
+                texture and visual interest. Innovative technology seamlessly integrates into the design, enhancing
+                comfort
+                and efficiency. This style reflects a forward-thinking approach to living, blending modernity with
+                comfort
+                and style.
+            </div>
+            <div class="image-rightside">
+                <img src="/static/image/Contemporary house pic.png">
+            </div>
+        </section>
+        <section class="theme">
+            <div class="description-leftside">
+                <h3 class="roomtitle">Farmhouse</h3>
+                A Farmhouse-themed house exudes rustic charm, simplicity, and a connection to
+                nature. Inspired by rural living, it features a combination of classic and cozy elements such as exposed
+                wood beams, shiplap walls, and reclaimed materials. Large windows invite ample natural light, while cozy
+                fireplaces create a warm and inviting atmosphere. The kitchen often serves as the heart of the home,
+                with
+                farmhouse sinks, butcher block countertops, and vintage-inspired appliances adding to the nostalgic
+                feel.
+                Wrap-around porches and expansive outdoor spaces encourage relaxation and outdoor living, completing the
+                timeless appeal of this style.
+            </div>
+            <div class="image-rightside">
+                <img src="/static/image/Farm house pic.png">
+            </div>
+        </section>
+    </section>
+        <p id="textcreateproj">Get started with your project by filling out the details below. We will guide you through
+        each step.</p>
     <div class="airbnb-form-container">
         <h3 class="airbnb-title">Create Project</h3>
         <form method="POST" action="/createProject2" class="airbnb-form">
             <div class="airbnb-form-field">
                 <label for="phone" class="airbnb-label">Phone <span class="airbnb-required">*</span></label>
-                <input type="text" id="phone" name="phone" class="airbnb-input" required>
+                <input type="text" id="phone" name="phone" class="airbnb-input" placeholder="Enter Phone Number"
+                       required>
             </div>
 
             <div class="airbnb-form-field">
                 <label for="address" class="airbnb-label">Address <span class="airbnb-required">*</span></label>
-                <input type="text" id="address" name="address" class="airbnb-input" required>
+                <input type="text" id="address" name="address" class="airbnb-input" placeholder="Enter Address"
+                       required>
             </div>
 
             <div class="airbnb-form-field">

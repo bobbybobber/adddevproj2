@@ -125,6 +125,14 @@
 
 
 
+
+
+
+
+
+
+
+
 </style>
 
 
@@ -171,7 +179,9 @@
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">
     Update Blog
 </button>
-
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteBlogModal_{{ blog.get_blog_id() }}">
+    Delete
+</button>
 <!-- The Modal for Blog Update -->
 <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -189,17 +199,18 @@
                     <label for="update-name" class="form-label">Blog Title</label>
                     <input type="text" class="form-control" id="update-name" placeholder="Enter blog title"
                            value="{{ blog.title }}">
-                    <button type="button" class="btn btn-secondary mt-2"
-                            onclick="updateField('name', {{ blog['id'] }})">Update Title
+                    <button type="button" class="btn btn-secondary mt-2" id="update-title-button">
+                        Update Title
                     </button>
+
                 </div>
 
                 <!-- Comment Update Section -->
                 <div class="mb-3">
                     <label for="update-comment" class="form-label">Blog Content</label>
                     <textarea class="form-control" id="update-comment" placeholder="Write your blog content here">{{ blog.comment }}</textarea>
-                    <button type="button" class="btn btn-secondary mt-2"
-                            onclick="updateField('comment', {{ blog['id'] }})">Update Comment
+                    <button type="button" class="btn btn-secondary mt-2" id="update-comment-button">
+                        Update Comment
                     </button>
                 </div>
 
@@ -211,50 +222,79 @@
                         <input class="form-check-input" type="checkbox" name="images_to_remove" value="{{ image }}"
                                id="remove-image-{{ loop.index }}">
                         <label class="form-check-label" for="remove-image-{{ loop.index }}">
-                            <img src="{{ url_for('static', filename='image/' + image) }}" alt="Blog Image"
+                            <img src="{{ url_for('static', filename='image/' + image) }}"
                                  style="max-width: 100px; height: auto;">
                         </label>
                     </div>
                     {% endfor %}
-                    <button type="button" class="btn btn-danger mt-2" onclick="removeSelectedImages({{ blog['id'] }})">
+                    <button type="button" class="btn btn-danger mt-2" id="remove-images-button">
                         Remove Selected Images
                     </button>
+
+
                 </div>
                 <!-- Image Upload Section -->
                 <div class="mb-3">
                     <label for="upload-image" class="form-label">Upload New Image(s)</label>
                     <input type="file" class="form-control" id="upload-image" multiple>
-                    <button type="button" class="btn btn-success mt-2" onclick="uploadImage({{ blog['id'] }})">Upload
-                        Image
+                    <button type="button" class="btn btn-success mt-2" id="upload-image-button">
+                        Upload Image
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteBlogModal_{{ blog.get_blog_id() }}" tabindex="-1" role="dialog"
+     aria-labelledby="deleteBlogLabel_{{ blog.get_blog_id() }}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteBlogLabel_{{ blog.get_blog_id() }}">Delete Blog Confirmation</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this blog post?
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('deleteblog', id=blog.get_blog_id()) }}" method="POST">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
+function handleRequestError(xhr) {
+    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
+        alert('An error occurred: ' + xhr.status + ' ' + xhr.statusText);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var csrfToken = document.querySelector('input[name="csrf_token"]').value;
     var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
 
-    function handleRequestError(xhr) {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
-            alert('An error occurred: ' + xhr.status + ' ' + xhr.statusText);
-        }
-    }
-
-    window.updateField = function(fieldName, blogId) {
+    window.updateField = function(fieldName) {
+        var blogId = getBlogIdFromUrl();
         var value = document.getElementById('update-' + fieldName).value;
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/update_blog_field/" + blogId, true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader('X-CSRFToken', csrfToken);
 
         xhr.onreadystatechange = function() {
             if (this.readyState === XMLHttpRequest.DONE) {
                 if (this.status === 200) {
                     alert(fieldName + ' updated successfully');
-                    if (fieldName === 'name') {
+ if (fieldName === 'name') {
                         Array.from(document.getElementsByClassName('title')).forEach(element => {
                             element.textContent = value;
                         });
@@ -274,12 +314,30 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.send(data);
     };
 
-    function handleRequestError(xhr) {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
-            alert('An error occurred: ' + xhr.status + ' ' + xhr.statusText);
-        }
-    }
+    document.getElementById('update-title-button').addEventListener('click', function() {
+        updateField('name');
+    });
 
+    document.getElementById('update-comment-button').addEventListener('click', function() {
+        updateField('comment');
+    });
+
+    document.getElementById('remove-images-button').addEventListener('click', function() {
+        var blogId = getBlogIdFromUrl();
+        removeSelectedImages(event, blogId);
+    });
+
+    document.getElementById('upload-image-button').addEventListener('click', function() {
+        var blogId = getBlogIdFromUrl();
+        uploadImage(blogId);
+    });
+});
+
+function getBlogIdFromUrl() {
+    const path = window.location.pathname;
+    const blogId = path.split('/').pop();
+    return blogId;
+}
     function updateCarouselAndImageList(remainingImages) {
         const carouselIndicators = document.querySelector('.carousel-indicators');
         const carouselInner = document.querySelector('.carousel-inner');
@@ -288,7 +346,6 @@ document.addEventListener('DOMContentLoaded', function() {
         carouselInner.innerHTML = '';
 
         remainingImages.forEach((image, index) => {
-            // Add new indicator
             const indicator = document.createElement('li');
             indicator.setAttribute('data-bs-target', '#blogCarousel');
             indicator.setAttribute('data-bs-slide-to', index);
@@ -297,44 +354,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             carouselIndicators.appendChild(indicator);
 
-            // Add new carousel item
             const carouselItem = document.createElement('div');
             carouselItem.className = 'carousel-item' + (index === 0 ? ' active' : '');
             const imgTag = document.createElement('img');
-            imgTag.className = 'd-block w-100'; // Add your image classes here
-            imgTag.src = '/path/to/your/images/folder/' + image; // Update with the correct path
+            imgTag.className = 'd-block w-100';
+            imgTag.src = '/static/image/' + image;
             carouselItem.appendChild(imgTag);
 
             carouselInner.appendChild(carouselItem);
         });
     }
-        function removeSelectedImages(event, blogId) {
-        event.preventDefault();
-        var checkedBoxes = document.querySelectorAll('input[name="images_to_remove"]:checked');
-        var imageNames = Array.from(checkedBoxes).map(checkbox => checkbox.value);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/delete_blog_images/" + blogId, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
 
-        xhr.onreadystatechange = function() {
-            if (this.readyState === XMLHttpRequest.DONE) {
-                if (this.status === 200) {
-                    var response = JSON.parse(this.responseText);
-                    alert(response.message);
-                    updateCarouselAndImageList(response.remainingImages);
-                    updateModal.hide();
-                } else {
-                    handleRequestError(this);
-                }
+   function removeSelectedImages(event, blogId) {
+    event.preventDefault();
+    var csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    var checkedBoxes = document.querySelectorAll('input[name="images_to_remove"]:checked');
+    var formData = new FormData();
+
+    Array.from(checkedBoxes).forEach(function(checkbox) {
+        formData.append('images_to_remove', checkbox.value);
+    });
+    console.log(blogId); // This should output the actual id, not undefined or an empty value
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/delete_blog_images/" + blogId, true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+    xhr.onreadystatechange = function() {
+        if (this.readyState === XMLHttpRequest.DONE) {
+            if (this.status === 200) {
+                var response = JSON.parse(this.responseText);
+                alert(response.message);
+                updateCarouselAndImageList(response.remainingImages);
+                updateModal.hide();
+            } else {
+                handleRequestError(this);
             }
-        };
+        }
+    };
 
-        xhr.send(JSON.stringify({ images: imageNames }));
-    }
-
+    xhr.send(formData);
+}
     function uploadImage(blogId) {
         var fileInput = document.getElementById('upload-image');
         var formData = new FormData();
@@ -358,25 +419,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
         xhr.send(formData);
     }
-  document.body.addEventListener('click', function(event) {
-        if (event.target.matches('.update-button')) {
-            event.preventDefault();
-            var fieldName = event.target.getAttribute('data-field-name');
-            var blogId = event.target.getAttribute('data-blog-id');
-            updateField(fieldName, blogId);
-        } else if (event.target.matches('.delete-button')) {
-            event.preventDefault();
-            var blogId = event.target.getAttribute('data-blog-id');
-            removeSelectedImages(event, blogId);
-        } else if (event.target.matches('.upload-button')) {
-            event.preventDefault();
-            var blogId = event.target.getAttribute('data-blog-id');
-            uploadImage(blogId);
-        }
+// Attaching event listeners for delete buttons
+document.querySelectorAll('.remove-image-button').forEach(function(button) {
+    button.addEventListener('click', function(event) {
+        var blogId = this.getAttribute('data-blog-id');
+        console.log("Blog ID is: ", blogId); // Should log the actual ID
+        removeSelectedImages(event, blogId);
     });
 });
+
+document.querySelectorAll('.update-button').forEach(function(button) {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        var fieldName = this.getAttribute('data-field-name');
+        var blogId = this.getAttribute('data-blog-id');
+        updateField(fieldName, blogId);
+    });
 });
 
+document.querySelectorAll('.upload-button').forEach(function(button) {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        var blogId = this.getAttribute('data-blog-id');
+        uploadImage(blogId);
+    });
+});
 
 </script>
 

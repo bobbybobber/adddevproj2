@@ -17,6 +17,7 @@ import os
 import uuid
 from random import *
 import bcrypt
+import copy
 import pandas as pd
 from flask import send_file
 from events import socketio
@@ -503,7 +504,7 @@ def UploadImage():
         files = request.files.getlist('image[]')  # To handle multiple files
         name = request.form['name']
         comment = request.form['comment']
-
+        creator = session['email']
         # Initialize a list to hold the filenames for saving and later reference
         filenames = []
 
@@ -517,7 +518,7 @@ def UploadImage():
                     filenames.append(filename)
 
             # Create a new blog instance
-            Blog = blog(name, comment, filenames)  # Directly pass the list of filenames
+            Blog = blog(name, comment, filenames, creator)  # Directly pass the list of filenames
 
             add_blog(Blog)  # Assuming this function adds the blog to your database or storage
             print(Blog.get_blog_image())
@@ -568,10 +569,15 @@ def retrieveblog():
 def viewblog(id):
     blog_list = session.get('blog_list', [])
     blog = next((item for item in blog_list if item['id'] == id), None)
-
+    db = shelve.open('blog.db', 'r')
+    blog_dict = db.get('Blog', {})
+    db.close()
+    blog = blog_dict[id]
     if blog:
-        images = blog.get('images')
+        images = blog.get_blog_image()
         session['images'] = images
+        print(images)
+        print(blog.get_blog_id())
         form = UpdateBlogForm()  # Create an instance of the form to pass to the template
         return render_template('ViewBlog.html', blog=blog, images=images, form=form)
     else:
@@ -582,7 +588,7 @@ def viewblog(id):
 def update_blog(id):
     email = request.args.get('email')
 
-    db = shelve.open('blog.db', 'c')
+    db = shelve.open('blog.db', 'w')
     blog_dict = db.get('Blog', {})
 
     if id not in blog_dict:
@@ -690,44 +696,73 @@ def update_blog_images(uploaded_files, existing_images, images_to_remove):
 @app.route('/delete_blog_images/<int:id>', methods=['POST'])
 def delete_blog_images(id):
     image_names_to_remove = request.form.getlist('images_to_remove')
-    print(image_names_to_remove)
-    db = shelve.open('blog.db', writeback=True)
-    blog_dict = db.get('Blog', {})
+    print(f"Requested images to remove: {image_names_to_remove}")
 
-    if id not in blog_dict:
-        db.close()
-        return jsonify({"error": "Blog not found"}), 404
+    with shelve.open('blog.db', writeback=True) as db:
+        blog_dict = db.get('Blog', {})
 
-    blog = blog_dict[id]
-    if blog:
-        existing_images = blog.get_blog_image()
-        print('existing images',existing_images)
+        if id not in blog_dict:
+            print(f"Blog with ID {id} not found.")
+            return jsonify({"error": "Blog not found"}), 404
 
-        # Filter out images to keep
-        images_to_keep = [img for img in existing_images if img not in image_names_to_remove]
+        blog = blog_dict[id]
 
-        setattr(blog, 'images', images_to_keep)  # Update images attribute
-        print('updated images',images_to_keep)
-        blog_dict[id] = blog
+        # Remove specified images using the new method
+        updated_images_after_removal = blog.remove_blog_images(image_names_to_remove)
+        print(f"Images after removal: {updated_images_after_removal}")
+
+        # Delete specified images from the filesystem
+        for img_to_remove in set(image_names_to_remove):
+            file_path = os.path.join('static/image/', img_to_remove)
+            try:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"Deleted image {file_path}.")
+                else:
+                    print(f"File {file_path} not found.")
+            except OSError as e:
+                print(f"Error deleting image {img_to_remove}: {e.strerror}")
+
+        # Sync the updated blog data to the database
         db['Blog'] = blog_dict
-        db.close()
+        db.sync()
 
-        return jsonify({"message": "Images deleted successfully", "remainingImages": images_to_keep})
-    else:
-        print('No blog found')
+    # Retrieve the final updated list of images for response
+    final_updated_images = blog.get_blog_images()
+    print("Final updated images in blog object:", final_updated_images)
 
-
+    return jsonify({"message": "Images deleted successfully", "remainingImages": final_updated_images})
 
 @app.route('/deleteblog/<int:id>', methods=['POST'])
 def deleteblog(id):
-    blog_dict = {}
-    db = shelve.open('blog.db', 'w')
-    blog_dict = db['Blog']
-    blog_dict.pop(id)
-    db['Blog'] = blog_dict
-    db.close()
-    return redirect(url_for('retrieveblog'))
+    # Open the shelve database
+    db = shelve.open('blog.db', 'c')  # Use 'c' for read/write access, create if necessary
+    try:
+        blog_dict = db['Blog']
+        if id in blog_dict:
+            # Retrieve the current user's email or ID from the session
+            current_user_id = session.get('email')  # Adjust if you use another identifier than email
+            blog_post = blog_dict[id]
 
+            # Use the correct getter to check the creator's identity
+            if blog_post.get_creator() == current_user_id:
+                del blog_dict[id]
+                db['Blog'] = blog_dict
+                flash('Blog post deleted successfully.')
+            if session['user_type'] == 'staff':
+                del blog_dict[id]
+                db['Blog'] = blog_dict
+                flash('Blog post deleted successfully.')
+            else:
+                flash('You do not have permission to delete this blog post.')
+        else:
+            flash('Blog post not found.')
+    except KeyError:
+        flash('No blog data found.')
+    finally:
+        db.close()
+
+    return redirect(url_for('about'))
 
 # Customer CRUD
 @app.route('/createCustomer', methods=['GET', 'POST'])
@@ -803,64 +838,70 @@ def retrieveCustomers():
 @app.route('/updateCustomer/<string:email>/', methods=['GET', 'POST'])
 def update_user(email):
     update_customer_form = UpdateCustomerForm(request.form)
-
     if request.method == 'POST' and update_customer_form.validate():
-        customer_dict = {}
-        db = shelve.open('customer.db', 'w')
-        customer_dict = db['Customer']
+        try:
+            db = shelve.open('customer.db', 'w')
+            customer_dict = db.get('Customer', {})
 
-        # Check if the customer exists in the dictionary
-        if email in customer_dict:
-            Customer = customer_dict[email]
-            Customer.set_first_name(update_customer_form.first_name.data)
-            Customer.set_last_name(update_customer_form.last_name.data)
-            print(update_customer_form.password.data)
-            passwordhash = update_customer_form.password.data
-            password2 = hash_password(passwordhash)
+            # Check if the customer exists in the dictionary
+            if email in customer_dict:
+                customer = customer_dict[email]
+                customer.set_first_name(update_customer_form.first_name.data)
+                customer.set_last_name(update_customer_form.last_name.data)
 
-            Customer.set_password(password2)
+                # Handle password update, if provided
+                if update_customer_form.password.data:
+                    password_hash = hash_password(update_customer_form.password.data)
+                    customer.set_password(password_hash)
 
-            try:
-                file = request.files['image']
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                image = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            except:
-                image = 'default'
-            if image == "default":
-                Customer.set_image("default")
+                # Handle image upload
+                file = request.files.get('image')
+                if file and file.filename != '':  # Check if a file is uploaded
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+                    customer.set_image(file_path)
+                else:  # If no new image is uploaded, keep the current image
+                    customer.set_image(customer.get_image())
 
+                customer.set_email(update_customer_form.email.data)
 
+                # Update the customer_dict with the modified customer
+                customer_dict[email] = customer
+                db['Customer'] = customer_dict
             else:
-                Customer.set_image(image)
-                print(Customer.get_image())
-
-            Customer.set_email(update_customer_form.email.data)
-            db['Customer'] = customer_dict
+                flash('Customer not found', 'error')
+                return redirect(url_for('retrieveCustomers'))
+        except Exception as e:
+            flash('An error occurred: ' + str(e), 'error')
+            return redirect(url_for('updateCustomers'))
+        finally:
             db.close()
-            flash('Customer updated successfully', 'success')
-            return redirect(url_for('retrieveCustomers', email=email))
+        flash('Customer updated successfully', 'success')
+        return redirect(url_for('retrieveCustomers', email=email))
+    elif request.method == 'GET':
+        try:
+            db = shelve.open('customer.db', 'r')
+            customer_dict = db.get('Customer', {})
 
-    else:
-        customer_dict = {}
-        db = shelve.open('customer.db', 'r')
-        customer_dict = db['Customer']
-        db.close()
-
-        # Check if the customer exists in the dictionary
-        if email in customer_dict:
-            Customer = customer_dict[email]
-            update_customer_form.first_name.data = Customer.get_first_name()
-            update_customer_form.last_name.data = Customer.get_last_name()
-            update_customer_form.email.data = Customer.get_email()
-            update_customer_form.password.data = Customer.get_password()
-            print('hello')
-            return render_template('updateCustomer.html', form=update_customer_form, email=email)
+            # Check if the customer exists in the dictionary
+            if email in customer_dict:
+                customer = customer_dict[email]
+                update_customer_form.first_name.data = customer.get_first_name()
+                update_customer_form.last_name.data = customer.get_last_name()
+                update_customer_form.email.data = customer.get_email()
+            else:
+                flash('Customer not found', 'error')
+                return redirect(url_for('updateCustomers'))
+        except Exception as e:
+            flash('An error occurred: ' + str(e), 'error')
+            return redirect(url_for('updateCustomers'))
+        finally:
+            db.close()
+        return render_template('updateCustomer.html', form=update_customer_form, email=email)
 
     flash('Customer not found', 'error')
     return redirect(url_for('updateCustomers'))
-
-
 @app.route('/deleteCustomer/<string:email>', methods=['POST'])
 def deleteCustomer(email):
     customer_dict = {}
@@ -1288,8 +1329,6 @@ def about():
                 image_filename = os.path.basename(image)
                 web_image_path = image_filename.replace('\\', '/')
                 web_image_paths.append(web_image_path)
-            else:
-                web_image_paths.append('default_image.jpg')  # Default image if none
 
         blog_item = {
             'id': blog.get_blog_id(),

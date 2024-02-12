@@ -21,18 +21,18 @@
             <form method="POST">
                 <div class="airbnb-field">
                     <div class="control">
-                        {{ render_field(form.first_name, class="airbnb-input") }}
-                        {{ render_field(form.last_name, class="airbnb-input") }}
+                        {{ render_field(form.first_name, class="airbnb-input",placeholder='Enter first name') }}
+                        {{ render_field(form.last_name, class="airbnb-input",placeholder='Enter last name') }}
                     </div>
                 </div>
                 <div class="airbnb-field">
                     <div class="control">
-                        {{ render_field(form.email, class="airbnb-input") }}
+                        {{ render_field(form.email, class="airbnb-input",placeholder='Enter email') }}
                     </div>
                 </div>
                 <div class="airbnb-field">
                     <div class="control">
-                        {{ render_field(form.password, class="airbnb-input") }}
+                        {{ render_field(form.password, class="airbnb-input",placeholder='Enter password') }}
                     </div>
                 </div>
                 <button type="submit" class="airbnb-submit-btn">Submit</button>
